@@ -168,14 +168,6 @@ function get_available_plugins() {
 function load_plugins() {
 	$config = get_config();
 
-	add_filter( 'plugins_url', function ( $url, $path, $plugin ) {
-		if ( strpos( $plugin, dirname( __DIR__ ) ) === false ) {
-			return $url;
-		}
-
-		return str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, dirname( $plugin ) ) . $path;
-	}, 10, 3 );
-
 	// Force DISABLE_WP_CRON for Cavalcade.
 	if ( $config['cavalcade'] && ! defined( 'DISABLE_WP_CRON' ) ) {
 		define( 'DISABLE_WP_CRON', true );

@@ -69,10 +69,6 @@ function run_checks() : array {
 		'cron-canary'  => Cavalcade\check_health(),
 	];
 
-	if ( defined( 'ELASTICSEARCH_HOST' ) && ELASTICSEARCH_HOST ) {
-		$checks['elasticsearch'] = run_elasticsearch_healthcheck();
-	}
-
 	$checks = apply_filters( 'hm_platform_healthchecks', $checks );
 
 	return $checks;
@@ -175,20 +171,3 @@ function run_cron_healthcheck() {
 	return true;
 }
 
-/**
- * Run ElasticSearch health check.
- */
-function run_elasticsearch_healthcheck() {
-	$host = sprintf( '%s://%s:%d', ELASTICSEARCH_PORT === 443 ? 'https' : 'http', ELASTICSEARCH_HOST, ELASTICSEARCH_PORT );
-	$response = wp_remote_get( $host . '/_cluster/health' );
-	if ( is_wp_error( $response ) ) {
-		return new WP_Error( 'elasticsearch-unhealthy', $response->get_error_message() );
-	}
-
-	$body = wp_remote_retrieve_body( $response );
-	if ( is_wp_error( $body ) ) {
-		return new WP_Error( 'elasticsearch-unhealthy', $body->get_error_message() );
-	}
-
-	return true;
-}
