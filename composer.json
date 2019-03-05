@@ -1,0 +1,12 @@
+{
+	"name": "humanmade/cloud",
+	"description": "Human Made Platform Cloud",
+	"type": "library",
+	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "Human Made",
+			"email": "hello@humanmade.com"
+		}
+	]
+}
