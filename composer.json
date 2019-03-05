@@ -8,5 +8,15 @@
 			"name": "Human Made",
 			"email": "hello@humanmade.com"
 		}
-	]
+	],
+	"autoload": {
+		"files": [
+			"load.php",
+			"inc/namespace.php",
+			"wp-config.php"
+		]
+	},
+	"require": {
+		"humanmade/wp-redis-predis-client": "dev-master"
+	}
 }
