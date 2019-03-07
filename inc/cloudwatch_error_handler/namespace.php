@@ -8,7 +8,7 @@
 
 namespace HM\Platform\Cloud\CloudWatch_Error_Handler;
 
-use function HM\Platform\CloudWatch_Logs\send_events_to_stream;
+use function HM\Platform\Cloud\CloudWatch_Logs\send_events_to_stream;
 
 function bootstrap() {
 	$GLOBALS['hm_platform_cloudwatch_error_handler_errors'] = [];
