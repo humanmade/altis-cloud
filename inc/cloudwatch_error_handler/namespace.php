@@ -1,11 +1,12 @@
 <?php
 
-/*
-PHP Error Handler to send all PHP errors to CloudWatch
+/**
+ * PHP Error Handler to send all PHP errors to CloudWatch
+ *
+ * We do this to get better structured data about the errors, and also tie XRay trace ids to the errors.
+ */
 
-We do this to get better structured data about the errrors, and also tie XRay trace ids to the errors.
-*/
-namespace HM\Platform\CloudWatch_Error_Handler;
+namespace HM\Platform\Cloud\CloudWatch_Error_Handler;
 
 use function HM\Platform\CloudWatch_Logs\send_events_to_stream;
 
