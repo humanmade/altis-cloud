@@ -12,7 +12,6 @@
 	"autoload": {
 		"files": [
 			"load.php",
-			"inc/namespace.php",
 			"wp-config.php"
 		]
 	},
