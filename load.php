@@ -2,15 +2,47 @@
 
 namespace HM\Platform\Cloud;
 
-if ( ! defined( 'WP_CACHE' ) ) {
-	define( 'WP_CACHE', true );
-}
+use const HM\Platform\ROOT_DIR;
+use function HM\Platform\register_module;
+use function HM\Platform\get_config;
+use HM\Platform\XRay;
 
 require_once __DIR__ . '/inc/namespace.php';
 
-// Load the platform as soon as WP is loaded.
-add_action( 'enable_wp_debug_mode_checks', __NAMESPACE__ . '\\bootstrap' );
+add_action( 'hm-platform.modules.init', function () {
+	$default_settings = [
+		'enabled'         => true,
+		'cavalcade'       => true,
+		's3-uploads'      => true,
+		'aws-ses-wp-mail' => true,
+		'batcache'        => true,
+		'redis'           => true,
+		'ludicrousdb'     => true,
+		'healthcheck'     => true,
+		'xray'            => true,
+	];
 
-if ( class_exists( 'HM\\Cavalcade\\Runner\\Runner' ) && get_config()['cavalcade'] ) {
-	boostrap_cavalcade_runner();
-}
+	register_module( 'cloud', __DIR__, 'Cloud', $default_settings, function () {
+		$config = get_config()['modules']['cloud'];
+
+		if (
+			$config['xray']
+			&& function_exists( 'xhprof_sample_enable' )
+			&& ( ! defined( 'WP_CLI' ) || ! WP_CLI )
+			&& ! class_exists( 'HM\\Cavalcade\\Runner\\Runner' )
+		) {
+			require_once ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
+			require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
+			XRay\bootstrap();
+		}
+
+		// Load the platform as soon as WP is loaded.
+		add_action( 'enable_wp_debug_mode_checks', __NAMESPACE__ . '\\bootstrap' );
+
+		if ( class_exists( 'HM\\Cavalcade\\Runner\\Runner' ) && $config['cavalcade'] ) {
+			boostrap_cavalcade_runner();
+		}
+	} );
+} );
+
+

@@ -1,6 +1,5 @@
 curl -L https://github.com/humanmade/Cavalcade/archive/907c2ec3e52bffe50a8d06ce589d1376731f1e2d.zip -o cavalcade.zip
 curl -L https://github.com/humanmade/aws-ses-wp-mail/archive/ae12da33c381bf04ce31c1b520e7b62c9d2269a7.zip -o aws-ses-wp-mail.zip
-curl -L https://github.com/humanmade/aws-xray/archive/b647c35a54fa59e3753758507e9415521ad7008d.zip -o aws-xray.zip
 curl -L https://github.com/humanmade/S3-Uploads/archive/237e73fef2cb56630afa9bb561fc121e58eb4886.zip -o s3-uploads.zip
 curl -L https://github.com/pantheon-systems/wp-redis/archive/ac5f4e62a298ea784f682c3ea5dc8061aedf525e.zip -o wp-redis.zip
 curl -L https://github.com/humanmade/batcache/archive/5819246c266cf517fb34c1318ff0a6d0bfd69741.zip -o batcache.zip
@@ -9,7 +8,6 @@ curl -L https://github.com/humanmade/wordpress-pecl-memcached-object-cache/archi
 
 mkdir plugins/cavalcade ; tar -xvf cavalcade.zip -C plugins/cavalcade --strip-components=1
 mkdir plugins/aws-ses-wp-mail ; tar -xvf aws-ses-wp-mail.zip -C plugins/aws-ses-wp-mail --strip-components=1
-mkdir plugins/aws-xray ; tar -xvf aws-xray.zip -C plugins/aws-xray --strip-components=1
 mkdir plugins/wp-redis ; tar -xvf wp-redis.zip -C plugins/wp-redis --strip-components=1
 mkdir plugins/s3-uploads ; tar -xvf s3-uploads.zip -C plugins/s3-uploads --strip-components=1
 mkdir dropins/batcache ; tar -xvf batcache.zip -C dropins/batcache --strip-components=1

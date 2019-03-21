@@ -3,6 +3,7 @@
 namespace HM\Platform\Cloud;
 
 use function HM\Platform\get_environment_architecture;
+use function HM\Platform\get_config as get_platform_config;
 
 // Load the Cavalcade Runner CloudWatch extension.
 // This is loaded on the Cavalcade-Runner, not WordPress, crazy I know.
@@ -19,6 +20,22 @@ function boostrap_cavalcade_runner() {
  * that was passed in at the end of the function.
  */
 function bootstrap( $wp_debug_enabled ) {
+	if ( ! defined( 'WP_CACHE' ) ) {
+		define( 'WP_CACHE', true );
+	}
+
+	/**
+	 * In Cloud, the User Agent is not available via the headers, as it is stripped at the CDN level. This is to
+	 * preserve cache-key generation, as it's not possible to get access to headers that will cause a highly
+	 * unique cache key.
+	 *
+	 * The $_SERVER['HTTP_USER_AGENT'] must still be set, because WordPress and other things will test against
+	 * the user agent to enable things like the visual editor.
+	 */
+	if ( $_SERVER['HTTP_USER_AGENT'] === 'Amazon CloudFront' ) {
+		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36';
+	}
+
 	load_object_cache();
 	load_db();
 
@@ -64,15 +81,8 @@ function bootstrap( $wp_debug_enabled ) {
 function get_config() {
 	global $hm_platform;
 
-	$defaults = [
-		's3-uploads'      => true,
-		'aws-ses-wp-mail' => true,
-		'cavalcade'       => true,
-		'batcache'        => true,
-		'redis'           => true,
-		'ludicrousdb'     => true,
-		'healthcheck'     => true,
-	];
+	$defaults = get_platform_config()['modules']['cloud'];
+
 	return array_merge( $defaults, $hm_platform ? $hm_platform : [] );
 }
 
