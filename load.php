@@ -11,15 +11,16 @@ require_once __DIR__ . '/inc/namespace.php';
 
 add_action( 'hm-platform.modules.init', function () {
 	$default_settings = [
-		'enabled'         => true,
-		'cavalcade'       => true,
-		's3-uploads'      => true,
-		'aws-ses-wp-mail' => true,
-		'batcache'        => true,
-		'redis'           => true,
-		'ludicrousdb'     => true,
-		'healthcheck'     => true,
-		'xray'            => true,
+		'enabled'            => true,
+		'cavalcade'          => true,
+		's3-uploads'         => true,
+		'aws-ses-wp-mail'    => true,
+		'batcache'           => true,
+		'redis'              => true,
+		'ludicrousdb'        => true,
+		'healthcheck'        => true,
+		'xray'               => true,
+		'email-from-address' => 'no-reply@humanmade.com',
 	];
 
 	register_module( 'cloud', __DIR__, 'Cloud', $default_settings, function () {
@@ -35,6 +36,10 @@ add_action( 'hm-platform.modules.init', function () {
 			require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
 			XRay\bootstrap();
 		}
+
+		add_filter( 'wp_mail_from', function ( string $email ) use ( $config ) : string {
+			return $config['email-from-address'];
+		}, 1 );
 
 		// Load the platform as soon as WP is loaded.
 		add_action( 'enable_wp_debug_mode_checks', __NAMESPACE__ . '\\bootstrap' );
