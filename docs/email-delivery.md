@@ -24,7 +24,6 @@ For advanced configuration of the sending email address for outbound mail, use t
 add_filter( 'wp_mail_from', function ( $email ) {
 	return 'no-reply@mydomainname.com';
 } );
-
 ```
 
 To configure the "from name" of outbound emails by using the `wp_mail_from_name` filter:
@@ -33,7 +32,6 @@ To configure the "from name" of outbound emails by using the `wp_mail_from_name`
 add_filter( 'wp_mail_from_name', function ( $name ) {
 	return 'Joe Bloggs';
 } );
-
 ```
 
 Any email address can be used as long as they are all from a verified sending domain. Multiple sending domains can also be used, just get each one verified.
