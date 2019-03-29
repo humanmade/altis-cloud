@@ -3,15 +3,16 @@
 namespace HM\Platform\Cloud;
 
 use const HM\Platform\ROOT_DIR;
-use function HM\Platform\register_module;
 use function HM\Platform\get_config;
+use function HM\Platform\get_environment_architecture;
+use function HM\Platform\register_module;
 use HM\Platform\XRay;
 
 require_once __DIR__ . '/inc/namespace.php';
 
 add_action( 'hm-platform.modules.init', function () {
 	$default_settings = [
-		'enabled'            => true,
+		'enabled'            => in_array( get_environment_architecture(), [ 'ec2', 'ecs', 'local-server' ] ),
 		'cavalcade'          => true,
 		's3-uploads'         => true,
 		'aws-ses-wp-mail'    => true,
