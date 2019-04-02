@@ -11,7 +11,7 @@ use HM\Platform\XRay;
 require_once __DIR__ . '/inc/namespace.php';
 
 add_action( 'hm-platform.modules.init', function () {
-	$is_cloud = in_array( get_environment_architecture(), [ 'ec2', 'ecs' ] );
+	$is_cloud = in_array( get_environment_architecture(), [ 'ec2', 'ecs' ], true );
 	$default_settings = [
 		'enabled'            => true,
 		'cavalcade'          => true,
