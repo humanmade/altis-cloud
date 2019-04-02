@@ -6,6 +6,14 @@ use LudicrousDB;
 
 class DB extends LudicrousDB {
 	public $check_tcp_responsiveness = false;
+
+	/**
+	 * Whether to use mysql_pconnect instead of mysql_connect
+	 *
+	 * @public bool
+	 */
+	public $persistent = true;
+
 	function query( $query ) {
 		$start = microtime( true );
 		$result = parent::query( $query );
