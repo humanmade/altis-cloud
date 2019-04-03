@@ -11,16 +11,17 @@ use HM\Platform\XRay;
 require_once __DIR__ . '/inc/namespace.php';
 
 add_action( 'hm-platform.modules.init', function () {
+	$is_cloud = in_array( get_environment_architecture(), [ 'ec2', 'ecs' ], true );
 	$default_settings = [
-		'enabled'            => in_array( get_environment_architecture(), [ 'ec2', 'ecs', 'local-server' ] ),
+		'enabled'            => true,
 		'cavalcade'          => true,
 		's3-uploads'         => true,
-		'aws-ses-wp-mail'    => true,
-		'batcache'           => true,
+		'aws-ses-wp-mail'    => $is_cloud,
+		'batcache'           => $is_cloud,
 		'redis'              => true,
 		'ludicrousdb'        => true,
 		'healthcheck'        => true,
-		'xray'               => true,
+		'xray'               => $is_cloud,
 		'email-from-address' => 'no-reply@humanmade.com',
 	];
 
