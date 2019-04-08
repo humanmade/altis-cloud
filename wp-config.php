@@ -7,6 +7,6 @@
 
 use const HM\Platform\ROOT_DIR;
 
-if ( ROOT_DIR . '/wp-config-production.php' ) {
+if ( file_exists( ROOT_DIR . '/wp-config-production.php' ) ) {
 	require_once ROOT_DIR . '/wp-config-production.php';
 }
