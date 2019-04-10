@@ -56,13 +56,6 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 	 *
 	 * @return array
 	 */
-		/**
-	 * Retrieve records
-	 *
-	 * @param array $args
-	 *
-	 * @return array
-	 */
 	public function get_records( $args ) {
 		$fields = [
 			'blog_id',
