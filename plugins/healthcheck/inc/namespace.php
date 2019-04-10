@@ -31,7 +31,15 @@ function output_page( array $checks ) {
 	}
 	nocache_headers();
 
+	$format = 'html';
 	if ( ! empty( $_SERVER['HTTP_ACCEPT'] ) && $_SERVER['HTTP_ACCEPT'] === 'application/json' ) {
+		$format = 'json';
+	}
+	if ( $_GET['_accept'] ?? '' === 'json' ) {
+		$format = 'json';
+	}
+
+	if ( $format === 'json' ) {
 		echo json_encode( $checks );
 		exit;
 	}
