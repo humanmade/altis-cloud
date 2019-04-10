@@ -29,7 +29,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 	 *
 	 * @param array $data Data to insert.
 	 *
-	 * @return int
+	 * @return bool
 	 */
 	public function insert_record( $data ) {
 		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
@@ -38,6 +38,9 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 
 		$result = send_events_to_stream( [ [ 'timestamp' => time() * 1000, 'message' => json_encode( $data ) ] ], get_environment_name() . '/audit-log', 'items' );
 
+		if ( ! $result ) {
+			return false;
+		}
 		// Add the values to the column values caches if they exist
 		foreach ( $data as $column => $value ) {
 			$cache = wp_cache_get( $column, 'stream_column_values' );
@@ -47,6 +50,8 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			$cache[] = $value;
 			wp_cache_set( $column, $cache, 'stream_column_values' );
 		}
+
+		return true;
 	}
 
 	/**
