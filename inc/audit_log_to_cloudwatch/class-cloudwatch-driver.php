@@ -79,12 +79,12 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		$field_where = [];
 		foreach ( $fields as $field ) {
 			if ( $args[ $field ] || $args[ $field ] === '0' ) {
-				$field_where[] = sprintf( '%s = "%s" ', $field, $args[ $field ] );
+				$field_where[] = sprintf( '%s = "%s" ', $field, esc_sql( $args[ $field ] ) );
 			}
 		}
 
 		if ( $args['search'] ) {
-			$field_where[] = sprintf( '%s like "%s" ', $args['search_field'], $args['search'] );
+			$field_where[] = sprintf( '%s like "%s" ', $args['search_field'], esc_sql( $args['search'] ) );
 		}
 
 		if ( $field_where ) {
