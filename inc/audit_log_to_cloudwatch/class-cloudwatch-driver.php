@@ -190,17 +190,18 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 	 * Init storage.
 	 *
 	 * @param \WP_Stream\Plugin $plugin Instance of the plugin.
-	 * @return \WP_Stream\Install
+	 * @return null
 	 */
 	public function setup_storage( $plugin ) {
-		//
+		// no op.
+		return;
 	}
 
 	/**
 	 * Purge storage.
 	 *
 	 * @param \WP_Stream\Plugin $plugin Instance of the plugin.
-	 * @return \WP_Stream\Uninstall
+	 * @return null
 	 */
 	public function purge_storage( $plugin ) {
 		// no op.
