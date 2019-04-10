@@ -183,6 +183,14 @@ function load_plugins() {
 		define( 'DISABLE_WP_CRON', true );
 	}
 
+	// Define TACHYON_URL, as in the Cloud environment is "always on"
+	// but the constant is not defined at the infra. level as we want
+	// it to be the network primary domain which isn't available
+	// at the infra level current.
+	if ( ! defined( 'TACHYON_URL' ) ) {
+		define( 'TACHYON_URL', get_site_url( get_main_site_id( get_main_network_id() ), '/tachyon' ) );
+	}
+
 	foreach ( get_available_plugins() as $plugin => $file ) {
 		if ( ! $config[ $plugin ] ) {
 			continue;
