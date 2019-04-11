@@ -2,6 +2,7 @@
 
 namespace HM\Platform\Cloud;
 
+use const HM\Platform\ROOT_DIR;
 use function HM\Platform\get_environment_architecture;
 use function HM\Platform\get_config as get_platform_config;
 
@@ -99,7 +100,7 @@ function load_object_cache() {
 	Alloptions_Fix\bootstrap();
 	\WP_Predis\add_filters();
 
-	require dirname( __DIR__ ) . '/plugins/wp-redis/object-cache.php';
+	require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
@@ -164,10 +165,7 @@ function load_db() {
  */
 function get_available_plugins() {
 	return [
-		's3-uploads'      => 's3-uploads/s3-uploads.php',
 		'aws-ses-wp-mail' => 'aws-ses-wp-mail/aws-ses-wp-mail.php',
-		'cavalcade'       => 'cavalcade/plugin.php',
-		'redis'           => 'wp-redis/wp-redis.php',
 		'healthcheck'     => 'healthcheck/plugin.php',
 	];
 }
@@ -178,9 +176,12 @@ function get_available_plugins() {
 function load_plugins() {
 	$config = get_config();
 
-	// Force DISABLE_WP_CRON for Cavalcade.
-	if ( $config['cavalcade'] && ! defined( 'DISABLE_WP_CRON' ) ) {
-		define( 'DISABLE_WP_CRON', true );
+	if ( $config['cavalcade'] ) {
+		// Force DISABLE_WP_CRON for Cavalcade.
+		if ( ! defined( 'DISABLE_WP_CRON' ) ) {
+			define( 'DISABLE_WP_CRON', true );
+		}
+		require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
 	}
 
 	// Define TACHYON_URL, as in the Cloud environment is "always on"
@@ -189,6 +190,14 @@ function load_plugins() {
 	// at the infra level current.
 	if ( ! defined( 'TACHYON_URL' ) ) {
 		define( 'TACHYON_URL', get_site_url( get_main_site_id( get_main_network_id() ), '/tachyon' ) );
+	}
+
+	if ( $config['s3-uploads'] ) {
+		require_once ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
+	}
+
+	if ( $config['redis'] ) {
+		require_once ROOT_DIR . '/vendor/humanmade/wp-redis/wp-redis.php';
 	}
 
 	foreach ( get_available_plugins() as $plugin => $file ) {
