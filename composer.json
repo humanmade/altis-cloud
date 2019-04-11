@@ -17,6 +17,9 @@
 	},
 	"require": {
 		"humanmade/wp-redis-predis-client": "dev-master",
-		"humanmade/aws-xray": "1.1.2"
+		"humanmade/aws-xray": "1.1.2",
+		"humanmade/s3-uploads": "dev-master",
+		"humanmade/cavalcade": "dev-master",
+		"humanmade/wp-redis": "0.7.1"
 	}
 }
