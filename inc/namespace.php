@@ -21,6 +21,8 @@ function boostrap_cavalcade_runner() {
  * that was passed in at the end of the function.
  */
 function bootstrap( $wp_debug_enabled ) {
+	$config = get_config();
+
 	if ( ! defined( 'WP_CACHE' ) ) {
 		define( 'WP_CACHE', true );
 	}
@@ -71,6 +73,12 @@ function bootstrap( $wp_debug_enabled ) {
 		require_once __DIR__ . '/cloudwatch_error_handler/namespace.php';
 		CloudWatch_Error_Handler\bootstrap();
 	}
+
+	if ( $config['audit-log-to-cloudwatch'] ) {
+		require_once __DIR__ . '/audit_log_to_cloudwatch/namespace.php';
+		Audit_Log_To_CloudWatch\bootstrap();
+	}
+
 	return $wp_debug_enabled;
 }
 
