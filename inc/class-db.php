@@ -15,15 +15,25 @@ class DB extends LudicrousDB {
 	 */
 	public $persistent = true;
 
+	/**
+	 * Track total time waiting for database responses;
+	 *
+	 * @var integer
+	 */
+	public $time_spent = 0;
+
+
 	function query( $query ) {
 		$start = microtime( true );
 		$result = parent::query( $query );
+		$end = microtime( true );
 		if ( function_exists( 'HM\\Platform\\XRay\\trace_wpdb_query' ) ) {
 			$host = $this->current_host ?: $this->last_connection['host'];
 			// Host gets the port number applied, which we don't want to add.
 			$host = strtok( $host, ':' );
-			XRay\trace_wpdb_query( $query, $start, microtime( true ), $result === false ? $this->last_error : null, $host );
+			XRay\trace_wpdb_query( $query, $start, $end, $result === false ? $this->last_error : null, $host );
 		}
+		$this->time_spent += $end - $start;
 		return $result;
 	}
 
