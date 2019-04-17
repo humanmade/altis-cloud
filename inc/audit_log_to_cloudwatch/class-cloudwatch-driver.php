@@ -89,7 +89,8 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		}
 
 		if ( $args['date_to'] ) {
-			$field_where[] = sprintf( 'created_timestamp < %d ', strtotime( $args['date_to'] ) * 1000 );
+			// Because date_to is in the format 2019/04/17, we want to really say the create date is less then 2019/04/17 23:59:59
+			$field_where[] = sprintf( 'created_timestamp < %d ', ( strtotime( $args['date_to'] ) + DAY_IN_SECONDS ) * 1000 );
 		}
 
 		if ( $args['date_from'] ) {
