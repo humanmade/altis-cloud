@@ -36,6 +36,9 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			return false;
 		}
 
+		// Track the timestamp in an integer so we can do range queries for it.
+		$data['created_timestamp'] = strtotime( $data['created'] ) * 1000;
+
 		$result = send_events_to_stream( [ [ 'timestamp' => time() * 1000, 'message' => json_encode( $data ) ] ], get_environment_name() . '/audit-log', 'items' );
 
 		if ( ! $result ) {
@@ -85,6 +88,14 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			$field_where[] = sprintf( '%s like "%s" ', $args['search_field'], esc_sql( $args['search'] ) );
 		}
 
+		if ( $args['date_to'] ) {
+			$field_where[] = sprintf( 'created_timestamp < %d ', strtotime( $args['date_to'] ) * 1000 );
+		}
+
+		if ( $args['date_from'] ) {
+			$field_where[] = sprintf( 'created_timestamp >= %d ', strtotime( $args['date_from'] ) * 1000 );
+		}
+
 		if ( $field_where ) {
 			$where = sprintf( '| filter ( %s )', implode( ' and ', $field_where ) );
 		}
@@ -93,7 +104,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		$offset = absint( $args['paged'] - 1 ) * $args['records_per_page'];
 		$order = $args['order'];
 
-		$query = "fields @message $where | sort @timestamp $order";
+		$query = "fields @message $where | sort created_timestamp $order";
 
 		$params = [
 			'logGroupName'   => get_environment_name() . '/audit-log',
@@ -120,8 +131,12 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		$count = 0;
 		foreach ( $results['results'] as $result ) {
 			$count++;
-			if ( $count < $offset ) {
+			if ( $count <= $offset ) {
 				continue;
+			}
+			// Sometimes the AWS API returns more results than asked for.
+			if ( $count > $limit ) {
+				break;
 			}
 			$object = json_decode( $result[0]['value'] );
 			$object->meta = json_decode( json_encode( $object->meta ), true );
@@ -130,7 +145,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 
 		return [
 			'items' => $items,
-			'count' => $results['statistics']['recordsMatched'],
+			'count' => min( $results['statistics']['recordsMatched'], 10000 ),
 		];
 	}
 
