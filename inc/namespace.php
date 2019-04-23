@@ -67,9 +67,7 @@ function bootstrap( $wp_debug_enabled ) {
 	CloudWatch_Logs\bootstrap();
 	Performance_Optimizations\bootstrap();
 
-	// Only load the CloudWatch PHP Logs error handler on ECS,
-	// as the log group only exists there.
-	if ( get_environment_architecture() === 'ecs' ) {
+	if ( $config['php-errors-to-cloudwatch'] ) {
 		require_once __DIR__ . '/cloudwatch_error_handler/namespace.php';
 		CloudWatch_Error_Handler\bootstrap();
 	}
@@ -100,15 +98,21 @@ function get_config() {
  */
 function load_object_cache() {
 	wp_using_ext_object_cache( true );
-	require __DIR__ . '/alloptions_fix/namespace.php';
-	if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
-		define( 'WP_REDIS_DISABLE_FAILBACK_FLUSH', true );
+	$config = get_config();
+
+	if ( $config['memcached'] ) {
+		require dirname( __DIR__ ) . '/dropins/wordpress-pecl-memcached-object-cache/object-cache.php';
+	} else {
+		require __DIR__ . '/alloptions_fix/namespace.php';
+		if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
+			define( 'WP_REDIS_DISABLE_FAILBACK_FLUSH', true );
+		}
+
+		Alloptions_Fix\bootstrap();
+		\WP_Predis\add_filters();
+
+		require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
 	}
-
-	Alloptions_Fix\bootstrap();
-	\WP_Predis\add_filters();
-
-	require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
