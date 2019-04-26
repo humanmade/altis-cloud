@@ -11,7 +11,7 @@ There are several areas in WordPress that _allow_ for poorly performing code.
 When using `WP_Query`, `get_posts`, `get_children` or other wrapping functions, you should avoid using the following parameters:
 
 - `meta_value`: Any `meta_query` that uses a `meta_value` clause should not be used. WordPress doesn't have a MySQL index on the `meta_value` field, so query times can be very long. Consider storing flags via the existence of a meta key (by using `EXISTS` in `meta_compare`), storing lookup values in the `meta_key`.
-- `showposts => -1` (or similar): Never make unbounded `WP_Query` instances.
+- `showposts => -1` (or similar): Never make unbounded `WP_Query` instances. Even in CLI scripts it's best to paginate requests.
 - `s`: Using the in-build `WP_Query` is very slow, though this parameter is OK to use if you have Elasticsearch enabled.
 
 ### attachment_url_to_postid

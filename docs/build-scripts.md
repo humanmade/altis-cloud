@@ -2,6 +2,13 @@
 
 As part of the deployment process, HM Cloud supports running the running of tasks to handle pre-deployment tasks such as minifying JavaScript, running webpack, compiling SASS, etc. The specific build process is defined in a file `.build-script` in the root of your project's git repository.
 
+The minimum required build script is:
+
+```
+# Install modules
+composer install
+```
+
 
 ## Build Script Environment Specification
 

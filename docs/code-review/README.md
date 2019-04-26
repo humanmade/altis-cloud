@@ -1,6 +1,6 @@
 # Code Review
 
-All Code Review for HM Cloud is done via GitHub in the pre set-up GitHub repository for your project. Specific development flow process varies project to project, this document only covers the required Human Made Code Review. Specifically where in the "code development to running in production" flow the Human Made Code Review needs to be performed can be discussed separately.
+All Code Review for HM Cloud is done via GitHub in the pre set-up GitHub repository for your project. Development flow processes vary from project to project therefore this document only covers the required HM Platform Code Review. Specifically where in the "code development to running in production" flow the HM Platform Code Review needs to be performed can be discussed separately.
 
 It is required that all code review be performed on Git branches, via a GitHub Pull Request. When a given Git branch is ready for review, the following process should be followed:
 
@@ -8,7 +8,7 @@ It is required that all code review be performed on Git branches, via a GitHub P
 1. Assign the Pull Request to the `@humanmade-cloud` GitHub user.
 1. Make sure your Pull Request passes any status checks and WordPress Coding Standards.
 
-Once the Pull Request is submitted, it's possible an automated code review will be performed by the HM Linter bot. In this case, the Pull Request will be marked as "Changes Requested" and you should fix up any errors to do with formatting for the manual review to continue.
+Once the Pull Request is submitted, it's possible an automated code review will be performed by the [HM Linter bot](https://github.com/apps/hm-linter). In this case, the Pull Request will be marked as "Changes Requested" and you should fix up any errors to do with formatting for the manual review to continue.
 
 Upon receiving a new Pull Request, Human Made will perform the manual code review. This will result in one of three outcomes:
 
@@ -16,7 +16,7 @@ Upon receiving a new Pull Request, Human Made will perform the manual code revie
 1. "Commented" - We asked a question of for more information for the Pull Request. Get back to us, and we'll be able to continue.
 1. "Approved" - The code is ready to be merged into the mainline branch, and will not need to be reviewed again on it's way to production!
 
-Once a Pull Request is reviewed, the next steps depend on the process of the project. You may communicate on the Pull Request for Human Made to merge and deploy the Pull Request on Approval. This can be done via a comment, or a label of "Review Merge" or similar.
+Once a Pull Request is reviewed, the next steps depend on the process of the project. You may communicate on the Pull Request for the HM Platform team to merge and deploy the Pull Request on Approval. This can be done via a comment, or a label of "Ready to Merge" or similar.
 
 The Pull Request will be assigned back to the developer, if the Pull Request requires changes or comment. Once the changes have been made, the developer should assign the Pull Request back to the `@humanmade-cloud` GitHub user.
 
