@@ -101,7 +101,7 @@ function load_object_cache() {
 	$config = get_config();
 
 	if ( $config['memcached'] ) {
-		require dirname( __DIR__ ) . '/dropins/wordpress-pecl-memcached-object-cache/object-cache.php';
+		require ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
 	} else {
 		require __DIR__ . '/alloptions_fix/namespace.php';
 		if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
