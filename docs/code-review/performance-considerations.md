@@ -22,7 +22,28 @@ This function uses a `meta_value` query internally, avoid using it wherever poss
 
 Avoid making remote requests on any page render, or other idempotent GET request. Code that does so will typically be rejected at code review time. Parts of the page render that require data from a remote resource should use background tasks to push the remote data to a long-lived object cache item.
 
+Background tasks can be created using the functions `wp_schedule_single_event()` or `wp_schedule_event()`.
+
+The following example shows how to schedule a task to run an hour after `wp_schedule_single_event()` is called:
+
+```php
+function do_this_in_an_hour( $arg1, $arg2, $arg3 ) {
+    // Do something
+}
+
+add_action( 'my_new_event', 'do_this_in_an_hour', 10, 3 );
+
+// put this line inside a function,
+// presumably in response to something the user does
+// otherwise it will schedule a new event on every page visit
+
+wp_schedule_single_event( time() + 3600, 'my_new_event', array( $arg1, $arg2, $arg3 ) );
+
+// time() + 3600 = one hour from now.
+```
+
+More information can be found in the WordPress developer documentation for creating [one time events](https://developer.wordpress.org/reference/functions/wp_schedule_single_event/) and [recurring events](https://developer.wordpress.org/reference/functions/wp_schedule_event/).
+
 ## SQL Queries
 
 Avoid SQL `UPDATE` or `INSERT` queries on any page render or other idempotent request. SQL updates should only be done via admin requests or background tasks.
-

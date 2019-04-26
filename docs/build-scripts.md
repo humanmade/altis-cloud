@@ -8,6 +8,7 @@ As part of the deployment process, HM Cloud supports running the running of task
 The build script is run in an integration environment, not in the context of the application servers. The following packages are available to your script:
 
 - PHP 7.2
+- Composer
 - NodeJS 8.11
 - NPM 5.6
 - Git 2.7

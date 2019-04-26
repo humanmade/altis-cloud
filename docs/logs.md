@@ -23,4 +23,3 @@ It is possible to download access logs from the Vantage REST API, this is not cu
 ```
 @todo add REST API cURL request.
 ```
-
