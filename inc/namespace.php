@@ -60,6 +60,10 @@ function bootstrap( $wp_debug_enabled ) {
 	add_filter( 'enable_loading_advanced_cache_dropin', __NAMESPACE__ . '\\load_advanced_cache', 10, 1 );
 	add_action( 'muplugins_loaded', __NAMESPACE__ . '\\load_plugins' );
 
+	if ( in_array( get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
+		add_filter( 'map_meta_cap', __NAMESPACE__ . '\\disable_install_capability', 10, 2 );
+	}
+
 	require_once __DIR__ . '/ses-to-cloudwatch/plugin.php';
 	require_once __DIR__ . '/performance_optimizations/namespace.php';
 	require_once __DIR__ . '/cloudwatch_logs/namespace.php';
@@ -219,4 +223,24 @@ function load_plugins() {
 
 		require dirname( __DIR__ ) . '/plugins/' . $file;
 	}
+}
+
+/**
+ * Disable the install plugins / themes capability.
+ * 
+ * In the cloud context it's not possible to do this so this hides 
+ * non functional UI.
+ *
+ * @param array $caps The required capabilities list.
+ * @param string $cap The current capability being checked.
+ * @return array
+ */
+function disable_install_capability( array $caps, string $cap ) : array {
+	if ( ! in_array( $cap, [ 'install_plugins', 'install_themes' ], true ) ) {
+		return $caps;
+	}
+
+	// This is how you disable a capability via map meta cap.
+	$caps[] = 'do_not_allow';
+	return $caps;
 }
