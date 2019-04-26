@@ -21,6 +21,7 @@
 		"humanmade/aws-xray": "1.1.2",
 		"humanmade/s3-uploads": "2.1.0-RC2",
 		"humanmade/cavalcade": "1.0.0",
-		"humanmade/wp-redis": "0.7.1"
+		"humanmade/wp-redis": "0.7.1",
+		"humanmade/wordpress-pecl-memcached-object-cache": "2.0.0"
 	}
 }
