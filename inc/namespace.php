@@ -222,10 +222,13 @@ function load_plugins() {
 }
 
 /**
- * Disable the install plugins / themes capability in Cloud, as it's not possible to do in that context.
+ * Disable the install plugins / themes capability.
+ * 
+ * In the cloud context it's not possible to do this so this hides 
+ * non functional UI.
  *
- * @param array $caps
- * @param string $cap
+ * @param array $caps The required capabilities list.
+ * @param string $cap The current capability being checked.
  * @return array
  */
 function disable_install_capability( array $caps, string $cap ) : array {
