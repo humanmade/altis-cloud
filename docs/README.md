@@ -19,4 +19,4 @@ Most of the features require no configuration, you can dig in further to learn m
 
 ## Code Review
 
-On top of the integrations the Cloud team provide [code review services](code-review/README.md) to ensure all code that gets pushed to production is written to a high standard that is secure and performant.
+On top of the integrations the Cloud team provide [code review services](docs://guides/code-review/) to ensure all code that gets pushed to production is written to a high standard that is secure and performant.
