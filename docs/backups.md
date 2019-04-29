@@ -10,8 +10,10 @@ In HM Platform, there are two main components that must be backed up: the databa
 
 ## Manual Snapshot
 
-Manual snapshots of both the database or uploaded files can be performed at any time, via Vantage. Manual snapshots are a ZIP archive containing a `mysqldump` SQL file and all the uploaded files. Manual backups are retained indefinitely. It's generally recommended to do a manual backup before any major event or migration. Restoring is typically quicker from a manual backup than a automated, point in time backup procedure.
+Manual snapshots of both the database or uploaded files can be performed at any time, via Vantage. Manual snapshots are a ZIP archive containing a `mysqldump` SQL file and all the uploaded files. Manual backups are retained indefinitely. It's generally recommended to do a manual backup before any major event or migration. Restoring is typically quicker from a manual backup than an automated, point in time backup procedure.
 
 ## Restore Process
 
 Restoring an environment to an earlier point in time typically takes between 1 and 2 hours, and should only be used for a "full site restore". If individual pages need to be restored it's best to first check WordPress revisions or other application layer revisions before resorting to a full site restore.
+
+Contact support to start the full site restore process.

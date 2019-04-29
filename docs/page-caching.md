@@ -12,7 +12,7 @@ The majority of the pages viewed on HM Cloud will be cached to improve performan
 
 ## Cache Key Calculation
 
-Each cache key for pages follow the pattern:
+Each cache key for pages follows the pattern:
 
 ```
 {method}:{protocol}:{host}:{path}:{query_params}
