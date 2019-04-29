@@ -17,7 +17,7 @@
 	},
 	"require": {
 		"php": ">=7.1",
-		"humanmade/wp-redis-predis-client": "dev-master",
+		"humanmade/wp-redis-predis-client": "0.1.0",
 		"humanmade/aws-xray": "1.1.2",
 		"humanmade/s3-uploads": "2.1.0-RC2",
 		"humanmade/cavalcade": "1.0.0",
