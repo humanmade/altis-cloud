@@ -47,6 +47,10 @@ add_action( 'hm-platform.modules.init', function () {
 			XRay\bootstrap();
 		}
 
+		if ( $config['batcache'] && ! defined( 'WP_CACHE' ) ) {
+			define( 'WP_CACHE', true );
+		}
+
 		add_filter( 'wp_mail_from', function ( string $email ) use ( $config ) : string {
 			return $config['email-from-address'];
 		}, 1 );

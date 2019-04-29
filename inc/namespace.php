@@ -23,10 +23,6 @@ function boostrap_cavalcade_runner() {
 function bootstrap( $wp_debug_enabled ) {
 	$config = get_config();
 
-	if ( ! defined( 'WP_CACHE' ) ) {
-		define( 'WP_CACHE', true );
-	}
-
 	/**
 	 * In Cloud, the User Agent is not available via the headers, as it is stripped at the CDN level. This is to
 	 * preserve cache-key generation, as it's not possible to get access to headers that will cause a highly
