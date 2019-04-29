@@ -15,12 +15,3 @@ The logs can be viewed via [Vantage](./vantage.md) under a site's Logs tab.
 The date range can be specified for all logs types. Some log types will also support additional filtering such as cron logs.
 
 ![](https://joehoyle-captured.s3.amazonaws.com/sJ84jvK9.png)
-
-## Downloading Access Logs
-
-It is possible to download access logs from the Vantage REST API, this is not currently provided by the Vantage UI due to vast amount of data to display. As such it's typically better to download access logs for a time range, and do further local processing to find the type of requests you need information for.
-
-```
-@todo add REST API cURL request.
-```
-
