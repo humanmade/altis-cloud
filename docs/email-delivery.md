@@ -38,4 +38,4 @@ Any email address can be used as long as they are all from a verified sending do
 
 ## Email Logging
 
-See [Accessing Logs](./logs) for details on access send and failure logs for email.
+See [Accessing Logs](./logs.md) for details on access send and failure logs for email.

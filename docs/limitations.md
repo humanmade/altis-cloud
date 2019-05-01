@@ -37,7 +37,7 @@ All web requests are subject to a 60 second maximum execution. Anything that req
 
 ## No Custom PHP Modules
 
-We do not support requests for custom PHP modules. The PHP modules we have installed are listed on the [specifications](./specifications) page. Contact Human Made to discuss the inclusion of other modules in this list.
+We do not support requests for custom PHP modules. The PHP modules we have installed are listed on the [specifications](./specifications.md) page. Contact Human Made to discuss the inclusion of other modules in this list.
 
 ## WP_Filesystem Not Supported
 
