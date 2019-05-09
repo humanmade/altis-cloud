@@ -1,6 +1,6 @@
 <?php
 
-namespace HM\Platform\Healthcheck;
+namespace Altis\Healthcheck;
 
 use WP_CLI;
 use WP_Error;
@@ -77,7 +77,7 @@ function run_checks() : array {
 		'cron-canary'  => Cavalcade\check_health(),
 	];
 
-	$checks = apply_filters( 'hm_platform_healthchecks', $checks );
+	$checks = apply_filters( 'altis_healthchecks', $checks );
 
 	return $checks;
 }

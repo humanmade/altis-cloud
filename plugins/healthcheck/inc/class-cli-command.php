@@ -1,6 +1,6 @@
 <?php
 
-namespace HM\Platform\Healthcheck;
+namespace Altis\Healthcheck;
 
 use cli;
 use WP_CLI;

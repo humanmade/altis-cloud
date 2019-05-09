@@ -1,10 +1,10 @@
 <?php
 
-namespace HM\Platform\Cloud\CloudWatch_Logs;
+namespace Altis\Cloud\CloudWatch_Logs;
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Exception;
-use function HM\Platform\get_aws_sdk;
+use function Altis\get_aws_sdk;
 
 const OBJECT_CACHE_GROUP = 'cloudwatch-stream-tokens';
 

@@ -1,6 +1,6 @@
 {
 	"name": "humanmade/cloud",
-	"description": "Human Made Platform Cloud",
+	"description": "Cloud module for Altis",
 	"type": "library",
 	"license": "GPL-2.0-or-later",
 	"authors": [

@@ -1,6 +1,6 @@
 <?php
 
-namespace HM\Platform\Healthcheck\Cavalcade;
+namespace Altis\Healthcheck\Cavalcade;
 
 use WP_Error;
 
@@ -56,7 +56,7 @@ function check_health() {
 	}
 
 	return new WP_Error(
-		'hm-platform.healthcheck.cavalcade.not_running',
+		'altis.healthcheck.cavalcade.not_running',
 		sprintf(
 			'Last job was run %d seconds ago, threshold is %d',
 			time() - $last_run,

@@ -1,8 +1,8 @@
 <?php
 
-namespace HM\Platform\Cloud\Audit_Log_To_CloudWatch;
+namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
-use function HM\Platform\get_environment_architecture;
+use function Altis\get_environment_architecture;
 
 /**
  * Bootstrap the audit log to cloudwatch integration.

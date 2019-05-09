@@ -1,6 +1,6 @@
 <?php
 
-namespace HM\Platform\Healthcheck;
+namespace Altis\Healthcheck;
 
 require_once __DIR__ . '/inc/namespace.php';
 require_once __DIR__ . '/inc/cavalcade/namespace.php';

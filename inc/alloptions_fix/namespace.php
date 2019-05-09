@@ -1,6 +1,6 @@
 <?php
 
-namespace HM\Platform\Cloud\Alloptions_Fix;
+namespace Altis\Cloud\Alloptions_Fix;
 
 function bootstrap() {
 	add_action( 'added_option', __NAMESPACE__ . '\\maybe_clear_alloptions_cache' );

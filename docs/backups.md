@@ -1,6 +1,6 @@
 # Backups
 
-In HM Platform, there are two main components that must be backed up: the database and file uploads. Both the database and file uploads are backed up on a daily basis.
+In Altis, there are two main components that must be backed up: the database and file uploads. Both the database and file uploads are backed up on a daily basis.
 
 ## Automated Backup Strategy
 

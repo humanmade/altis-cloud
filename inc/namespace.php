@@ -1,10 +1,10 @@
 <?php
 
-namespace HM\Platform\Cloud;
+namespace Altis\Cloud;
 
-use const HM\Platform\ROOT_DIR;
-use function HM\Platform\get_environment_architecture;
-use function HM\Platform\get_config as get_platform_config;
+use const Altis\ROOT_DIR;
+use function Altis\get_environment_architecture;
+use function Altis\get_config as get_platform_config;
 
 // Load the Cavalcade Runner CloudWatch extension.
 // This is loaded on the Cavalcade-Runner, not WordPress, crazy I know.
@@ -15,7 +15,7 @@ function boostrap_cavalcade_runner() {
 }
 
 /**
- * Bootstrap the platform pieces.
+ * Bootstrap the altis pieces.
  *
  * This function is hooked into to enable_wp_debug_mode_checks so we have to return the value
  * that was passed in at the end of the function.
@@ -40,7 +40,7 @@ function bootstrap( $wp_debug_enabled ) {
 
 	global $wp_version;
 	if ( version_compare( '4.6', $wp_version, '>' ) ) {
-		die( 'HM Platform is only supported on WordPress 4.6+.' );
+		die( 'Altis is only supported on WordPress 4.6+.' );
 	}
 
 	// Disable indexing when not in production
@@ -81,7 +81,7 @@ function bootstrap( $wp_debug_enabled ) {
 }
 
 /**
- * Get the config for hm-platform for which features to enable.
+ * Get the config for altis for which features to enable.
  *
  * @return array
  */
@@ -171,7 +171,7 @@ function load_db() {
 }
 
 /**
- * Get available platform plugins.
+ * Get available altis plugins.
  *
  * @return array Map of plugin ID => path relative to plugins directory.
  */
@@ -183,7 +183,7 @@ function get_available_plugins() {
 }
 
 /**
- * Load the plugins in hm-platform.
+ * Load the plugins in altis.
  */
 function load_plugins() {
 	$config = get_config();
