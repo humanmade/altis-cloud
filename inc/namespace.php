@@ -54,7 +54,7 @@ function bootstrap( $wp_debug_enabled ) {
 	}
 
 	add_filter( 'enable_loading_advanced_cache_dropin', __NAMESPACE__ . '\\load_advanced_cache', 10, 1 );
-	add_action( 'muplugins_loaded', __NAMESPACE__ . '\\load_plugins' );
+	add_action( 'muplugins_loaded', __NAMESPACE__ . '\\load_plugins', 0 );
 
 	if ( in_array( get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
 		add_filter( 'map_meta_cap', __NAMESPACE__ . '\\disable_install_capability', 10, 2 );
@@ -223,8 +223,8 @@ function load_plugins() {
 
 /**
  * Disable the install plugins / themes capability.
- * 
- * In the cloud context it's not possible to do this so this hides 
+ *
+ * In the cloud context it's not possible to do this so this hides
  * non functional UI.
  *
  * @param array $caps The required capabilities list.
