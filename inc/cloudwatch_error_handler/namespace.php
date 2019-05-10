@@ -6,13 +6,13 @@
  * We do this to get better structured data about the errors, and also tie XRay trace ids to the errors.
  */
 
-namespace HM\Platform\Cloud\CloudWatch_Error_Handler;
+namespace Altis\Cloud\CloudWatch_Error_Handler;
 
-use function HM\Platform\Cloud\CloudWatch_Logs\send_events_to_stream;
+use function Altis\Cloud\CloudWatch_Logs\send_events_to_stream;
 
 function bootstrap() {
-	$GLOBALS['hm_platform_cloudwatch_error_handler_errors'] = [];
-	$GLOBALS['hm_platform_cloudwatch_error_handler_error_count'] = 0;
+	$GLOBALS['altis_cloudwatch_error_handler_errors'] = [];
+	$GLOBALS['altis_cloudwatch_error_handler_error_count'] = 0;
 
 	// If there is already an error handler set, we want to make sure it's not lost.
 	$current_errror_handler = set_error_handler( function () use ( &$current_errror_handler ) { // @codingStandardsIgnoreLine
@@ -27,9 +27,9 @@ function bootstrap() {
 }
 
 function error_handler( int $errno, string $errstr, string $errfile = null, int $errline = null ) : bool {
-	global $hm_platform_cloudwatch_error_handler_errors, $hm_platform_cloudwatch_error_handler_error_count;
+	global $hm_altis_cloudwatch_error_handler_errors, $hm_altis_cloudwatch_error_handler_error_count;
 	// Limit the amount of errors to hold in memory. Flush every 100.
-	if ( $hm_platform_cloudwatch_error_handler_error_count > 100 ) {
+	if ( $hm_altis_cloudwatch_error_handler_error_count > 100 ) {
 		send_buffered_errors();
 	}
 	$error = [
@@ -38,12 +38,12 @@ function error_handler( int $errno, string $errstr, string $errfile = null, int 
 		'file'    => str_replace( dirname( ABSPATH ), '', $errfile ),
 		'line'    => $errline,
 	];
-	$error = apply_filters( 'hm_platform_cloudwatch_error_handler_error', $error );
-	$hm_platform_cloudwatch_error_handler_errors[ $errno ][] = [
+	$error = apply_filters( 'altis_cloudwatch_error_handler_error', $error );
+	$hm_altis_cloudwatch_error_handler_errors[ $errno ][] = [
 		'timestamp' => time() * 1000,
 		'message'   => json_encode( $error ), // @codingStandardsIgnoreLine
 	];
-	$hm_platform_cloudwatch_error_handler_error_count++;
+	$hm_altis_cloudwatch_error_handler_error_count++;
 	return false;
 }
 
@@ -55,9 +55,9 @@ function send_buffered_errors() {
 		error_handler( $last_error['type'], $last_error['message'], $last_error['file'], $last_error['line'] );
 	}
 
-	$errors = $GLOBALS['hm_platform_cloudwatch_error_handler_errors'];
-	$GLOBALS['hm_platform_cloudwatch_error_handler_errors'] = [];
-	$GLOBALS['hm_platform_cloudwatch_error_handler_error_count'] = 0;
+	$errors = $GLOBALS['altis_cloudwatch_error_handler_errors'];
+	$GLOBALS['altis_cloudwatch_error_handler_errors'] = [];
+	$GLOBALS['altis_cloudwatch_error_handler_error_count'] = 0;
 	if ( ! $errors ) {
 		return;
 	}

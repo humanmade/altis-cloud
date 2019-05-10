@@ -2,7 +2,7 @@
 	<tr>
 		<td align="left" width="70">
 			<strong>Cloud</strong><br />
-			Cloud module for Platform.
+			Cloud module for Altis.
 		</td>
 		<td align="right" width="20%">
 		</td>
@@ -19,4 +19,4 @@
 
 # Cloud
 
-The Cloud module includes all adaptors, plugins and drop-ins to run Platform at scale on cloud infrastructure.
+The Cloud module includes all adaptors, plugins and drop-ins to run Altis at scale on cloud infrastructure.

@@ -1,21 +1,21 @@
 <?php
 
-namespace HM\Platform\Cloud;
+namespace Altis\Cloud;
 
-use const HM\Platform\ROOT_DIR;
-use function HM\Platform\get_config;
-use function HM\Platform\get_environment_architecture;
-use function HM\Platform\register_module;
-use HM\Platform\XRay;
+use const Altis\ROOT_DIR;
+use function Altis\get_config;
+use function Altis\get_environment_architecture;
+use function Altis\register_module;
+use Altis\XRay;
 
 require_once __DIR__ . '/inc/namespace.php';
 
-// Don't self-initialize if this is not a Platform execution.
+// Don't self-initialize if this is not an Altis execution.
 if ( ! function_exists( 'add_action' ) ) {
 	return;
 }
 
-add_action( 'hm-platform.modules.init', function () {
+add_action( 'altis.modules.init', function () {
 	$is_cloud = in_array( get_environment_architecture(), [ 'ec2', 'ecs' ], true );
 	$default_settings = [
 		'enabled'                  => true,

@@ -2,7 +2,7 @@
 
 HM Cloud supports geolocation targeting when specifically enabled. Once enabled, developers can make use of the `Cloudfront-Viewer-Country` HTTP Header to serve content on a per-country basis.
 
-To enable Geo Targeting contact the HM Platform team.
+To enable Geo Targeting contact the Altis team.
 
 ## Cache Variants
 

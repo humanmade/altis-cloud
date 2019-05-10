@@ -1,6 +1,6 @@
 <?php
 
-namespace HM\Platform\Cloud\Performance_Optimizations;
+namespace Altis\Cloud\Performance_Optimizations;
 
 function bootstrap() {
 	if ( strpos( $_SERVER['REQUEST_URI'], '/wp-admin/async-upload.php' ) !== false ) {

@@ -9,7 +9,7 @@ use HM\Cavalcade\Runner\Job;
 use HM\Cavalcade\Runner\Runner;
 use HM\Cavalcade\Runner\Worker;
 use ReflectionClass;
-use function HM\Platform\get_aws_sdk;
+use function Altis\get_aws_sdk;
 
 Runner::instance()->hooks->register( 'Runner.run_job.started', __NAMESPACE__ . '\\on_job_started' );
 Runner::instance()->hooks->register( 'Runner.check_workers.job_failed', __NAMESPACE__ . '\\on_job_failed' );

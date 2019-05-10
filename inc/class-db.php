@@ -1,8 +1,8 @@
 <?php
 
-namespace HM\Platform\Cloud;
+namespace Altis\Cloud;
 
-use HM\Platform\XRay;
+use Altis\XRay;
 use LudicrousDB;
 
 class DB extends LudicrousDB {

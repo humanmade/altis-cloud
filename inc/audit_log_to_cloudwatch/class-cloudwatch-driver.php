@@ -1,12 +1,12 @@
 <?php
 
-namespace HM\Platform\Cloud\Audit_Log_To_CloudWatch;
+namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
 use Aws\CloudWatch\CloudWatchClient;
-use function HM\Platform\Cloud\CloudWatch_Logs\cloudwatch_logs_client;
-use function HM\Platform\Cloud\CloudWatch_Logs\send_events_to_stream;
-use function HM\Platform\get_environment_name;
-use function HM\Platform\get_aws_sdk;
+use function Altis\Cloud\CloudWatch_Logs\cloudwatch_logs_client;
+use function Altis\Cloud\CloudWatch_Logs\send_events_to_stream;
+use function Altis\get_environment_name;
+use function Altis\get_aws_sdk;
 use WP_Stream\DB_Driver as DB_Driver_Interface;
 
 class CloudWatch_Driver implements DB_Driver_Interface {
