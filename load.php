@@ -6,7 +6,7 @@ use const Altis\ROOT_DIR;
 use function Altis\get_config;
 use function Altis\get_environment_architecture;
 use function Altis\register_module;
-use Altis\XRay;
+use HM\Platform\XRay;
 
 require_once __DIR__ . '/inc/namespace.php';
 

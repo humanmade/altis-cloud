@@ -2,7 +2,7 @@
 
 namespace Altis\Cloud;
 
-use Altis\XRay;
+use HM\Platform\XRay;
 use LudicrousDB;
 
 class DB extends LudicrousDB {
