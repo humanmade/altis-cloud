@@ -2,7 +2,7 @@
 
 <p align="center">Cloud integration for <strong><a href="https://altis-dxp.com/">Altis</a></strong>.</p>
 
-<p align="center"><img alt="Packagist Version" src="https://img.shields.io/packagist/v/altis/cloud.svg"></p>
+<p align="center"><a href="https://packagist.org/packages/altis/cloud"><img alt="Packagist Version" src="https://img.shields.io/packagist/v/altis/cloud.svg"></a></p>
 
 
 # Cloud
