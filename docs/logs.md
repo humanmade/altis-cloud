@@ -8,7 +8,7 @@ You have access to several types of logging from sites on HM Cloud have followin
 - Email logs
 - Access logs (via a custom REST API endpoint)
 
-The logs can be viewed via [Vantage](./vantage.md) under a site's Logs tab.
+The logs can be viewed via [Altis Dashboard](./dashboard.md) under a site's Logs tab.
 
 ![](https://joehoyle-captured.s3.amazonaws.com/GTKPP2Yh.png)
 
