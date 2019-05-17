@@ -10,7 +10,7 @@ In Altis, there are two main components that must be backed up: the database and
 
 ## Manual Snapshot
 
-Manual snapshots of both the database or uploaded files can be performed at any time, via Vantage. Manual snapshots are a ZIP archive containing a `mysqldump` SQL file and all the uploaded files. Manual backups are retained indefinitely. It's generally recommended to do a manual backup before any major event or migration. Restoring is typically quicker from a manual backup than an automated, point in time backup procedure.
+Manual snapshots of both the database or uploaded files can be performed at any time, via the Altis Dashboard. Manual snapshots are a ZIP archive containing a `mysqldump` SQL file and all the uploaded files. Manual backups are retained indefinitely. It's generally recommended to do a manual backup before any major event or migration. Restoring is typically quicker from a manual backup than an automated, point in time backup procedure.
 
 ## Restore Process
 
