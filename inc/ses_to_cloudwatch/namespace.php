@@ -1,12 +1,17 @@
 <?php
 
-namespace HM\AWS_SES_WP_Mail\CloudWatch;
+namespace Altis\Cloud\SES_To_CloudWatch;
 
 use Exception;
 use function Altis\Cloud\CloudWatch_Logs\send_events_to_stream;
 
-add_action( 'aws_ses_wp_mail_ses_sent_message', __NAMESPACE__ . '\\on_sent_message', 10, 2 );
-add_action( 'aws_ses_wp_mail_ses_error_sending_message', __NAMESPACE__ . '\\on_error_sending_message', 10, 2 );
+/**
+ * Set up actions.
+ */
+function bootstrap() {
+	add_action( 'aws_ses_wp_mail_ses_sent_message', __NAMESPACE__ . '\\on_sent_message', 10, 2 );
+	add_action( 'aws_ses_wp_mail_ses_error_sending_message', __NAMESPACE__ . '\\on_error_sending_message', 10, 2 );
+}
 
 /**
  * Called when the AWS SES plugin has sent an email.
