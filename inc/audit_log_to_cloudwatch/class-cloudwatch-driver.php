@@ -42,6 +42,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		$result = send_events_to_stream( [
 			[
 				'timestamp' => time() * 1000,
+				// @codingStandardsIgnoreLine
 				'message' => json_encode( $data ),
 			],
 		], get_environment_name() . '/audit-log', 'items' );

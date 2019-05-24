@@ -1,6 +1,6 @@
 <?php
 
-namespace Altis\Cloud;
+namespace Altis\Cloud; // @codingStandardsIgnoreLine
 
 use function Altis\get_environment_architecture;
 use function Altis\register_module;
