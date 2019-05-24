@@ -25,7 +25,6 @@ function bootstrap() {
 	}
 
 	if ( $config['batcache'] && ! defined( 'WP_CACHE' ) ) {
-		// @codingStandardsIgnoreLine
 		define( 'WP_CACHE', true );
 	}
 
