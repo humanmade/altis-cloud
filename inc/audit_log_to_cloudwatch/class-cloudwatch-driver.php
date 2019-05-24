@@ -39,13 +39,17 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		// Track the timestamp in an integer so we can do range queries for it.
 		$data['created_timestamp'] = strtotime( $data['created'] ) * 1000;
 
-		$result = send_events_to_stream( [
+		$result = send_events_to_stream(
 			[
-				'timestamp' => time() * 1000,
-				// @codingStandardsIgnoreLine
-				'message' => json_encode( $data ),
+				[
+					'timestamp' => time() * 1000,
+					// @codingStandardsIgnoreLine
+					'message' => json_encode( $data ),
+				],
 			],
-		], get_environment_name() . '/audit-log', 'items' );
+			get_environment_name() . '/audit-log',
+			'items'
+		);
 
 		if ( ! $result ) {
 			return false;
