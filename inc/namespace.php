@@ -3,14 +3,49 @@
 namespace Altis\Cloud;
 
 use const Altis\ROOT_DIR;
-use function Altis\get_environment_architecture;
 use function Altis\get_config as get_platform_config;
+use function Altis\get_environment_architecture;
+use HM\Platform\XRay;
+
+/**
+ * Set up the Cloud Module.
+ */
+function bootstrap() {
+	$config = get_config();
+
+	if (
+		$config['xray']
+		&& function_exists( 'xhprof_sample_enable' )
+		&& ( ! defined( 'WP_CLI' ) || ! WP_CLI )
+		&& ! class_exists( 'HM\\Cavalcade\\Runner\\Runner' )
+	) {
+		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
+		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
+		XRay\bootstrap();
+	}
+
+	if ( $config['batcache'] && ! defined( 'WP_CACHE' ) ) {
+		define( 'WP_CACHE', true );
+	}
+
+	add_filter( 'wp_mail_from', function ( string $email ) use ( $config ) : string {
+		return $config['email-from-address'];
+	}, 1 );
+
+	// Load the platform as soon as WP is loaded.
+	add_action( 'enable_wp_debug_mode_checks', __NAMESPACE__ . '\\load_platform' );
+
+	if ( class_exists( 'HM\\Cavalcade\\Runner\\Runner' ) && $config['cavalcade'] ) {
+		boostrap_cavalcade_runner();
+	}
+}
 
 // Load the Cavalcade Runner CloudWatch extension.
 // This is loaded on the Cavalcade-Runner, not WordPress, crazy I know.
 function boostrap_cavalcade_runner() {
 	if ( defined( 'HM_ENV' ) && HM_ENV ) {
-		require_once __DIR__ . '/cavalcade-runner-to-cloudwatch/plugin.php';
+		require_once __DIR__ . '/cavalcade_runner_to_cloudwatch/namespace.php';
+		Cavalcade_Runner_To_CloudWatch\bootstrap();
 	}
 }
 
@@ -20,7 +55,7 @@ function boostrap_cavalcade_runner() {
  * This function is hooked into to enable_wp_debug_mode_checks so we have to return the value
  * that was passed in at the end of the function.
  */
-function bootstrap( $wp_debug_enabled ) {
+function load_platform( $wp_debug_enabled ) {
 	$config = get_config();
 
 	/**
@@ -60,10 +95,11 @@ function bootstrap( $wp_debug_enabled ) {
 		add_filter( 'map_meta_cap', __NAMESPACE__ . '\\disable_install_capability', 10, 2 );
 	}
 
-	require_once __DIR__ . '/ses-to-cloudwatch/plugin.php';
+	require_once __DIR__ . '/ses_to_cloudwatch/namespace.php';
 	require_once __DIR__ . '/performance_optimizations/namespace.php';
 	require_once __DIR__ . '/cloudwatch_logs/namespace.php';
 
+	SES_To_CloudWatch\bootstrap();
 	CloudWatch_Logs\bootstrap();
 	Performance_Optimizations\bootstrap();
 

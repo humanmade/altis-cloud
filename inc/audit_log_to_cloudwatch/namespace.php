@@ -2,8 +2,6 @@
 
 namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
-use function Altis\get_environment_architecture;
-
 /**
  * Bootstrap the audit log to cloudwatch integration.
  */
