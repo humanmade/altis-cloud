@@ -1,6 +1,6 @@
 # Nginx Configuration
 
-HM Cloud uses Nginx for the web server which is responsible for serving static files, and proxying requests to PHP for dynamic content. For advanced customization we support additional Nginx configuration via the project codebase.
+Altis Cloud uses Nginx for the web server which is responsible for serving static files, and proxying requests to PHP for dynamic content. For advanced customization we support additional Nginx configuration via the project codebase.
 
 Nginx will look for an additional file in your project repository at `.config/nginx-additions.conf` and will load it into the `server {}` context of the main configuration.
 
