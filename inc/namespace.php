@@ -29,7 +29,7 @@ function bootstrap() {
 	}
 
 	add_filter( 'wp_mail_from', function ( string $email ) use ( $config ) : string {
-		return $config['email-from-address'];
+		return ! empty( $config['email-from-address'] ) ? $config['email-from-address'] : $email;
 	}, 1 );
 
 	// Load the platform as soon as WP is loaded.
@@ -133,8 +133,11 @@ function get_config() {
  * Load the Object Cache dropin.
  */
 function load_object_cache() {
-	wp_using_ext_object_cache( true );
 	$config = get_config();
+	if ( ! $config['memcached'] && ! $config['redis'] ) {
+		return;
+	}
+	wp_using_ext_object_cache( true );
 
 	if ( $config['memcached'] ) {
 		require ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
@@ -187,6 +190,10 @@ function disable_no_cache_headers_on_admin_ajax_nopriv() {
  * Load the db dropin.
  */
 function load_db() {
+	$config = get_config();
+	if ( ! $config['ludicrousdb'] ) {
+		return;
+	}
 	require_once ABSPATH . WPINC . '/wp-db.php';
 	require_once dirname( __DIR__ ) . '/dropins/ludicrousdb/ludicrousdb/includes/class-ludicrousdb.php';
 	require_once __DIR__ . '/class-db.php';
