@@ -70,8 +70,15 @@ function load_platform( $wp_debug_enabled ) {
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36';
 	}
 
-	load_object_cache();
-	load_db();
+	if ( $config['memcached'] ) {
+		load_object_cache_memcached();
+	} elseif ( $config['redis'] ) {
+		load_object_cache_redis();
+	}
+
+	if ( $config['ludicrousdb'] ) {
+		load_db();
+	}
 
 	global $wp_version;
 	if ( version_compare( '4.6', $wp_version, '>' ) ) {
@@ -130,28 +137,30 @@ function get_config() {
 }
 
 /**
- * Load the Object Cache dropin.
+ * Load the Memcached Object Cache dropin.
  */
-function load_object_cache() {
-	$config = get_config();
-	if ( ! $config['memcached'] && ! $config['redis'] ) {
-		return;
-	}
+function load_object_cache_memcached() {
 	wp_using_ext_object_cache( true );
+	require ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
 
-	if ( $config['memcached'] ) {
-		require ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
-	} else {
-		require __DIR__ . '/alloptions_fix/namespace.php';
-		if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
-			define( 'WP_REDIS_DISABLE_FAILBACK_FLUSH', true );
-		}
+	// cache must be initted once it's included, else we'll get a fatal.
+	wp_cache_init();
+}
 
-		Alloptions_Fix\bootstrap();
-		\WP_Predis\add_filters();
-
-		require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
+/**
+ * Load the Redis Object Cache dropin.
+ */
+function load_object_cache_redis() {
+	wp_using_ext_object_cache( true );
+	require __DIR__ . '/alloptions_fix/namespace.php';
+	if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
+		define( 'WP_REDIS_DISABLE_FAILBACK_FLUSH', true );
 	}
+
+	Alloptions_Fix\bootstrap();
+	\WP_Predis\add_filters();
+
+	require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
@@ -187,13 +196,9 @@ function disable_no_cache_headers_on_admin_ajax_nopriv() {
 }
 
 /**
- * Load the db dropin.
+ * Load the ludicrousdb dropin.
  */
 function load_db() {
-	$config = get_config();
-	if ( ! $config['ludicrousdb'] ) {
-		return;
-	}
 	require_once ABSPATH . WPINC . '/wp-db.php';
 	require_once dirname( __DIR__ ) . '/dropins/ludicrousdb/ludicrousdb/includes/class-ludicrousdb.php';
 	require_once __DIR__ . '/class-db.php';
