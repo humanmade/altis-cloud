@@ -29,7 +29,11 @@ function bootstrap() {
 	}
 
 	add_filter( 'wp_mail_from', function ( string $email ) use ( $config ) : string {
-		return ! empty( $config['email-from-address'] ) ? $config['email-from-address'] : $email;
+		return filter_var(
+			$config['email-from-address'],
+			FILTER_VALIDATE_EMAIL,
+			FILTER_NULL_ON_FAILURE
+		) ?? $email;
 	}, 1 );
 
 	// Load the platform as soon as WP is loaded.
