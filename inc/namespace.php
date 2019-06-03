@@ -137,6 +137,34 @@ function get_config() {
 }
 
 /**
+ * Load the object cache.
+ *
+ * Check the object caching configuration and load either memcached
+ * or redis as appropriate.
+ *
+ * @deprecated 1.1.0 Object caching setup moved to dedicated functions.
+ */
+function load_object_cache() {
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		trigger_error(
+			sprintf(
+				__( '%1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.' ),
+				__FUNCTION__,
+				'1.1.0',
+				'load_object_cache_*()'
+			)
+		);
+	}
+	$config = get_config();
+
+	if ( $config['memcached'] ) {
+		load_object_cache_memcached();
+	} elseif ( $config['redis'] ) {
+		load_object_cache_redis();
+	}
+}
+
+/**
  * Load the Memcached Object Cache dropin.
  */
 function load_object_cache_memcached() {
