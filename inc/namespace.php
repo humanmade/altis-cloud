@@ -146,15 +146,15 @@ function get_config() {
  * Check the object caching configuration and load either memcached
  * or redis as appropriate.
  *
- * @deprecated 1.1.0 Object caching setup moved to dedicated functions.
+ * @deprecated 1.0.1 Object caching setup moved to dedicated functions.
  */
 function load_object_cache() {
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		trigger_error(
 			sprintf(
-				__( '%1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.' ),
+				'%1$s is deprecated since version %2$s! Use %3$s instead.',
 				__FUNCTION__,
-				'1.1.0',
+				'1.0.1',
 				'load_object_cache_*()'
 			)
 		);
