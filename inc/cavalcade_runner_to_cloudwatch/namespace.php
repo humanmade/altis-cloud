@@ -1,19 +1,23 @@
 <?php
 
-namespace HM\Cavalcade\CloudWatch;
+namespace Altis\Cloud\Cavalcade_Runner_To_CloudWatch;
 
 use Aws\CloudWatch\CloudWatchClient;
 use Exception;
-use HM\Cavalcade\Runner\Hooks;
+use function Altis\get_aws_sdk;
 use HM\Cavalcade\Runner\Job;
 use HM\Cavalcade\Runner\Runner;
 use HM\Cavalcade\Runner\Worker;
 use ReflectionClass;
-use function Altis\get_aws_sdk;
 
-Runner::instance()->hooks->register( 'Runner.run_job.started', __NAMESPACE__ . '\\on_job_started' );
-Runner::instance()->hooks->register( 'Runner.check_workers.job_failed', __NAMESPACE__ . '\\on_job_failed' );
-Runner::instance()->hooks->register( 'Runner.check_workers.job_completed', __NAMESPACE__ . '\\on_job_completed' );
+/**
+ * Register Cavalcade Hooks.
+ */
+function bootstrap() {
+	Runner::instance()->hooks->register( 'Runner.run_job.started', __NAMESPACE__ . '\\on_job_started' );
+	Runner::instance()->hooks->register( 'Runner.check_workers.job_failed', __NAMESPACE__ . '\\on_job_failed' );
+	Runner::instance()->hooks->register( 'Runner.check_workers.job_completed', __NAMESPACE__ . '\\on_job_completed' );
+}
 
 /**
  * Called when a new job is started via Cavalcade, and sends an Invocation metric to CloudWatch.
@@ -24,7 +28,10 @@ Runner::instance()->hooks->register( 'Runner.check_workers.job_completed', __NAM
 function on_job_started( Worker $worker, Job $job ) {
 	global $job_start_times;
 	$job_start_times[ $job->id ] = microtime( true );
-	put_metric_data( 'Invocations', 1, [ 'Application' => HM_ENV, 'Job' => $job->hook ] );
+	put_metric_data( 'Invocations', 1, [
+		'Application' => HM_ENV,
+		'Job' => $job->hook,
+	] );
 	put_metric_data( 'Invocations', 1, [ 'Application' => HM_ENV ] );
 	put_metric_data( 'Invocations', 1 );
 }
@@ -36,7 +43,10 @@ function on_job_started( Worker $worker, Job $job ) {
  * @param  Job    $job
  */
 function on_job_failed( Worker $worker, Job $job ) {
-	put_metric_data( 'Failed', 1, [ 'Application' => HM_ENV, 'Job' => $job->hook ] );
+	put_metric_data( 'Failed', 1, [
+		'Application' => HM_ENV,
+		'Job' => $job->hook,
+	] );
 	put_metric_data( 'Failed', 1, [ 'Application' => HM_ENV ] );
 	put_metric_data( 'Failed', 1 );
 	on_end_job( $worker, $job, 'fail' );
@@ -49,7 +59,10 @@ function on_job_failed( Worker $worker, Job $job ) {
  * @param  Job    $job
  */
 function on_job_completed( Worker $worker, Job $job ) {
-	put_metric_data( 'Completed', 1, [ 'Application' => HM_ENV, 'Job' => $job->hook ] );
+	put_metric_data( 'Completed', 1, [
+		'Application' => HM_ENV,
+		'Job' => $job->hook,
+	] );
 	put_metric_data( 'Completed', 1, [ 'Application' => HM_ENV ] );
 	put_metric_data( 'Completed', 1 );
 	on_end_job( $worker, $job, 'success' );
@@ -65,7 +78,10 @@ function on_end_job( Worker $worker, Job $job, string $status ) {
 	global $job_start_times;
 	$duration = microtime( true ) - $job_start_times[ $job->id ];
 	unset( $job_start_times[ $job->id ] );
-	put_metric_data( 'Duration', $duration, [ 'Application' => HM_ENV, 'Job' => $job->hook ], 'Seconds' );
+	put_metric_data( 'Duration', $duration, [
+		'Application' => HM_ENV,
+		'Job' => $job->hook,
+	], 'Seconds' );
 	put_metric_data( 'Duration', $duration, [ 'Application' => HM_ENV ], 'Seconds' );
 	put_metric_data( 'Duration', $duration, [], 'Seconds' );
 
@@ -114,7 +130,10 @@ function put_metric_data( $metric_name, $value, $dimensions = [], $unit = 'None'
 				[
 					'Dimensions' => array_map(
 						function ( $name, $value ) {
-							return [ 'Name' => $name, 'Value' => $value ];
+							return [
+								'Name' => $name,
+								'Value' => $value,
+							];
 						},
 						array_keys( $dimensions ),
 						$dimensions
@@ -136,7 +155,7 @@ function put_metric_data( $metric_name, $value, $dimensions = [], $unit = 'None'
  *
  * @return CloudWatchClient
  */
-function cloudwatch_client() {
+function cloudwatch_client() : CloudWatchClient {
 	return get_aws_sdk()->createCloudWatch([
 		'version'     => '2010-08-01',
 		'http'        => [

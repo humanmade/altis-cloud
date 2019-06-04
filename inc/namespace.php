@@ -3,14 +3,53 @@
 namespace Altis\Cloud;
 
 use const Altis\ROOT_DIR;
-use function Altis\get_environment_architecture;
 use function Altis\get_config as get_platform_config;
+use function Altis\get_environment_architecture;
+use HM\Platform\XRay;
+
+/**
+ * Set up the Cloud Module.
+ */
+function bootstrap() {
+	$config = get_config();
+
+	if (
+		$config['xray']
+		&& function_exists( 'xhprof_sample_enable' )
+		&& ( ! defined( 'WP_CLI' ) || ! WP_CLI )
+		&& ! class_exists( 'HM\\Cavalcade\\Runner\\Runner' )
+	) {
+		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
+		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
+		XRay\bootstrap();
+	}
+
+	if ( $config['batcache'] && ! defined( 'WP_CACHE' ) ) {
+		define( 'WP_CACHE', true );
+	}
+
+	add_filter( 'wp_mail_from', function ( string $email ) use ( $config ) : string {
+		return filter_var(
+			$config['email-from-address'],
+			FILTER_VALIDATE_EMAIL,
+			FILTER_NULL_ON_FAILURE
+		) ?? $email;
+	}, 1 );
+
+	// Load the platform as soon as WP is loaded.
+	add_action( 'enable_wp_debug_mode_checks', __NAMESPACE__ . '\\load_platform' );
+
+	if ( class_exists( 'HM\\Cavalcade\\Runner\\Runner' ) && $config['cavalcade'] ) {
+		boostrap_cavalcade_runner();
+	}
+}
 
 // Load the Cavalcade Runner CloudWatch extension.
 // This is loaded on the Cavalcade-Runner, not WordPress, crazy I know.
 function boostrap_cavalcade_runner() {
 	if ( defined( 'HM_ENV' ) && HM_ENV ) {
-		require_once __DIR__ . '/cavalcade-runner-to-cloudwatch/plugin.php';
+		require_once __DIR__ . '/cavalcade_runner_to_cloudwatch/namespace.php';
+		Cavalcade_Runner_To_CloudWatch\bootstrap();
 	}
 }
 
@@ -20,7 +59,7 @@ function boostrap_cavalcade_runner() {
  * This function is hooked into to enable_wp_debug_mode_checks so we have to return the value
  * that was passed in at the end of the function.
  */
-function bootstrap( $wp_debug_enabled ) {
+function load_platform( $wp_debug_enabled ) {
 	$config = get_config();
 
 	/**
@@ -35,8 +74,15 @@ function bootstrap( $wp_debug_enabled ) {
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36';
 	}
 
-	load_object_cache();
-	load_db();
+	if ( $config['memcached'] ) {
+		load_object_cache_memcached();
+	} elseif ( $config['redis'] ) {
+		load_object_cache_redis();
+	}
+
+	if ( $config['ludicrousdb'] ) {
+		load_db();
+	}
 
 	global $wp_version;
 	if ( version_compare( '4.6', $wp_version, '>' ) ) {
@@ -60,10 +106,11 @@ function bootstrap( $wp_debug_enabled ) {
 		add_filter( 'map_meta_cap', __NAMESPACE__ . '\\disable_install_capability', 10, 2 );
 	}
 
-	require_once __DIR__ . '/ses-to-cloudwatch/plugin.php';
+	require_once __DIR__ . '/ses_to_cloudwatch/namespace.php';
 	require_once __DIR__ . '/performance_optimizations/namespace.php';
 	require_once __DIR__ . '/cloudwatch_logs/namespace.php';
 
+	SES_To_CloudWatch\bootstrap();
 	CloudWatch_Logs\bootstrap();
 	Performance_Optimizations\bootstrap();
 
@@ -94,25 +141,58 @@ function get_config() {
 }
 
 /**
- * Load the Object Cache dropin.
+ * Load the object cache.
+ *
+ * Check the object caching configuration and load either memcached
+ * or redis as appropriate.
+ *
+ * @deprecated 1.0.1 Object caching setup moved to dedicated functions.
  */
 function load_object_cache() {
-	wp_using_ext_object_cache( true );
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		trigger_error(
+			sprintf(
+				'%1$s is deprecated since version %2$s! Use %3$s instead.',
+				__FUNCTION__,
+				'1.0.1',
+				'load_object_cache_*()'
+			)
+		);
+	}
 	$config = get_config();
 
 	if ( $config['memcached'] ) {
-		require ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
-	} else {
-		require __DIR__ . '/alloptions_fix/namespace.php';
-		if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
-			define( 'WP_REDIS_DISABLE_FAILBACK_FLUSH', true );
-		}
-
-		Alloptions_Fix\bootstrap();
-		\WP_Predis\add_filters();
-
-		require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
+		load_object_cache_memcached();
+	} elseif ( $config['redis'] ) {
+		load_object_cache_redis();
 	}
+}
+
+/**
+ * Load the Memcached Object Cache dropin.
+ */
+function load_object_cache_memcached() {
+	wp_using_ext_object_cache( true );
+	require ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
+
+	// cache must be initted once it's included, else we'll get a fatal.
+	wp_cache_init();
+}
+
+/**
+ * Load the Redis Object Cache dropin.
+ */
+function load_object_cache_redis() {
+	wp_using_ext_object_cache( true );
+	require __DIR__ . '/alloptions_fix/namespace.php';
+	if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
+		define( 'WP_REDIS_DISABLE_FAILBACK_FLUSH', true );
+	}
+
+	Alloptions_Fix\bootstrap();
+	\WP_Predis\add_filters();
+
+	require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
@@ -148,7 +228,7 @@ function disable_no_cache_headers_on_admin_ajax_nopriv() {
 }
 
 /**
- * Load the db dropin.
+ * Load the ludicrousdb dropin.
  */
 function load_db() {
 	require_once ABSPATH . WPINC . '/wp-db.php';
