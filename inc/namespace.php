@@ -29,7 +29,11 @@ function bootstrap() {
 	}
 
 	add_filter( 'wp_mail_from', function ( string $email ) use ( $config ) : string {
-		return $config['email-from-address'];
+		return filter_var(
+			$config['email-from-address'],
+			FILTER_VALIDATE_EMAIL,
+			FILTER_NULL_ON_FAILURE
+		) ?? $email;
 	}, 1 );
 
 	// Load the platform as soon as WP is loaded.
@@ -70,8 +74,15 @@ function load_platform( $wp_debug_enabled ) {
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36';
 	}
 
-	load_object_cache();
-	load_db();
+	if ( $config['memcached'] ) {
+		load_object_cache_memcached();
+	} elseif ( $config['redis'] ) {
+		load_object_cache_redis();
+	}
+
+	if ( $config['ludicrousdb'] ) {
+		load_db();
+	}
 
 	global $wp_version;
 	if ( version_compare( '4.6', $wp_version, '>' ) ) {
@@ -130,25 +141,58 @@ function get_config() {
 }
 
 /**
- * Load the Object Cache dropin.
+ * Load the object cache.
+ *
+ * Check the object caching configuration and load either memcached
+ * or redis as appropriate.
+ *
+ * @deprecated 1.0.1 Object caching setup moved to dedicated functions.
  */
 function load_object_cache() {
-	wp_using_ext_object_cache( true );
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		trigger_error(
+			sprintf(
+				'%1$s is deprecated since version %2$s! Use %3$s instead.',
+				__FUNCTION__,
+				'1.0.1',
+				'load_object_cache_*()'
+			)
+		);
+	}
 	$config = get_config();
 
 	if ( $config['memcached'] ) {
-		require ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
-	} else {
-		require __DIR__ . '/alloptions_fix/namespace.php';
-		if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
-			define( 'WP_REDIS_DISABLE_FAILBACK_FLUSH', true );
-		}
-
-		Alloptions_Fix\bootstrap();
-		\WP_Predis\add_filters();
-
-		require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
+		load_object_cache_memcached();
+	} elseif ( $config['redis'] ) {
+		load_object_cache_redis();
 	}
+}
+
+/**
+ * Load the Memcached Object Cache dropin.
+ */
+function load_object_cache_memcached() {
+	wp_using_ext_object_cache( true );
+	require ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
+
+	// cache must be initted once it's included, else we'll get a fatal.
+	wp_cache_init();
+}
+
+/**
+ * Load the Redis Object Cache dropin.
+ */
+function load_object_cache_redis() {
+	wp_using_ext_object_cache( true );
+	require __DIR__ . '/alloptions_fix/namespace.php';
+	if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
+		define( 'WP_REDIS_DISABLE_FAILBACK_FLUSH', true );
+	}
+
+	Alloptions_Fix\bootstrap();
+	\WP_Predis\add_filters();
+
+	require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
@@ -184,7 +228,7 @@ function disable_no_cache_headers_on_admin_ajax_nopriv() {
 }
 
 /**
- * Load the db dropin.
+ * Load the ludicrousdb dropin.
  */
 function load_db() {
 	require_once ABSPATH . WPINC . '/wp-db.php';
