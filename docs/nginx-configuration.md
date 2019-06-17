@@ -15,3 +15,13 @@ if ( $host = "example.com" ) {
     rewrite ^ https://sub2.example.com$request_uri? permanent;
 }
 ```
+
+Alternatively, if you have a local file in your repository you wish to explicitly block from being publicly accessed you may manually configure a 404 for a specific resource or filename pattern:
+
+```
+# Block access to a local virtual machine config file.
+location ~* config.local.yaml {
+    deny all;
+    return 404;
+}
+```
