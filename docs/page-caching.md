@@ -33,20 +33,20 @@ Any response that can be added to the page cache should not include references t
 
 ## Cache Rule Customizations
 
-The patterns for excluded cache cookies can be modified at request from Human Made. It's recommended to name the cookies accordingly to a current exclusion pattern if you want to access them via PHP. If you have a custom cookie name, it's also possible to create new cache pools from the cookie values, so users with the custom cookie still get performance benefits of the page cache. After requesting the cookie name exception with Human Made, it's necessary to define the behavior for the custom cookie in regards to the page cache.
+The patterns for excluded cache cookies can be modified at request from Altis support. It's recommended to name the cookies accordingly to a current exclusion pattern if you want to access them via PHP. If you have a custom cookie name, it's also possible to create new cache pools from the cookie values, so users with the custom cookie still get performance benefits of the page cache. After requesting the cookie name exception with Altis support, it's necessary to define the behavior for the custom cookie in regards to the page cache.
 
-The follow example will make the cache key for the page unique to the `user_accepted_cooke_disclaimer` cookie being set.
+The follow example will make the cache key for the page unique to the `user_accepted_cookie_disclaimer` cookie being set.
 
 ```php
 global $batcache;
 $batcache['unique'] = [
-	'accepted-cookie-disclaimer' => ! empty( $_COOKIE['user_accepted_cooke_disclaimer'] ),
+	'accepted-cookie-disclaimer' => ! empty( $_COOKIE['user_accepted_cookie_disclaimer'] ),
 ];
 ```
 
 ## Cache Invalidation
 
-We do not provide an automated way to invalidate page caches, as the TTL is so short. If you require a certain URL be invalidation, contact the Human Made with such requests.
+We do not provide an automated way to invalidate page caches, as the TTL is so short. If you require a certain URL be invalidation, contact Altis support with such requests.
 
 ## Debugging
 
