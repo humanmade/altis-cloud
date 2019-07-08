@@ -16,10 +16,10 @@ if ( $host = "example.com" ) {
 }
 ```
 
-Alternatively, if you have a local file in your repository you wish to explicitly block from being publicly accessed you may manually configure a 404 for a specific resource or filename pattern:
+Alternatively, if you have one or more local files in your repository you wish to explicitly block from being publicly accessed you may manually configure a 404 for a specific resource or filename pattern:
 
 ```
-# Block access to a local virtual machine config file.
+# Block access to any file entitled `config.local.yaml`.
 location ~* config.local.yaml {
     deny all;
     return 404;
