@@ -6,7 +6,7 @@ Altis Cloud can handle vast amounts of email sending, with very good deliverabil
 
 All email delivery on Cloud using `aws-ses` must be sent from email addresses that have their domain verified. Contact support to start the process of verifying your domain for email sending.
 
-Once you have requested a domain for verification, you will be provided DNS entries to add to your DNS Server, or Human Made will configure it if we already control DNS for you domain.
+Once you have requested a domain for verification, you will be provided DNS entries to add to your DNS Server, or Human Made will configure it if we already control DNS for your domain.
 
 It's also required to configure the code base to send emails from the domain. This can be done by setting the `altis.modules.cloud.email-from-address` setting.
 
