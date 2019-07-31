@@ -1,5 +1,7 @@
 # Cloud
 
+![](./assets/banner-cloud.png)
+
 The cloud module integrates the application with the infrastructure it's running on.
 
 It is responsible for delivering scalability and performance as well as taking care of the common challenges faced when running applications simultaneously on multiple servers.
