@@ -1,6 +1,6 @@
 # Accessing Logs
 
-You have access to several types of logging from sites on HM Cloud have following logs available:
+You have access to several types of logging from sites on Altis have following logs available:
 
 - PHP Error log
 - Nginx Error log

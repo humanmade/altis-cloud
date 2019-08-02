@@ -1,6 +1,6 @@
 # Geo Targeting / GeoIP
 
-HM Cloud supports geolocation targeting when specifically enabled. Once enabled, developers can make use of the `Cloudfront-Viewer-Country` HTTP Header to serve content on a per-country basis.
+Altis supports geolocation targeting when specifically enabled. Once enabled, developers can make use of the `Cloudfront-Viewer-Country` HTTP Header to serve content on a per-country basis.
 
 To enable Geo Targeting contact the Altis team.
 

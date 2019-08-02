@@ -1,6 +1,6 @@
 # Page Caching
 
-The majority of the pages viewed on HM Cloud will be cached to improve performance and delivery time to the user. Its necessary to take into account the page cache when developing - considerations are listed at the bottom of this page. All pages are cached by default, and the following rules excluded specific cases:
+The majority of the pages viewed on Altis will be cached to improve performance and delivery time to the user. Its necessary to take into account the page cache when developing - considerations are listed at the bottom of this page. All pages are cached by default, and the following rules excluded specific cases:
 
 - All `POST` requests are not cached
 - Any requests with cookies matching the patterns `wordpress_*`, `wp-*`, `wp_*`, `comment_*` and `hm_*`are not cached.

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * On HM Cloud, all configuration of DB constants (etc) will be put
+ * On Altis, all configuration of DB constants (etc) will be put
  * in to a wp-config-production.php in the web root.
  */
 
