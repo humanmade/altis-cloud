@@ -6,7 +6,7 @@ If you wish to bring your own HTTP certificate, you must provide a single certif
 
 In cases where Human Made registers HTTPS certificates, we will manage auto-renewals on a yearly basis and will provide your team with DNS verification records to validate the certificate request. All certificates are RSA 2048-bit with signature algorithm `SHA256WITHRSA` by the root CA "Amazon Root CA 1".
 
-HTTPS on Cloud requires user-agents support SNI (Server Name Indication). The follow protocols are supported:
+HTTPS on Cloud requires user-agents support SNI (Server Name Indication). The following protocols are supported:
 
 - TLS 1.2
 - TLS 1.1
