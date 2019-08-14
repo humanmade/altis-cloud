@@ -14,7 +14,7 @@ Most of the features require no configuration, you can dig in further to learn m
 - Scalable multi-threaded scheduled tasks
 - S3 storage for media assets
 - [Geo targeting](geo-targeting.md)
-- [Customisable nginx configuration](nginx-configuration.md)
+- [Customizable nginx configuration](nginx-configuration.md)
 - [Page caching](page-caching.md)
 - Database caching
 - Database replication, load-balancing and failover
