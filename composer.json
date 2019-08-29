@@ -26,13 +26,5 @@
 		"humanmade/batcache": "1.3.0",
 		"stuttter/ludicrousdb": "4.2.0",
 		"humanmade/aws-ses-wp-mail": "1.0.0"
-	},
-	"extra": {
-		"installer-paths": {
-			"vendor/${vendor}/${name}": [
-				"stuttter/ludicrousdb",
-				"humanmade/aws-ses-wp-mail"
-			]
-		}
 	}
 }
