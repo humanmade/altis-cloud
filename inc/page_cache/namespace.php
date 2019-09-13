@@ -49,12 +49,12 @@ function handle_cloudfront_headers() {
 	$batcache['unique'] = [];
 
 	foreach ( $unique_headers as $header ) {
-		$header_global = str_replace( '-', '_', strtoupper( $header ) );
-		if ( isset( $_SERVER["HTTP_{$header_global}"] ) ) {
+		$header_key = 'HTTP_' . str_replace( '-', '_', strtoupper( $header ) );
+		if ( isset( $_SERVER[ $header_key ] ) ) {
 			// Add header to batcache vary keys.
-			$batcache['unique'][ $header ] = $_SERVER["HTTP_{$header_global}"];
+			$batcache['unique'][ $header ] = $_SERVER[ $header_key ];
 			// Forward the header back in the response.
-			header( sprintf( 'X-%s: %s', $header, $_SERVER["HTTP_{$header_global}"] ) );
+			header( sprintf( 'X-%s: %s', $header, $_SERVER[ $header_key ] ) );
 		}
 	}
 }
