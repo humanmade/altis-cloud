@@ -212,6 +212,10 @@ function load_advanced_cache( $should_load ) {
 	}
 	add_action( 'admin_init', __NAMESPACE__ . '\\disable_no_cache_headers_on_admin_ajax_nopriv' );
 
+	// Pre-configure batcache.
+	require __DIR__ . '/page_cache/namespace.php';
+	Page_Cache\bootstrap();
+
 	require dirname( __DIR__ ) . '/dropins/batcache/advanced-cache.php';
 }
 
