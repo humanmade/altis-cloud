@@ -216,7 +216,7 @@ function load_advanced_cache( $should_load ) {
 	require __DIR__ . '/page_cache/namespace.php';
 	Page_Cache\bootstrap();
 
-	require dirname( __DIR__ ) . '/dropins/batcache/advanced-cache.php';
+	require ROOT_DIR . '/vendor/humanmade/batcache/advanced-cache.php';
 }
 
 /**
@@ -236,7 +236,7 @@ function disable_no_cache_headers_on_admin_ajax_nopriv() {
  */
 function load_db() {
 	require_once ABSPATH . WPINC . '/wp-db.php';
-	require_once dirname( __DIR__ ) . '/dropins/ludicrousdb/ludicrousdb/includes/class-ludicrousdb.php';
+	require_once ROOT_DIR . '/vendor/stuttter/ludicrousdb/ludicrousdb/includes/class-ludicrousdb.php';
 	require_once __DIR__ . '/class-db.php';
 	if ( ! defined( 'DB_CHARSET' ) ) {
 		define( 'DB_CHARSET', 'utf8mb4' );
@@ -265,18 +265,6 @@ function load_db() {
 			'password' => DB_PASSWORD,
 		] );
 	}
-}
-
-/**
- * Get available altis plugins.
- *
- * @return array Map of plugin ID => path relative to plugins directory.
- */
-function get_available_plugins() {
-	return [
-		'aws-ses-wp-mail' => 'aws-ses-wp-mail/aws-ses-wp-mail.php',
-		'healthcheck'     => 'healthcheck/plugin.php',
-	];
 }
 
 /**
@@ -309,13 +297,14 @@ function load_plugins() {
 		require_once ROOT_DIR . '/vendor/humanmade/wp-redis/wp-redis.php';
 	}
 
-	foreach ( get_available_plugins() as $plugin => $file ) {
-		if ( ! $config[ $plugin ] ) {
-			continue;
-		}
-
-		require dirname( __DIR__ ) . '/plugins/' . $file;
+	if ( $config['aws-ses-wp-mail'] ) {
+		require_once ROOT_DIR . '/vendor/humanmade/aws-ses-wp-mail/aws-ses-wp-mail.php';
 	}
+
+	if ( $config['healthcheck'] ) {
+		require dirname( __DIR__ ) . '/inc/healthcheck/plugin.php';
+	}
+
 }
 
 /**
