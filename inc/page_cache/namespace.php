@@ -2,6 +2,7 @@
 
 namespace Altis\Cloud\Page_Cache;
 
+use const Altis\ROOT_DIR;
 use function Altis\Cloud\get_config;
 
 function bootstrap() {
