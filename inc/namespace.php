@@ -99,13 +99,21 @@ function load_platform( $wp_debug_enabled ) {
 		add_action( 'pre_option_blog_public', '__return_zero' );
 	}
 
+	// Reflect CloudFront headers pre-batcache.
+	reflect_cloudfront_headers();
+
+	// Load Batcache.
 	add_filter( 'enable_loading_advanced_cache_dropin', __NAMESPACE__ . '\\load_advanced_cache', 10, 1 );
+
+	// Load infrastructure plugins.
 	add_action( 'muplugins_loaded', __NAMESPACE__ . '\\load_plugins', 0 );
 
+	// Remove plugin install / update caps on AWS.
 	if ( in_array( get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
 		add_filter( 'map_meta_cap', __NAMESPACE__ . '\\disable_install_capability', 10, 2 );
 	}
 
+	// Load logging features.
 	require_once __DIR__ . '/ses_to_cloudwatch/namespace.php';
 	require_once __DIR__ . '/performance_optimizations/namespace.php';
 	require_once __DIR__ . '/cloudwatch_logs/namespace.php';
@@ -210,13 +218,10 @@ function load_advanced_cache( $should_load ) {
 	if ( ! $should_load || ! $config['batcache'] ) {
 		return $should_load;
 	}
-	add_action( 'admin_init', __NAMESPACE__ . '\\disable_no_cache_headers_on_admin_ajax_nopriv' );
 
-	// Pre-configure batcache.
+	// Load and configure Batcache.
 	require __DIR__ . '/page_cache/namespace.php';
 	Page_Cache\bootstrap();
-
-	require dirname( __DIR__ ) . '/dropins/batcache/advanced-cache.php';
 }
 
 /**
@@ -236,7 +241,7 @@ function disable_no_cache_headers_on_admin_ajax_nopriv() {
  */
 function load_db() {
 	require_once ABSPATH . WPINC . '/wp-db.php';
-	require_once dirname( __DIR__ ) . '/dropins/ludicrousdb/ludicrousdb/includes/class-ludicrousdb.php';
+	require_once ROOT_DIR . '/vendor/stuttter/ludicrousdb/ludicrousdb/includes/class-ludicrousdb.php';
 	require_once __DIR__ . '/class-db.php';
 	if ( ! defined( 'DB_CHARSET' ) ) {
 		define( 'DB_CHARSET', 'utf8mb4' );
@@ -265,18 +270,6 @@ function load_db() {
 			'password' => DB_PASSWORD,
 		] );
 	}
-}
-
-/**
- * Get available altis plugins.
- *
- * @return array Map of plugin ID => path relative to plugins directory.
- */
-function get_available_plugins() {
-	return [
-		'aws-ses-wp-mail' => 'aws-ses-wp-mail/aws-ses-wp-mail.php',
-		'healthcheck'     => 'healthcheck/plugin.php',
-	];
 }
 
 /**
@@ -309,13 +302,14 @@ function load_plugins() {
 		require_once ROOT_DIR . '/vendor/humanmade/wp-redis/wp-redis.php';
 	}
 
-	foreach ( get_available_plugins() as $plugin => $file ) {
-		if ( ! $config[ $plugin ] ) {
-			continue;
-		}
-
-		require dirname( __DIR__ ) . '/plugins/' . $file;
+	if ( $config['aws-ses-wp-mail'] ) {
+		require_once ROOT_DIR . '/vendor/humanmade/aws-ses-wp-mail/aws-ses-wp-mail.php';
 	}
+
+	if ( $config['healthcheck'] ) {
+		require dirname( __DIR__ ) . '/inc/healthcheck/plugin.php';
+	}
+
 }
 
 /**
@@ -336,4 +330,29 @@ function disable_install_capability( array $caps, string $cap ) : array {
 	// This is how you disable a capability via map meta cap.
 	$caps[] = 'do_not_allow';
 	return $caps;
+}
+
+/**
+ * CloudFront can pass headers to the origin that provide information
+ * useful for modifying responses or performing redirects and other
+ * logic.
+ *
+ * This function reflects those headers back in responses for
+ * client side usage.
+ */
+function reflect_cloudfront_headers() {
+	$headers = [
+		'CloudFront-Is-Desktop-Viewer',
+		'CloudFront-Is-Mobile-Viewer',
+		'CloudFront-Is-SmartTV-Viewer',
+		'CloudFront-Is-Tablet-Viewer',
+		'CloudFront-Viewer-Country',
+	];
+
+	foreach ( $headers as $header ) {
+		$header_key = 'HTTP_' . str_replace( '-', '_', strtoupper( $header ) );
+		if ( isset( $_SERVER[ $header_key ] ) ) {
+			header( sprintf( 'X-%s: %s', $header, $_SERVER[ $header_key ] ) );
+		}
+	}
 }
