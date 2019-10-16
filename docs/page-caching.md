@@ -3,7 +3,7 @@
 The majority of the pages viewed on Altis will be cached to improve performance and delivery time to the user. It is necessary to take into account the page cache when developing - considerations are listed at the bottom of this page. All pages are cached by default, and the following rules excluded specific cases:
 
 - All `POST` requests are not cached
-- Any requests with cookies matching the patterns `wordpress_*`, `wp-*`, `wp_*`, `comment_*` and `hm_*`are not cached.
+- Any requests with cookies matching the patterns `wordpress_*`, `wp-*`, `wp_*`, `comment_*` and `hm_*` are not cached.
 - Any requests with the `Authentication` HTTP header will not be cached.
 - Any response with the `Cache-Control: no-cache` HTTP header will not be cached.
 - Any response with no content are not cached.
@@ -33,15 +33,56 @@ Any response that can be added to the page cache should not include references t
 
 ## Cache Rule Customizations
 
-The patterns for excluded cache cookies can be modified at request from Altis support. It's recommended to name the cookies accordingly to a current exclusion pattern if you want to access them via PHP. If you have a custom cookie name, it's also possible to create new cache pools from the cookie values, so users with the custom cookie still get performance benefits of the page cache. After requesting the cookie name exception with Altis support, it's necessary to define the behavior for the custom cookie in regards to the page cache.
+The page cache can be customised via your `composer.json`. The example below shows the default configuration:
 
-The follow example will make the cache key for the page unique to the `user_accepted_cookie_disclaimer` cookie being set.
+```json
+{
+	"extra": {
+		"altis": {
+			"modules": {
+				"cloud": {
+					"page-cache": {
+						"ignored-query-string-params": [
+							"utm_campaign",
+							"utm_medium",
+							"utm_source",
+							"utm_content",
+							"fbclid",
+							"_ga"
+						],
+						"unique-headers": [],
+						"unique-cookies": []
+					}
+				}
+			}
+		}
+	}
+}
+```
+
+### Ignored Query String Parameters
+
+Some query string parameters have no effect on the content or output of the page. You can make the page cache and site more efficient by including all of these to an ignore list. The page cache will filter these out when generating the cache key as specified in the [Cache Key Calculation](#cache-key-calculation) section above.
+
+### Headers
+
+If you need to generate different content on the server side based on an HTTP request header you can add those to the `unique-headers` property. For example in conjunction with [geo targeting](./geo-targeting.md) you could add `Cloudfront-Viewer-Country` to vary the generated page cache key.
+
+### Cookies
+
+If the presence of a particular cookie means that the generated page should be unique you add the cookie name to the `unique-cookies` property. It's recommended to name the cookies accordingly to a current exclusion pattern if you want to access them via PHP eg. `wp_*`.
+
+If you need a custom cookie name to be excluded at the CloudFront level the patterns can be modified at request by Altis support.
+
+### Custom Rules
+
+If the above configurations don't meet your needs you can add your own cache vary keys directly in PHP. The recommended place to do this is in a file under the `.config/` directory in a file included via `.config/load.php` to ensure it runs early enough.
+
+The following example will make the cache key for the page unique to the current codebase commit hash.
 
 ```php
 global $batcache;
-$batcache['unique'] = [
-	'accepted-cookie-disclaimer' => ! empty( $_COOKIE['user_accepted_cookie_disclaimer'] ),
-];
+$batcache['unique']['revision'] = Altis\get_environment_codebase_revision();
 ```
 
 ## Cache Invalidation

@@ -28,7 +28,7 @@ add_action( 'altis.modules.init', function () {
 		'email-from-address' => 'no-reply@humanmade.com',
 		'audit-log-to-cloudwatch' => $is_cloud,
 		'php-errors-to-cloudwatch' => $is_cloud,
-		'cache' => [
+		'page-cache' => [
 			'ignored-query-string-params' => [
 				'utm_campaign',
 				'utm_medium',
@@ -37,7 +37,9 @@ add_action( 'altis.modules.init', function () {
 				'fbclid',
 				'_ga',
 			],
-			'unique-headers' => [],
+			'unique-headers' => [
+				'cloudfront-viewer-country',
+			],
 			'unique-cookies' => [],
 		],
 	];

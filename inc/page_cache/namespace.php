@@ -18,6 +18,7 @@ function bootstrap() {
 		get_unique_cookies()
 	);
 	$unique = array_filter( $unique );
+	$unique = array_unique( $unique );
 	$batcache['unique'] = $unique;
 
 	// No-priv AJAX requests are public and should be cached.
@@ -35,7 +36,7 @@ function bootstrap() {
  */
 function get_ignore_query_params() : array {
 	$config = get_config();
-	$ignored_query_string_params = $config['cache']['ignored-query-string-params'] ?? [];
+	$ignored_query_string_params = $config['page-cache']['ignored-query-string-params'] ?? [];
 	return $ignored_query_string_params;
 }
 
@@ -48,7 +49,7 @@ function get_ignore_query_params() : array {
  */
 function get_unique_headers() : array {
 	$config = get_config();
-	$unique_headers = $config['cache']['unique-headers'] ?? [];
+	$unique_headers = $config['page-cache']['unique-headers'] ?? [];
 	$unique_keys = [];
 
 	foreach ( $unique_headers as $header ) {
@@ -69,7 +70,7 @@ function get_unique_headers() : array {
  */
 function get_unique_cookies() : array {
 	$config = get_config();
-	$unique_cookies = $config['cache']['unique-cookies'] ?? [];
+	$unique_cookies = $config['page-cache']['unique-cookies'] ?? [];
 	$unique_keys = [];
 
 	foreach ( $unique_cookies as $cookie ) {

@@ -15,6 +15,6 @@ The following is an example to show posts to a user that have a tag matching the
 
 ```php
 $posts = new WP_Query( [
-	'tag' => sanitize_text_field( $_SERVER['Cloudfront-Viewer-Country'] ),
+	'tag' => sanitize_text_field( $_SERVER['HTTP_CLOUDFRONT_VIEWER_COUNTRY'] ),
 ] );
 ```
