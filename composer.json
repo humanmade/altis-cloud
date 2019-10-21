@@ -11,7 +11,7 @@
 	],
 	"autoload": {
 		"files": [
-			"load.php",
+			"inc/namespace.php",
 			"wp-config.php"
 		]
 	},
@@ -26,5 +26,8 @@
 		"humanmade/batcache": "1.3.0",
 		"stuttter/ludicrousdb": "4.2.0",
 		"humanmade/aws-ses-wp-mail": "1.1.0"
+	},
+	"extra": {
+		"altis": {}
 	}
 }
