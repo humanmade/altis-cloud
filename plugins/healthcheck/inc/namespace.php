@@ -10,7 +10,7 @@ function bootstrap() {
 		require_once __DIR__ . '/class-cli-command.php';
 		WP_CLI::add_command( 'healthcheck', __NAMESPACE__ . '\\CLI_Command' );
 	}
-	if ( '/healthcheck/' !== $_SERVER['REQUEST_URI'] ) {
+	if ( ! isset( $_SERVER['REQUEST_URI'] ) || '/healthcheck/' !== $_SERVER['REQUEST_URI'] ) {
 		return;
 	}
 	output_page( run_checks() );
@@ -178,4 +178,3 @@ function run_cron_healthcheck() {
 
 	return true;
 }
-

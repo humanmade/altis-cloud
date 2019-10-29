@@ -3,9 +3,7 @@
 namespace Altis\Cloud\Performance_Optimizations;
 
 function bootstrap() {
-	if ( strpos( $_SERVER['REQUEST_URI'], '/wp-admin/async-upload.php' ) !== false ) {
-		increase_set_time_limit_on_async_upload();
-	}
+	increase_set_time_limit_on_async_upload();
 }
 
 /**
@@ -17,7 +15,11 @@ function bootstrap() {
  *
  */
 function increase_set_time_limit_on_async_upload() {
-	if ( ini_get( 'max_execution_time' ) < 120 ) {
+	if (
+		isset( $_SERVER['REQUEST_URI'] ) &&
+		strpos( $_SERVER['REQUEST_URI'], '/wp-admin/async-upload.php' ) !== false &&
+		ini_get( 'max_execution_time' ) < 120
+	) {
 		set_time_limit( 120 );
 	}
 }
