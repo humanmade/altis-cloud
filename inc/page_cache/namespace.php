@@ -21,6 +21,9 @@ function bootstrap() {
 	$unique = array_unique( $unique );
 	$batcache['unique'] = $unique;
 
+	// Cache redirects
+	$batcache['cache_redirects'] = true;
+
 	// No-priv AJAX requests are public and should be cached.
 	add_action( 'admin_init', __NAMESPACE__ . '\\disable_no_cache_headers_on_admin_ajax_nopriv' );
 
