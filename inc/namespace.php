@@ -88,7 +88,7 @@ function load_platform( $wp_debug_enabled ) {
 	 * The $_SERVER['HTTP_USER_AGENT'] must still be set, because WordPress and other things will test against
 	 * the user agent to enable things like the visual editor.
 	 */
-	if ( $_SERVER['HTTP_USER_AGENT'] === 'Amazon CloudFront' ) {
+	if ( ! isset( $_SERVER['HTTP_USER_AGENT'] ) || $_SERVER['HTTP_USER_AGENT'] === 'Amazon CloudFront' ) {
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36';
 	}
 
