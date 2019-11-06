@@ -21,7 +21,8 @@ function increase_set_time_limit_on_async_upload() {
 	if ( strpos( $_SERVER['REQUEST_URI'], '/wp-admin/async-upload.php' ) === false ) {
 		return;
 	}
-	if ( ini_get( 'max_execution_time' ) >= 120 ) {
+	$time = ini_get( 'max_execution_time' );
+	if ( $time === 0 || $time >= 120 ) {
 		return;
 	}
 	set_time_limit( 120 );
