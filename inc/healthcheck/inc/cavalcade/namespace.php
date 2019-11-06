@@ -15,6 +15,7 @@ const HEALTHY_THRESHOLD = 900; // 15 mins
  */
 function bootstrap() {
 	add_action( JOB_HOOK, __NAMESPACE__ . '\\set_last_run' );
+	// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 	add_filter( 'cron_schedules', __NAMESPACE__ . '\\add_cron_schedule' );
 
 	// Schedule if not already scheduled.

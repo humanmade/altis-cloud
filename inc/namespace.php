@@ -44,7 +44,7 @@ function bootstrap() {
 	}
 
 	// We use install.php as the health check at the infrastructure level, so requests must
-	// succedd to /wp-admin/install.php. This is mostly because of legacy reasons. There's
+	// succeed to /wp-admin/install.php. This is mostly because of legacy reasons. There's
 	// an issue with loading /wp-admin/install.php on a domain that doesn't exist when
 	// SUBDOMAIN_INSTALL is defined as true. The requests to the health check are made with
 	// the server's IP address, so naturally it doesn't recognize the site as being installed.
@@ -57,7 +57,11 @@ function bootstrap() {
 	//
 	// To avoid warnings, client code should check if SUBDOMAIN_INSTALL is already defined before
 	// defining it.
-	if ( $_SERVER['REQUEST_URI'] === '/wp-admin/install.php' ) {
+	if (
+		$config['healthcheck'] &&
+		isset( $_SERVER['REQUEST_URI'] ) &&
+		$_SERVER['REQUEST_URI'] === '/wp-admin/install.php'
+	) {
 		define( 'SUBDOMAIN_INSTALL', false );
 	}
 }
