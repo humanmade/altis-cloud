@@ -17,7 +17,7 @@ add_action( 'altis.modules.init', function () {
 		'memcached' => get_environment_architecture() === 'ec2',
 		'ludicrousdb' => true,
 		'healthcheck' => true,
-		'xray' => $is_cloud,
+		'xray' => true,
 		'email-from-address' => 'no-reply@humanmade.com',
 		'audit-log-to-cloudwatch' => $is_cloud,
 		'php-errors-to-cloudwatch' => $is_cloud,
