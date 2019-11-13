@@ -62,6 +62,7 @@ function bootstrap() {
 		isset( $_SERVER['REQUEST_URI'] ) &&
 		$_SERVER['REQUEST_URI'] === '/wp-admin/install.php'
 	) {
+		define( 'MULTISITE', false );
 		define( 'SUBDOMAIN_INSTALL', false );
 	}
 }
