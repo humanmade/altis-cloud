@@ -4,6 +4,8 @@ namespace Altis\Cloud;
 
 use HM\Platform\XRay;
 use LudicrousDB;
+use QM_Backtrace;
+use WP_Error;
 
 class DB extends LudicrousDB {
 	public $check_tcp_responsiveness = false;
@@ -22,9 +24,50 @@ class DB extends LudicrousDB {
 	 */
 	public $time_spent = 0;
 
-	function query( $query ) {
+	/**
+	 * Query Monitor PHP variables
+	 *
+	 * @var array
+	 */
+	public $qm_php_vars = [
+		'max_execution_time'  => null,
+		'memory_limit'        => null,
+		'upload_max_filesize' => null,
+		'post_max_size'       => null,
+		'display_errors'      => null,
+		'log_errors'          => null,
+	];
+
+	/**
+	 * Class constructor
+	 */
+	public function __construct( $args = null ) {
+		foreach ( $this->qm_php_vars as $key => &$val ) {
+			$val = ini_get( $setting );
+		}
+
+		parent::__construct( $args );
+
+	}
+
+	/**
+	 * Perform a MySQL database query, using current database connection.
+	 *
+	 * @see wpdb::query()
+	 *
+	 * @param string $query Database query
+	 * @return int|false Number of rows affected/selected or false on error
+	 */
+	public function query( $query ) {
 		$start = microtime( true );
+		$has_qm = class_exists( '\\QM_Backtrace' );
+
+		if ( $has_qm && $this->show_errors ) {
+			$this->hide_errors();
+		}
+
 		$result = parent::query( $query );
+
 		$end = microtime( true );
 		if ( function_exists( 'HM\\Platform\\XRay\\trace_wpdb_query' ) ) {
 			$host = $this->current_host ?: $this->last_connection['host'];
@@ -33,6 +76,39 @@ class DB extends LudicrousDB {
 			XRay\trace_wpdb_query( $query, $start, $end, $result === false ? $this->last_error : null, $host );
 		}
 		$this->time_spent += $end - $start;
+
+		if ( ! $has_qm || ! SAVEQUERIES ) {
+			return $result;
+		}
+
+		$i = count( $this->queries ) - 1;
+		$this->queries[ $i ]['trace'] = new QM_Backtrace( [
+			'ignore_frames' => 1,
+		] );
+
+		if ( ! isset( $this->queries[ $i ][3] ) ) {
+			$this->queries[ $i ][3] = $this->time_start;
+		}
+
+		if ( $this->last_error ) {
+			$code = 'qmdb';
+			if ( $this->use_mysqli ) {
+				if ( $this->dbh instanceof mysqli ) {
+					// phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_errno
+					$code = mysqli_errno( $this->dbh );
+				}
+			} else {
+				if ( is_resource( $this->dbh ) ) {
+					// Please do not report this code as a PHP 7 incompatibility. Observe the surrounding logic.
+					// @codingStandardsIgnoreLine
+					$code = mysql_errno( $this->dbh );
+				}
+			}
+			$this->queries[ $i ]['result'] = new WP_Error( $code, $this->last_error );
+		} else {
+			$this->queries[ $i ]['result'] = $result;
+		}
+
 		return $result;
 	}
 
