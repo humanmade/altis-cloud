@@ -29,14 +29,14 @@ class DB extends LudicrousDB {
 	 *
 	 * @var array
 	 */
-	public $qm_php_vars = array(
+	public $qm_php_vars = [
 		'max_execution_time'  => null,
 		'memory_limit'        => null,
 		'upload_max_filesize' => null,
 		'post_max_size'       => null,
 		'display_errors'      => null,
 		'log_errors'          => null,
-	);
+	];
 
 	/**
 	 * Class constructor
@@ -82,9 +82,9 @@ class DB extends LudicrousDB {
 		}
 
 		$i = count( $this->queries ) - 1;
-		$this->queries[ $i ]['trace'] = new QM_Backtrace( array(
+		$this->queries[ $i ]['trace'] = new QM_Backtrace( [
 			'ignore_frames' => 1,
-		) );
+		] );
 
 		if ( ! isset( $this->queries[ $i ][3] ) ) {
 			$this->queries[ $i ][3] = $this->time_start;
