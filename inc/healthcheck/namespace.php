@@ -1,6 +1,6 @@
 <?php
 
-namespace Altis\Healthcheck;
+namespace Altis\Cloud\Healthcheck;
 
 use WP_CLI;
 use WP_Error;

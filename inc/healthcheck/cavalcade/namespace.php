@@ -1,6 +1,6 @@
 <?php
 
-namespace Altis\Healthcheck\Cavalcade;
+namespace Altis\Cloud\Healthcheck\Cavalcade;
 
 use WP_Error;
 

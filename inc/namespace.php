@@ -330,7 +330,8 @@ function load_plugins() {
 	}
 
 	if ( $config['healthcheck'] ) {
-		require dirname( __DIR__ ) . '/inc/healthcheck/plugin.php';
+		Healthcheck\bootstrap();
+		Healthcheck\Cavalcade\bootstrap();
 	}
 
 }
