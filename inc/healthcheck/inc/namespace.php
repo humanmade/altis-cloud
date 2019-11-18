@@ -40,6 +40,7 @@ function output_page( array $checks ) {
 	}
 
 	if ( $format === 'json' ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 		echo json_encode( $checks );
 		exit;
 	}
