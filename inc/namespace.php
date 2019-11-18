@@ -330,10 +330,18 @@ function load_plugins() {
 	}
 
 	if ( $config['healthcheck'] ) {
-		Healthcheck\bootstrap();
-		Healthcheck\Cavalcade\bootstrap();
+		add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck' );
 	}
+}
 
+/**
+ * Load and run healthcheck.
+ *
+ * Runs the Cloud healthcheck at /healthcheck/
+ */
+function load_healthcheck() {
+	Healthcheck\bootstrap();
+	Healthcheck\Cavalcade\bootstrap();
 }
 
 /**
