@@ -94,6 +94,7 @@ class DB extends LudicrousDB {
 			$code = 'qmdb';
 			if ( $this->use_mysqli ) {
 				if ( $this->dbh instanceof mysqli ) {
+					// phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_errno
 					$code = mysqli_errno( $this->dbh );
 				}
 			} else {
