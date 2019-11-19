@@ -24,6 +24,7 @@ function on_sent_message( $result, $message ) {
 		[
 			[
 				'timestamp' => time() * 1000,
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 				'message'   => json_encode( $message ),
 			],
 		],
@@ -43,6 +44,7 @@ function on_error_sending_message( Exception $e, $message ) {
 		[
 			[
 				'timestamp' => time() * 1000,
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 				'message'   => json_encode( [
 					'error'     => [
 						'class'   => get_class( $e ),

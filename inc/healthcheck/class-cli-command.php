@@ -1,6 +1,6 @@
 <?php
 
-namespace Altis\Healthcheck;
+namespace Altis\Cloud\Healthcheck;
 
 use cli;
 use WP_CLI;
