@@ -306,7 +306,13 @@ function load_plugins() {
 		if ( ! defined( 'DISABLE_WP_CRON' ) ) {
 			define( 'DISABLE_WP_CRON', true );
 		}
-		require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+		if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
+			add_action( 'populate_options', function () {
+				require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+			} );
+		} else {
+			require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+		}
 	}
 
 	// Define TACHYON_URL, as in the Cloud environment is "always on"
@@ -340,6 +346,9 @@ function load_plugins() {
  * Runs the Cloud healthcheck at /healthcheck/
  */
 function load_healthcheck() {
+	if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
+		return;
+	}
 	Healthcheck\bootstrap();
 	Healthcheck\Cavalcade\bootstrap();
 }
