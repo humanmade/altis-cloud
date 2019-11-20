@@ -305,7 +305,13 @@ function load_plugins() {
 		if ( ! defined( 'DISABLE_WP_CRON' ) ) {
 			define( 'DISABLE_WP_CRON', true );
 		}
-		require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+		if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
+			add_action( 'populate_options', function () {
+				require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+			} );
+		} else {
+			require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+		}
 	}
 
 	// Define TACHYON_URL, as in the Cloud environment is "always on"
@@ -328,7 +334,7 @@ function load_plugins() {
 		require_once ROOT_DIR . '/vendor/humanmade/aws-ses-wp-mail/aws-ses-wp-mail.php';
 	}
 
-	if ( $config['healthcheck'] ) {
+	if ( $config['healthcheck'] && ( ! defined( 'WP_INSTALLING' ) || ! WP_INSTALLING ) ) {
 		require dirname( __DIR__ ) . '/inc/healthcheck/plugin.php';
 	}
 
