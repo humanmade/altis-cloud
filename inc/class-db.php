@@ -43,7 +43,7 @@ class DB extends LudicrousDB {
 	 */
 	public function __construct( $args = null ) {
 		foreach ( $this->qm_php_vars as $key => &$val ) {
-			$val = ini_get( $setting );
+			$val = ini_get( $key );
 		}
 
 		parent::__construct( $args );
