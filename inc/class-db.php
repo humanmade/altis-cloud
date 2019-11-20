@@ -25,32 +25,6 @@ class DB extends LudicrousDB {
 	public $time_spent = 0;
 
 	/**
-	 * Query Monitor PHP variables
-	 *
-	 * @var array
-	 */
-	public $qm_php_vars = [
-		'max_execution_time'  => null,
-		'memory_limit'        => null,
-		'upload_max_filesize' => null,
-		'post_max_size'       => null,
-		'display_errors'      => null,
-		'log_errors'          => null,
-	];
-
-	/**
-	 * Class constructor
-	 */
-	public function __construct( $args = null ) {
-		foreach ( $this->qm_php_vars as $key => &$val ) {
-			$val = ini_get( $key );
-		}
-
-		parent::__construct( $args );
-
-	}
-
-	/**
 	 * Perform a MySQL database query, using current database connection.
 	 *
 	 * @see wpdb::query()
