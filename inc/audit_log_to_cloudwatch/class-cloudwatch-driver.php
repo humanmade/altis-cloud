@@ -43,7 +43,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			[
 				[
 					'timestamp' => time() * 1000,
-					// @codingStandardsIgnoreLine
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 					'message' => json_encode( $data ),
 				],
 			],
@@ -150,6 +150,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 				break;
 			}
 			$object = json_decode( $result[0]['value'] );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 			$object->meta = json_decode( json_encode( $object->meta ), true );
 			$items[] = $object;
 		}

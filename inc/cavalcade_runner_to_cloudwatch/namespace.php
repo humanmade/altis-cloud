@@ -98,6 +98,7 @@ function on_end_job( Worker $worker, Job $job, string $status ) {
 	send_event_to_stream(
 		[
 			'timestamp' => time() * 1000,
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 			'message'   => json_encode( [
 				'hook'     => $job->hook,
 				'id'       => $job->id,

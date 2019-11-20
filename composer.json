@@ -11,6 +11,8 @@
 	],
 	"autoload": {
 		"files": [
+			"inc/healthcheck/namespace.php",
+			"inc/healthcheck/cavalcade/namespace.php",
 			"inc/namespace.php",
 			"wp-config.php"
 		]

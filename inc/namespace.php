@@ -62,6 +62,7 @@ function bootstrap() {
 		isset( $_SERVER['REQUEST_URI'] ) &&
 		$_SERVER['REQUEST_URI'] === '/wp-admin/install.php'
 	) {
+		define( 'MULTISITE', false );
 		define( 'SUBDOMAIN_INSTALL', false );
 	}
 }
@@ -334,10 +335,22 @@ function load_plugins() {
 		require_once ROOT_DIR . '/vendor/humanmade/aws-ses-wp-mail/aws-ses-wp-mail.php';
 	}
 
-	if ( $config['healthcheck'] && ( ! defined( 'WP_INSTALLING' ) || ! WP_INSTALLING ) ) {
-		require dirname( __DIR__ ) . '/inc/healthcheck/plugin.php';
+	if ( $config['healthcheck'] ) {
+		add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck' );
 	}
+}
 
+/**
+ * Load and run healthcheck.
+ *
+ * Runs the Cloud healthcheck at /healthcheck/
+ */
+function load_healthcheck() {
+	if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
+		return;
+	}
+	Healthcheck\bootstrap();
+	Healthcheck\Cavalcade\bootstrap();
 }
 
 /**
