@@ -306,12 +306,11 @@ function load_plugins() {
 		if ( ! defined( 'DISABLE_WP_CRON' ) ) {
 			define( 'DISABLE_WP_CRON', true );
 		}
+		require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+		// Wait until tables have been created to bootstrap cavalcade during install.
 		if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
-			add_action( 'populate_options', function () {
-				require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
-			} );
-		} else {
-			require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+			remove_action( 'plugins_loaded', 'HM\\Cavalcade\\Plugin\\bootstrap' );
+			add_action( 'populate_options', 'HM\\Cavalcade\\Plugin\\bootstrap' );
 		}
 	}
 
