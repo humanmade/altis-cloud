@@ -201,6 +201,10 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 
 			$results = [ 'status' => 'Running' ];
 			while ( ! in_array( $results['status'], [ 'Failed', 'Cancelled', 'Complete' ], true ) ) {
+				// Limit how fast we poll CloudWatch via calls to getQueryResults.
+				// Queries take at a minimum 1 second, so we `sleep` before even
+				// making the first call.
+				sleep( 1 );
 				$results = cloudwatch_logs_client()->getQueryResults([
 					'queryId' => $query['queryId'],
 				] );
