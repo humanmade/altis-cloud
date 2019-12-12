@@ -3,6 +3,8 @@
 namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
 use Aws\CloudWatch\CloudWatchClient;
+use Exception;
+
 use function Altis\Cloud\CloudWatch_Logs\cloudwatch_logs_client;
 use function Altis\Cloud\CloudWatch_Logs\send_events_to_stream;
 use function Altis\get_aws_sdk;
@@ -125,7 +127,12 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			'queryString'    => $query,
 		];
 
-		$query = cloudwatch_logs_client()->startQuery( $params );
+		try {
+			$query = cloudwatch_logs_client()->startQuery( $params );
+		} catch ( Exception $e ) {
+			$this->display_error( $e->getMessage() );
+			return [];
+		}
 
 		$results = [ 'status' => 'Running' ];
 		while ( ! in_array( $results['status'], [ 'Failed', 'Cancelled', 'Complete' ], true ) ) {
@@ -161,6 +168,20 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		];
 	}
 
+	/**
+	 * Disaply error message.
+	 *
+	 * @param string $message Error message.
+	 *
+	 * @return void
+	 */
+	private function display_error( $message ) {
+		?>
+		<div class="notice notice-error">
+			<p><?php echo esc_html( $message ); ?></p>
+		</div>
+		<?php
+	}
 
 	/**
 	 * Returns array of existing values for requested column.
@@ -182,7 +203,12 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 				'queryString'    => $query,
 			];
 
-			$query = cloudwatch_logs_client()->startQuery( $params );
+			try {
+				$query = cloudwatch_logs_client()->startQuery( $params );
+			} catch ( Exception $e ) {
+				return [];
+			}
+
 			$results = [ 'status' => 'Running' ];
 			while ( ! in_array( $results['status'], [ 'Failed', 'Cancelled', 'Complete' ], true ) ) {
 				// Limit how fast we poll CloudWatch via calls to getQueryResults.
