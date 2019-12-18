@@ -20,6 +20,12 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 	protected $query;
 
 	/**
+	 * Holds error message
+	 * @var string
+	 */
+	public static $error = '';
+
+	/**
 	 * Class constructor.
 	 */
 	public function __construct() {
@@ -130,7 +136,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		try {
 			$query = cloudwatch_logs_client()->startQuery( $params );
 		} catch ( Exception $e ) {
-			$this->display_error( $e->getMessage() );
+			self::$error = $e->getMessage();
 			return [];
 		}
 
@@ -165,21 +171,6 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			'items' => $items,
 			'count' => min( $results['statistics']['recordsMatched'], 10000 ),
 		];
-	}
-
-	/**
-	 * Disaply error message.
-	 *
-	 * @param string $message Error message.
-	 *
-	 * @return void
-	 */
-	private function display_error( $message ) {
-		?>
-		<div class="notice notice-error">
-			<p><?php echo esc_html( $message ); ?></p>
-		</div>
-		<?php
 	}
 
 	/**
