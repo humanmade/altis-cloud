@@ -26,9 +26,8 @@ function set_stream_db_driver( string $db_driver ): string {
 }
 
 /**
- * Disaply error message.
+ * Display error message.
  *
- * @param string $message Error message.
  *
  * @return void
  */
