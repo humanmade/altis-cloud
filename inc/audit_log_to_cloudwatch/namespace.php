@@ -19,7 +19,7 @@ function bootstrap() {
  *
  * @return string
  */
-function set_stream_db_driver( string $db_driver ): string {
+function set_stream_db_driver( string $db_driver ) : string {
 	require_once __DIR__ . '/class-cloudwatch-driver.php';
 
 	return __NAMESPACE__ . '\\CloudWatch_Driver';
