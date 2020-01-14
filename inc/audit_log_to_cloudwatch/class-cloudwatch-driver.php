@@ -3,6 +3,8 @@
 namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
 use Aws\CloudWatch\CloudWatchClient;
+use Exception;
+
 use function Altis\Cloud\CloudWatch_Logs\cloudwatch_logs_client;
 use function Altis\Cloud\CloudWatch_Logs\send_events_to_stream;
 use function Altis\get_aws_sdk;
@@ -16,6 +18,12 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 	 * @var Query
 	 */
 	protected $query;
+
+	/**
+	 * Holds error message
+	 * @var string
+	 */
+	public static $error = '';
 
 	/**
 	 * Class constructor.
@@ -125,7 +133,12 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			'queryString'    => $query,
 		];
 
-		$query = cloudwatch_logs_client()->startQuery( $params );
+		try {
+			$query = cloudwatch_logs_client()->startQuery( $params );
+		} catch ( Exception $e ) {
+			self::$error = $e->getMessage();
+			return [];
+		}
 
 		$results = [ 'status' => 'Running' ];
 		while ( ! in_array( $results['status'], [ 'Failed', 'Cancelled', 'Complete' ], true ) ) {
@@ -161,7 +174,6 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		];
 	}
 
-
 	/**
 	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
@@ -182,7 +194,12 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 				'queryString'    => $query,
 			];
 
-			$query = cloudwatch_logs_client()->startQuery( $params );
+			try {
+				$query = cloudwatch_logs_client()->startQuery( $params );
+			} catch ( Exception $e ) {
+				return [];
+			}
+
 			$results = [ 'status' => 'Running' ];
 			while ( ! in_array( $results['status'], [ 'Failed', 'Cancelled', 'Complete' ], true ) ) {
 				// Limit how fast we poll CloudWatch via calls to getQueryResults.
