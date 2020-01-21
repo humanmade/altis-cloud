@@ -219,6 +219,9 @@ function load_object_cache_redis() {
 	if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
 		define( 'WP_REDIS_DISABLE_FAILBACK_FLUSH', true );
 	}
+	if ( ! defined( 'WP_REDIS_USE_CACHE_GROUPS' ) ) {
+		define( 'WP_REDIS_USE_CACHE_GROUPS', true );
+	}
 
 	Alloptions_Fix\bootstrap();
 	\WP_Predis\add_filters();
