@@ -22,6 +22,7 @@ function bootstrap() {
 		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
 		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
 		XRay\bootstrap();
+		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
 	}
 
 	if ( $config['batcache'] && ! defined( 'WP_CACHE' ) ) {
@@ -395,4 +396,43 @@ function reflect_cloudfront_headers() {
 			header( sprintf( 'X-%s: %s', $header, $_SERVER[ $header_key ] ) );
 		}
 	}
+}
+
+/**
+ * Remove unneeded data from the XRay metadata.
+ *
+ * We have a lot of superfluous information in the $_SERVER super-global
+ * that doesn't need to be sent to xray. It's a lot of wasted bytes to
+ * send to xray on every request.
+ * @return void
+ */
+function remove_xray_metadata( array $metadata ) : array {
+	if ( ! isset( $metadata['$_SERVER'] ) ) {
+		return $metadata;
+	}
+
+	$metadata['$_SERVER'] = array_filter( $metadata['$_SERVER'], function ( string $key ) : bool {
+		// Allow all HTTP headers.
+		if ( strpos( $key, 'HTTP_' ) === 0 ) {
+			return true;
+		}
+
+		$allowed_keys = [
+			'REQUEST_URI',
+			'SERVER_ADDR',
+			'REMOTE_ADDR',
+			'CONTENT_LENGTH',
+			'CONTENT_TYPE',
+			'REQUEST_METHOD',
+			'QUERY_STRING',
+			'HTTPS',
+			'PHP_SELF',
+			'REQUEST_TIME_FLOAT',
+			'REQUEST_TIME',
+		];
+
+		return in_array( $key, $allowed_keys );
+	}, ARRAY_FILTER_USE_KEY );
+
+	return $metadata;
 }
