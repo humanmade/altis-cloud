@@ -2,8 +2,8 @@
 
 namespace Altis\Cloud\Environment_Indicator;
 
-use function Altis\get_environment_type;
 use function Altis\get_environment_name;
+use function Altis\get_environment_type;
 
 function bootstrap() {
 	add_action( 'admin_menu', __NAMESPACE__ . '\\add_menu_page' );
@@ -43,14 +43,16 @@ function display_environment_details() {
 			</tr>
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Environment Name', 'altis' ); ?></th>
-				<td><?php
+				<td>
+					<?php
 					// Link to the stack on the Altis dashboard.
 					if ( get_environment_name() !== 'unknown' ) {
 						printf( '<a href="%s">%s</a>', '#', get_environment_name() );
 					}
 					else {
 						echo get_environment_name();
-					} ?>
+					}
+					?>
 				</td>
 			</tr>
 			</tbody>
