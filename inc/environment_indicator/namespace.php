@@ -48,8 +48,7 @@ function display_environment_details() {
 					// Link to the stack on the Altis dashboard.
 					if ( get_environment_name() !== 'unknown' ) {
 						printf( '<a href="%s">%s</a>', '#', get_environment_name() );
-					}
-					else {
+					} else {
 						echo get_environment_name();
 					}
 					?>
