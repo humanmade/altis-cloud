@@ -21,17 +21,9 @@ function add_admin_bar_env_info() {
 	}
 
 	// Specify capabilities for which environment indicator is shown in the admin bar.
-	$capabilities[] = 'manage_options';
-
-	if ( is_multisite() ) {
-		$capabilities[] = 'manage_network_options';
-	}
-
-	$capabilities = apply_filters( 'altis_env_indicator_capabilities', $capabilities );
-	foreach ( $capabilities as $cap ) {
-		if ( ! current_user_can( $cap ) ) {
-			return;
-		}
+	$capability = apply_filters( 'altis_env_indicator_capability', 'manage_options' );
+	if ( ! current_user_can( $capability ) ) {
+		return;
 	}
 
 	global $wp_admin_bar;
