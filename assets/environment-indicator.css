@@ -1,0 +1,48 @@
+#wpadminbar #wp-admin-bar-altis-env-indicator > .ab-item:before {
+	content: "\f547";
+	color: #152A4E;
+}
+
+#wpadminbar #wp-admin-bar-altis-env-indicator > .ab-item,
+#wpadminbar #wp-admin-bar-altis-env-indicator > .ab-empty-item {
+	color: #152A4E;
+}
+
+#wpadminbar:not(.mobile) .ab-top-menu > li.altis-env-indicator--local:hover > .ab-item,
+#wpadminbar:not(.mobile) .ab-top-menu > li.altis-env-indicator--local > .ab-item:focus,
+#wpadminbar.nojq .quicklinks .ab-top-menu > li.altis-env-indicator--local > .ab-item:focus,
+#wpadminbar.nojs .ab-top-menu > li.menupop.altis-env-indicator--local:hover > .ab-item,
+#wpadminbar .ab-top-menu > li.menupop.hover.altis-env-indicator--local > .ab-item,
+#wpadminbar .ab-top-menu > li.altis-env-indicator--local {
+	background-color: #5AC5B1;
+}
+
+#wpadminbar:not(.mobile) .ab-top-menu > li.altis-env-indicator--development:hover > .ab-item,
+#wpadminbar:not(.mobile) .ab-top-menu > li.altis-env-indicator--development > .ab-item:focus,
+#wpadminbar.nojq .quicklinks .ab-top-menu > li.altis-env-indicator--development > .ab-item:focus,
+#wpadminbar.nojs .ab-top-menu > li.menupop.altis-env-indicator--development:hover > .ab-item,
+#wpadminbar .ab-top-menu > li.menupop.hover.altis-env-indicator--development > .ab-item,
+#wpadminbar .ab-top-menu > li.altis-env-indicator--development {
+	background-color: #06A9CE;
+	color: #152A4E;
+}
+
+#wpadminbar:not(.mobile) .ab-top-menu > li.altis-env-indicator--staging:hover > .ab-item,
+#wpadminbar:not(.mobile) .ab-top-menu > li.altis-env-indicator--staging > .ab-item:focus,
+#wpadminbar.nojq .quicklinks .ab-top-menu > li.altis-env-indicator--staging > .ab-item:focus,
+#wpadminbar.nojs .ab-top-menu > li.menupop.altis-env-indicator--staging:hover > .ab-item,
+#wpadminbar .ab-top-menu > li.menupop.hover.altis-env-indicator--staging > .ab-item,
+#wpadminbar .ab-top-menu > li.altis-env-indicator--staging {
+	background-color: #F8DA6D;
+	color: #152A4E;
+}
+
+#wpadminbar:not(.mobile) .ab-top-menu > li.altis-env-indicator--production:hover > .ab-item,
+#wpadminbar:not(.mobile) .ab-top-menu > li.altis-env-indicator--production > .ab-item:focus,
+#wpadminbar.nojq .quicklinks .ab-top-menu > li.altis-env-indicator--production > .ab-item:focus,
+#wpadminbar.nojs .ab-top-menu > li.menupop.altis-env-indicator--production:hover > .ab-item,
+#wpadminbar .ab-top-menu > li.menupop.hover.altis-env-indicator--production > .ab-item,
+#wpadminbar .ab-top-menu > li.altis-env-indicator--production {
+	background-color: #ED7B9D;
+	color: #152A4E;
+}

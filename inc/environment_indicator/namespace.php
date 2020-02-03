@@ -7,6 +7,7 @@ use function Altis\get_environment_type;
 
 function bootstrap() {
 	add_action( 'wp_before_admin_bar_render', __NAMESPACE__ . '\\add_admin_bar_env_info' );
+	add_action( 'admin_bar_init', __NAMESPACE__ . '\\enqueue_admin_scripts' );
 }
 
 /**
@@ -27,45 +28,42 @@ function add_admin_bar_env_info() {
 	}
 
 	global $wp_admin_bar;
-	// Specify admin bar menu item info and styling.
-	$indicator_colour = 'red';
-	$indicator_colour = apply_filters( 'altis_env_indicator_colour', $indicator_colour, get_environment_type() );
-
+	// Specify admin bar menu item info.
 	$indicator_text = strtoupper( get_environment_type() );
 	$indicator_text = apply_filters( 'altis_env_indicator_text', $indicator_text, get_environment_type() );
-
-	$bar_item_style = '<style>
-#wpadminbar #wp-admin-bar-altis-env-indicator>.ab-item:before {
-	content: "\f547";
-}
-#wpadminbar #wp-admin-bar-altis-env-indicator,
-#wpadminbar #wp-admin-bar-altis-env-indicator>.ab-item:hover,
-#wpadminbar #wp-admin-bar-altis-env-indicator>.ab-item:focus,
-#wpadminbar #wp-admin-bar-altis-env-indicator>.ab-item:visited {
-	background: ' . $indicator_colour . ' ! important;
-}
-</style>';
-	$bar_item_style = apply_filters( 'altis_env_indicator_style', $bar_item_style, get_environment_type() );
 
 	// Add menu items to admin bar.
 	$wp_admin_bar->add_menu( [
 		'id'    => 'altis-env-indicator',
-		'title' => $bar_item_style . $indicator_text,
+		'title' => $indicator_text,
+		'meta'  => [
+			'class' => 'altis-env-indicator--' . get_environment_type(),
+		],
 	] );
 
 	// Construct Altis dashboard URL for the environment.
-	$altis_dashboard_url = '';
 	if ( defined( 'HM_ENV_REGION' ) && get_environment_type() !== 'local' ) {
-		$altis_dashboard_url = sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', esc_url( HM_ENV_REGION ), esc_url( get_environment_name() ) );
-	}
+		$wp_admin_bar->add_menu( [
+			'id'     => 'altis-env-stack-name',
+			'title'  => esc_html( get_environment_name() ),
+			'parent' => 'altis-env-indicator',
+		] );
 
-	$wp_admin_bar->add_menu( [
-		'id'     => 'altis-env-stack-url',
-		'title'  => sprintf( __( 'Altis dashboard: %s', 'altis' ), esc_html( get_environment_name() ) ),
-		'parent' => 'altis-env-indicator',
-		'href'   => $altis_dashboard_url,
-		'meta'   => [
-			'target' => '__blank',
-		],
-	] );
+		$wp_admin_bar->add_menu( [
+			'id'     => 'altis-env-stack-url',
+			'title'  => __( 'Open in Altis Dashboard', 'altis' ),
+			'parent' => 'altis-env-indicator',
+			'href'   => sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', esc_url( HM_ENV_REGION ), esc_url( get_environment_name() ) ),
+			'meta'   => [
+				'target' => '_blank',
+			],
+		] );
+	}
+}
+
+/**
+ * Enqueue the environment indicator styles.
+ */
+function enqueue_admin_scripts() {
+	wp_enqueue_style( 'altis-env-indicator', plugin_dir_url( dirname( __FILE__, 2 ) ) . 'assets/environment-indicator.css', [], '2020-02-03-1' );
 }
