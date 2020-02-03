@@ -53,7 +53,7 @@ function add_admin_bar_env_info() {
 			'id'     => 'altis-env-stack-url',
 			'title'  => __( 'Open in Altis Dashboard', 'altis' ),
 			'parent' => 'altis-env-indicator',
-			'href'   => sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', esc_url( HM_ENV_REGION ), esc_url( get_environment_name() ) ),
+			'href'   => esc_url( sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', HM_ENV_REGION, get_environment_name() ) ),
 			'meta'   => [
 				'target' => '_blank',
 			],
