@@ -6,8 +6,8 @@ use function Altis\get_environment_name;
 use function Altis\get_environment_type;
 
 function bootstrap() {
-	add_action( 'wp_before_admin_bar_render', __NAMESPACE__ . '\\add_admin_bar_env_info' );
 	add_action( 'admin_bar_init', __NAMESPACE__ . '\\enqueue_admin_scripts' );
+	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\add_admin_bar_env_info' );
 }
 
 /**
@@ -28,27 +28,34 @@ function add_admin_bar_env_info() {
 	}
 
 	global $wp_admin_bar;
-	// Specify admin bar menu item info.
-	$indicator_text = strtoupper( get_environment_type() );
-	$indicator_text = apply_filters( 'altis_env_indicator_text', $indicator_text, get_environment_type() );
-
-	// Add menu items to admin bar.
+	// Add environment menu item to the admin bar.
 	$wp_admin_bar->add_menu( [
-		'id'    => 'altis-env-indicator',
-		'title' => $indicator_text,
-		'meta'  => [
+		'id'   => 'altis-env-indicator',
+		'meta' => [
 			'class' => 'altis-env-indicator--' . get_environment_type(),
 		],
 	] );
 
-	// Construct Altis dashboard URL for the environment.
+	// Environment type sub-menu item.
+	$env_type_text = strtoupper( get_environment_type() );
+	$env_type_text = apply_filters( 'altis_env_indicator_text', $env_type_text, get_environment_type() );
+
+	$wp_admin_bar->add_menu( [
+		'id'     => 'altis-env-stack-type',
+		'title'  => $env_type_text,
+		'parent' => 'altis-env-indicator',
+	] );
+
+	// Display environment info for non-local stacks.
 	if ( defined( 'HM_ENV_REGION' ) && get_environment_type() !== 'local' ) {
+		// Environment name sub-menu item.
 		$wp_admin_bar->add_menu( [
 			'id'     => 'altis-env-stack-name',
 			'title'  => esc_html( get_environment_name() ),
 			'parent' => 'altis-env-indicator',
 		] );
 
+		// Environment's Altis dashboard URL sub-menu item.
 		$wp_admin_bar->add_menu( [
 			'id'     => 'altis-env-stack-url',
 			'title'  => __( 'Open in Altis Dashboard', 'altis' ),
