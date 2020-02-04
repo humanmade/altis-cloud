@@ -10,12 +10,12 @@ function bootstrap() {
 	add_action( 'admin_bar_init', __NAMESPACE__ . '\\enqueue_admin_scripts' );
 	// Allow other modules to add sub-menu items to Altis admin bar menu first.
 	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\add_admin_bar_env_info', 15 );
+	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\add_admin_bar_dashboard_link', 15 );
 }
 
 /**
  * Add menu item to admin bar to display environment info:
  * - environment type
- * - environment name
  * - URL to Altis dashboard for the environment
  *
  * @param WP_Admin_Bar $wp_admin_bar WP_Admin_Bar instance, passed by reference.
@@ -48,22 +48,40 @@ function add_admin_bar_env_info( WP_Admin_Bar $wp_admin_bar ) {
 
 	// Add environment indicator to the Altis logo menu item in the admin bar.
 	$node = $wp_admin_bar->get_node( 'altis' );
-	$node->meta = [
-		'html' => sprintf( '<span class="altis-env-indicator">%s</span>', $envs[ get_environment_type() ] ),
-	];
+	$node->title .= ' ' . sprintf( '<span class="altis-env-indicator">%s</span>', $envs[ get_environment_type() ] );
 	$wp_admin_bar->add_menu( $node );
+}
+
+/**
+ * Add menu item to admin bar to display environment info:
+ * - URL to Altis dashboard for the environment
+ *
+ * @param WP_Admin_Bar $wp_admin_bar WP_Admin_Bar instance, passed by reference.
+ */
+function add_admin_bar_dashboard_link( WP_Admin_Bar $wp_admin_bar ) {
+	if ( ! is_admin_bar_showing() ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
 
 	// Stop - no Altis dashboard URL is available. No need to add sub-menu item.
-	if ( ! defined( 'HM_ENV_REGION' ) || get_environment_type() === 'local' ) {
-		return;
+	if ( ! defined( 'HM_ENV_REGION' ) ) {
+		$title = __( 'Open Altis Dashboard', 'altis' );
+		$url = 'https://dashboard.altis-dxp.com/';
+	} else {
+		$title = __( 'Open in Altis Dashboard', 'altis' );
+		$url = esc_url( sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', HM_ENV_REGION, get_environment_name() ) );
 	}
 
 	// Add environment's Altis dashboard URL as a sub-menu item to Altis logo menu in the admin bar.
 	$wp_admin_bar->add_menu( [
 		'parent' => 'altis',
 		'id'     => 'altis-env-stack-url',
-		'title'  => __( 'Open in Altis Dashboard', 'altis' ),
-		'href'   => esc_url( sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', HM_ENV_REGION, get_environment_name() ) ),
+		'title'  => $title . ' <span class="dashicons-before dashicons-external"></span>',
+		'href'   => $url,
 		'meta'   => [
 			'target' => '_blank',
 		],
