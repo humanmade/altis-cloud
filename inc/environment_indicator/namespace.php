@@ -38,36 +38,42 @@ function add_admin_bar_env_info( WP_Admin_Bar $wp_admin_bar ) {
 		],
 	] );
 
-	// Environment type sub-menu item.
-	$env_type_text = strtoupper( get_environment_type() );
-	$env_type_text = apply_filters( 'altis_env_indicator_text', $env_type_text, get_environment_type() );
+	// Environment types text to be displayed in the admin bar.
+	$envs = [
+		'local'       => esc_html_x( 'local', 'Server environment type', 'altis' ),
+		'development' => sprintf( '<abbr title="%s">%s</abbr>',
+			esc_attr_x( 'development', 'Server environment type - full form', 'altis' ),
+			esc_html_x( 'dev', 'Server environment type - abbreviated', 'altis' )
+		),
+		'staging'     => esc_html_x( 'staging', 'Server environment type', 'altis' ),
+		'production'  => sprintf( '<abbr title="%s">%s</abbr>',
+			esc_attr_x( 'production', 'Server environment type - full form', 'altis' ),
+			esc_html_x( 'prod', 'Server environment type - abbreviated', 'altis' )
+		),
+	];
 
+	// Environment type sub-menu item.
 	$wp_admin_bar->add_menu( [
 		'id'     => 'altis-env-stack-type',
-		'title'  => $env_type_text,
+		'title'  => $envs[ get_environment_type() ],
 		'parent' => 'altis-env-indicator',
 	] );
 
-	// Display environment info for non-local stacks.
-	if ( defined( 'HM_ENV_REGION' ) && get_environment_type() !== 'local' ) {
-		// Environment name sub-menu item.
-		$wp_admin_bar->add_menu( [
-			'id'     => 'altis-env-stack-name',
-			'title'  => esc_html( get_environment_name() ),
-			'parent' => 'altis-env-indicator',
-		] );
-
-		// Environment's Altis dashboard URL sub-menu item.
-		$wp_admin_bar->add_menu( [
-			'id'     => 'altis-env-stack-url',
-			'title'  => __( 'Open in Altis Dashboard', 'altis' ),
-			'parent' => 'altis-env-indicator',
-			'href'   => esc_url( sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', HM_ENV_REGION, get_environment_name() ) ),
-			'meta'   => [
-				'target' => '_blank',
-			],
-		] );
+	// Stop - no Altis dashboard URL is available.
+	if ( ! defined( 'HM_ENV_REGION' ) || get_environment_type() === 'local' ) {
+		return;
 	}
+
+	// Environment's Altis dashboard URL sub-menu item.
+	$wp_admin_bar->add_menu( [
+		'id'     => 'altis-env-stack-url',
+		'title'  => __( 'Open in Altis Dashboard', 'altis' ),
+		'parent' => 'altis-env-indicator',
+		'href'   => esc_url( sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', HM_ENV_REGION, get_environment_name() ) ),
+		'meta'   => [
+			'target' => '_blank',
+		],
+	] );
 }
 
 /**
