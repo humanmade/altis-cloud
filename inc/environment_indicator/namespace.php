@@ -25,9 +25,10 @@ function add_admin_bar_env_info( WP_Admin_Bar $wp_admin_bar ) {
 		return;
 	}
 
-	// Specify capabilities for which environment indicator is shown in the admin bar.
-	$capability = apply_filters( 'altis_env_indicator_capability', 'manage_options' );
-	if ( ! current_user_can( $capability ) ) {
+	// Specify environments for which to show indicator in the admin bar.
+	$show_indicator = in_array( get_environment_type(), [ 'local', 'development', 'staging' ], true );
+	$show_indicator = apply_filters( 'altis.show_environment_indicator', $show_indicator, get_environment_type() );
+	if ( ! $show_indicator ) {
 		return;
 	}
 
