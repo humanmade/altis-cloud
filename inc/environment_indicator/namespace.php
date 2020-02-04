@@ -4,6 +4,7 @@ namespace Altis\Cloud\Environment_Indicator;
 
 use function Altis\get_environment_name;
 use function Altis\get_environment_type;
+use WP_Admin_Bar;
 
 function bootstrap() {
 	add_action( 'admin_bar_init', __NAMESPACE__ . '\\enqueue_admin_scripts' );
@@ -15,8 +16,10 @@ function bootstrap() {
  * - environment type
  * - environment name
  * - URL to Altis dashboard for the environment
+ *
+ * @param WP_Admin_Bar $wp_admin_bar WP_Admin_Bar instance, passed by reference.
  */
-function add_admin_bar_env_info() {
+function add_admin_bar_env_info( WP_Admin_Bar $wp_admin_bar ) {
 	if ( ! is_admin_bar_showing() ) {
 		return;
 	}
@@ -27,7 +30,6 @@ function add_admin_bar_env_info() {
 		return;
 	}
 
-	global $wp_admin_bar;
 	// Add environment menu item to the admin bar.
 	$wp_admin_bar->add_menu( [
 		'id'   => 'altis-env-indicator',
