@@ -66,6 +66,9 @@ function bootstrap() {
 		define( 'MULTISITE', false );
 		define( 'SUBDOMAIN_INSTALL', false );
 	}
+
+	// Display environment details in admin sidebar.
+	Environment_Indicator\bootstrap();
 }
 
 // Load the Cavalcade Runner CloudWatch extension.
