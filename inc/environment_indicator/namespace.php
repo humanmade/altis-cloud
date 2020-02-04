@@ -8,7 +8,8 @@ use WP_Admin_Bar;
 
 function bootstrap() {
 	add_action( 'admin_bar_init', __NAMESPACE__ . '\\enqueue_admin_scripts' );
-	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\add_admin_bar_env_info' );
+	// Allow other modules to add sub-menu items to Altis admin bar menu first.
+	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\add_admin_bar_env_info', 15 );
 }
 
 /**
@@ -30,14 +31,6 @@ function add_admin_bar_env_info( WP_Admin_Bar $wp_admin_bar ) {
 		return;
 	}
 
-	// Add environment menu item to the admin bar.
-	$wp_admin_bar->add_menu( [
-		'id'   => 'altis-env-indicator',
-		'meta' => [
-			'class' => 'altis-env-indicator--' . get_environment_type(),
-		],
-	] );
-
 	// Environment types text to be displayed in the admin bar.
 	$envs = [
 		'local'       => esc_html_x( 'local', 'Server environment type', 'altis' ),
@@ -52,23 +45,23 @@ function add_admin_bar_env_info( WP_Admin_Bar $wp_admin_bar ) {
 		),
 	];
 
-	// Environment type sub-menu item.
-	$wp_admin_bar->add_menu( [
-		'id'     => 'altis-env-stack-type',
-		'title'  => $envs[ get_environment_type() ],
-		'parent' => 'altis-env-indicator',
-	] );
+	// Add environment indicator to the Altis logo menu item in the admin bar.
+	$node = $wp_admin_bar->get_node( 'altis' );
+	$node->meta = [
+		'html' => sprintf( '<span class="altis-env-indicator">%s</span>', $envs[ get_environment_type() ] ),
+	];
+	$wp_admin_bar->add_menu( $node );
 
-	// Stop - no Altis dashboard URL is available.
+	// Stop - no Altis dashboard URL is available. No need to add sub-menu item.
 	if ( ! defined( 'HM_ENV_REGION' ) || get_environment_type() === 'local' ) {
 		return;
 	}
 
-	// Environment's Altis dashboard URL sub-menu item.
+	// Add environment's Altis dashboard URL as a sub-menu item to Altis logo menu in the admin bar.
 	$wp_admin_bar->add_menu( [
+		'parent' => 'altis',
 		'id'     => 'altis-env-stack-url',
 		'title'  => __( 'Open in Altis Dashboard', 'altis' ),
-		'parent' => 'altis-env-indicator',
 		'href'   => esc_url( sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', HM_ENV_REGION, get_environment_name() ) ),
 		'meta'   => [
 			'target' => '_blank',
