@@ -13,10 +13,8 @@
 	margin-top: 6px;
 	padding: 2px 4px;
 	border-radius: 4px;
-}
-
-body.wp-admin #wpadminbar .altis-env-indicator {
 	flex: 0;
+	word-break: normal;
 }
 
 #wpadminbar .altis-env-indicator {
