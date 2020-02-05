@@ -92,5 +92,5 @@ function add_admin_bar_dashboard_link( WP_Admin_Bar $wp_admin_bar ) {
  * Enqueue the environment indicator styles.
  */
 function enqueue_admin_scripts() {
-	wp_enqueue_style( 'altis-env-indicator', plugin_dir_url( dirname( __FILE__, 2 ) ) . 'assets/environment-indicator.css', [], '2020-02-03-1' );
+	wp_enqueue_style( 'altis-env-indicator', plugin_dir_url( dirname( __FILE__, 2 ) ) . 'assets/environment-indicator.css', [], '2020-02-05-2' );
 }
