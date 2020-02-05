@@ -85,3 +85,15 @@ function get_unique_cookies() : array {
 
 	return $unique_keys;
 }
+
+/**
+ * Remove the "no cache" headers that are sent on logged out admin-ajax.php requests.
+ *
+ * These requests can be cached, as they don't include private data.
+ */
+function disable_no_cache_headers_on_admin_ajax_nopriv() {
+	if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX || is_user_logged_in() ) {
+		return;
+	}
+	array_map( 'header_remove', array_keys( wp_get_nocache_headers() ) );
+}
