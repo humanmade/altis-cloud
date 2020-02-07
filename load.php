@@ -40,3 +40,11 @@ add_action( 'altis.modules.init', function () {
 
 	register_module( 'cloud', __DIR__, 'Cloud', $default_settings, __NAMESPACE__ . '\\bootstrap' );
 } );
+
+// Early hook for logging AWS SDK HTTP requests.
+add_filter( 'altis.aws_sdk.params', function ( $params ) {
+	if ( ! function_exists( 'HM\\Platform\\XRay\\on_hm_platform_aws_sdk_params' ) ) {
+		return $params;
+	}
+	return on_hm_platform_aws_sdk_params( $params );
+} );
