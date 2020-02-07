@@ -23,7 +23,6 @@ function bootstrap() {
 		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
 		XRay\bootstrap();
 		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
-		add_filter( 'altis.aws_sdk.params', 'HM\\Platform\\XRay\\on_hm_platform_aws_sdk_params' );
 	}
 
 	if ( $config['batcache'] && ! defined( 'WP_CACHE' ) ) {
