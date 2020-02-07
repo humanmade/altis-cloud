@@ -5,6 +5,8 @@ namespace Altis\Cloud;
 use const Altis\ROOT_DIR;
 use function Altis\get_config as get_platform_config;
 use function Altis\get_environment_architecture;
+use function HM\Platform\XRay\on_aws_guzzle_request_stats;
+use GuzzleHttp\TransferStats;
 use HM\Platform\XRay;
 
 /**
@@ -426,4 +428,30 @@ function remove_xray_metadata( array $metadata ) : array {
 	}, ARRAY_FILTER_USE_KEY );
 
 	return $metadata;
+}
+
+/**
+ * Add the XRay logging callback to the AWS SDK HTTP configuration.
+ *
+ * @param array $params AWS SDK parameters.
+ * @return array
+ */
+function add_aws_sdk_xray_callback( array $params ) : array {
+	$params['http']['on_stats'] = __NAMESPACE__ . '\\on_request_stats';
+	return $params;
+}
+
+/**
+ * Callback function for GuzzleHTTP's `on_stats` param.
+ *
+ * This allows us to send all AWS SDK requests to xray
+ *
+ * @param TransferStats $stats
+ */
+function on_request_stats( TransferStats $stats ) {
+	if ( ! function_exists( 'HM\\Platform\\XRay\\on_aws_guzzle_request_stats' ) ) {
+		return;
+	}
+
+	on_aws_guzzle_request_stats( $stats );
 }

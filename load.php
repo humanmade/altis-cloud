@@ -42,9 +42,4 @@ add_action( 'altis.modules.init', function () {
 } );
 
 // Early hook for logging AWS SDK HTTP requests.
-add_filter( 'altis.aws_sdk.params', function ( $params ) {
-	if ( ! function_exists( 'HM\\Platform\\XRay\\on_hm_platform_aws_sdk_params' ) ) {
-		return $params;
-	}
-	return on_hm_platform_aws_sdk_params( $params );
-} );
+add_filter( 'altis.aws_sdk.params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
