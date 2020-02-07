@@ -437,6 +437,7 @@ function remove_xray_metadata( array $metadata ) : array {
  * @return array
  */
 function add_aws_sdk_xray_callback( array $params ) : array {
+	$params['stats'] = true;
 	$params['http']['on_stats'] = __NAMESPACE__ . '\\on_request_stats';
 	return $params;
 }
