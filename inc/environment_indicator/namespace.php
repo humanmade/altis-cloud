@@ -100,14 +100,15 @@ function add_admin_bar_support_ticket_link( WP_Admin_Bar $wp_admin_bar ) {
 	}
 
 	$env_name    = get_environment_name();
-	$support_url = 'unknown' !== $env_name ? "https://dashboard.altis-dxp.com/#/support/new?applications[]={$env_name}" : 'https://dashboard.altis-dxp.com/#/support/new';
+	$support_url = 'https://dashboard.altis-dxp.com/#/support/new';
+	$support_url = 'unknown' === $env_name ? $support_url : "{$support_url}?applications[]={$env_name}";
 
 	// Add support ticket URL as a sub-menu item to the Altis logo menu in the admin bar.
 	$wp_admin_bar->add_menu( [
 		'parent' => 'altis',
 		'id'     => 'altis-support-ticket',
 		'title'  => __( 'Open Support Ticket', 'altis' ) . ' <span class="dashicons-before dashicons-external"></span>',
-		'href'   => $support_url,
+		'href'   => esc_url( $support_url ),
 		'meta'   => [
 			'target' => '_blank',
 		],
