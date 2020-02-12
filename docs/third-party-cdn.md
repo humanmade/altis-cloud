@@ -17,7 +17,7 @@ All cookies matching the pattern `wordpress_*`, `wp-*`, `wp_*`, `comment_*` and 
 
 ### URL Query Parameters
 
-All URL query parameters should be forwarded to the Altis Cloud hostname.
+All URL query parameters should be forwarded to the Altis Cloud origin.
 
 ### HTTP Headers
 
