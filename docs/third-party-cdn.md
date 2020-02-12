@@ -34,7 +34,7 @@ The following type of requests should be set to skip the CDN cache entirely:
 - Any requests with the `Authentication` HTTP header.
 - Any response with the `Cache-Control: no-cache` HTTP header.
 
-The cache key creation on the CDN should follow logic: `{http method}:{protocol}:{host}:{path}:{query_params}`.
+The cache key should be based on the following string: `{http method}:{protocol}:{host}:{path}:{query_params}`.
 
 ## `/uploads/*` and `/tachyon/*` Requests
 
