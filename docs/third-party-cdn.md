@@ -9,7 +9,7 @@ In these cases, Altis Cloud can be configured to serve traffic to your CDN via a
 
 ## CDN Configuration
 
-Altis Cloud will provide origin DNS names for each Cloud environment (`development`, `staging` and `production`) to set as the Origin-Pull upstream for you CDN. For example, this could be `development.example.altis.cloud`. The CDN should be configured with the following logic, in whatever format or system the CDN uses.
+Altis Cloud will provide origin DNS names for each Cloud environment (`development`, `staging` and `production`) to set as the Origin-Pull upstream for you CDN. For example, this could be `development.example.altis.cloud`. The CDN should be configured with the following logic, in whatever format or system the CDN uses. See below for special routes `/tachyon/*` and `/uploads/*`.
 
 ### Cookies
 
@@ -35,6 +35,25 @@ The following type of requests should be set to skip the CDN cache entirely:
 - Any response with the `Cache-Control: no-cache` HTTP header.
 
 The cache key creation on the CDN should follow logic: `{http method}:{protocol}:{host}:{path}:{query_params}`.
+
+## `/uploads/*` and `/tachyon/*` Requests
+
+For all requests sent to `/uploads/*` and `/tachyon/*`, the above rules can be optimized to increase the cache-hit ratio and improve performance for users.
+
+- Cookies: All cookies can be removed from the origin request
+- Headers: Only the `Host` header needs to be forwarded to the origin.
+- URL Query Parameters: All url query parameters should still be forwarded.
+- Caching Configuration: The `Cache-Control` response header from the origin should be respected, and no further exceptions are required.
+
+## WebP Support on `/tachyon/*` Requests
+
+Altis Cloud supports serving the [WebP](https://en.wikipedia.org/wiki/WebP) image format to supported browsers. Support for WebP is detected by inspecting the `Accept` HTTP request header. When using a third party CDN, detection for WebP support should be implemented on the CDN edge node, and the `X-WebP` HTTP header should be set to `1` or `0` in the `tachyon/*` origin request. As a reference implementation, WebP detection can be achieved with the follow pseudo code:
+
+```
+webPSupport = request.headers.Accept.indexOf( 'image/webp' ) > -1
+```
+
+The WebP Support should be included in the cache key calculation on the CDN, so WebP responses are cached/stored separately. Failure to do so will result in browsers receiving WebP formatted images that do not support it.
 
 ## Access Restriction
 
