@@ -9,7 +9,7 @@ In these cases, Altis Cloud can be configured to serve traffic to your CDN via a
 
 ## CDN Configuration
 
-Altis Cloud will provide origin DNS names for each Cloud environment (`development`, `staging` and `production`) to set as the Origin-Pull upstream for you CDN. For example, this could be `development.example.altis.cloud`. The CDN should be configured with the following logic, in whatever format or system the CDN uses. See below for special routes `/tachyon/*` and `/uploads/*`.
+Altis Cloud will provide origin DNS names for each Cloud environment (`development`, `staging` and `production`) to set as the Origin-Pull upstream for you CDN. For example, this could be `development.example.altis.cloud`. The CDN should be configured with the logic described below, in whatever format or system the CDN uses. See below for special routes `/tachyon/*` and `/uploads/*`.
 
 ### Cookies
 
