@@ -30,7 +30,7 @@ The CDN caching rules should be set to respect the origin's `Cache-Control` HTTP
 The following type of requests should be set to skip the CDN cache entirely:
 
 - All `POST` or `DELETE` requests.
-- Any requests with cookies matching the patterns `wordpress_*`, `wp-*`, `wp_*`, `comment_*` and `hm_*`.
+- Any requests with cookies as described above.
 - Any requests with the `Authentication` HTTP header.
 - Any response with the `Cache-Control: no-cache` HTTP header.
 
