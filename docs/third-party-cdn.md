@@ -1,6 +1,6 @@
 # Third Party CDN Usage
 
-In some situations it may be required to use your own CDN to serve the Altis powered website or service. Below are some examples that may necessitate this:
+In some situations it may be required to use your own Content Delivery Network (CDN) to serve the Altis powered website or service. Below are some examples that may necessitate this:
 
 - Many web properties are served from a single domain name, whereby you need to control routing. A sub-section of the URL namespace may route to Altis, in which case it's not possible to route all traffic to Altis' CDN for a single domain name.
 - There may be compliance requirements or company-wide mandated use of a specific CDN vendor.
