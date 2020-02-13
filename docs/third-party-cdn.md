@@ -5,7 +5,7 @@ In some situations it may be required to use your own Content Delivery Network (
 - Many web properties are served from a single domain name, whereby you need to control routing. A sub-section of the URL namespace may route to Altis, in which case it's not possible to route all traffic to Altis' CDN for a single domain name.
 - There may be compliance requirements or company-wide mandated use of a specific CDN vendor.
 
-In these cases, Altis Cloud can be configured to serve traffic to your CDN via an origin-pull setup. Altis does not support an origin-push CDN setup. Reach out to Altis Cloud Support for assistance in third party CDN integration as it requires specific manual work by the Altis team.
+In these cases, Altis Cloud can be configured to serve traffic to your CDN via an origin-pull setup. Altis does not support an origin-push CDN setup. Reach out to [Altis Cloud Support](https://dashboard.altis-dxp.com/#/support) for assistance in third party CDN integration as it requires specific manual work by the Altis team.
 
 ## CDN Configuration
 
@@ -29,7 +29,7 @@ The CDN caching rules should be set to respect the origin's `Cache-Control` HTTP
 
 The following type of requests should be set to skip the CDN cache entirely:
 
-- All `POST` or `DELETE` requests.
+- All `POST`, `PUT`, `PATCH` or `DELETE` requests.
 - Any requests with cookies as described above.
 - Any requests with the `Authentication` HTTP header.
 - Any response with the `Cache-Control: no-cache` HTTP header.
@@ -57,4 +57,4 @@ The WebP Support should be included in the cache key calculation on the CDN, so 
 
 ## Access Restriction
 
-When using a third party CDN, access to the Altis Cloud environment may need to be restricted to the CDN, and not directly publicly available. If this is required, provide the CIDR IP Address ranges of your CDN origin request servers to Altis Cloud Support to set up access restriction accordingly.
+When using a third party CDN, access to the Altis Cloud environment may need to be restricted to the CDN, and not directly publicly available. If this is required, provide the [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) IP Address ranges of your CDN origin request servers to Altis Cloud Support to set up access restriction accordingly.
