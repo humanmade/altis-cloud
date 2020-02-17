@@ -8,7 +8,7 @@
 use const Altis\ROOT_DIR;
 
 // Don't self-initialize if this is not an Altis execution.
-if ( ! function_exists( 'add_action' ) ) {
+if ( ! function_exists( 'add_action' ) || ! defined( 'Altis\\ROOT_DIR' ) ) {
 	return;
 }
 
