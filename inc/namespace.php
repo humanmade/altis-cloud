@@ -504,7 +504,7 @@ function get_ec2_instance_metadata() : array {
 		return [];
 	}
 
-	if ( $request->getStatusCode() !== "200" ) {
+	if ( $request->getStatusCode() !== '200' ) {
 		trigger_error( sprintf( 'Unable to get instance metadata. Returned response code: %s', $request->getStatusCode() ), E_USER_NOTICE );
 		apcu_store( $cache_key, [] );
 		return [];
