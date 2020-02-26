@@ -26,7 +26,7 @@ function bootstrap() {
 		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
 		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
 		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
-		add_filter( 'aws_xray.send_trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
+		add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
 		XRay\bootstrap();
 	}
 
@@ -510,7 +510,7 @@ function get_ec2_instance_metadata() : array {
 		return [];
 	}
 
-	$metadata = json_decode( $request->getBody() );
+	$metadata = json_decode( $request->getBody(), true );
 
 	if ( ! $metadata ) {
 		$metadata = [];
