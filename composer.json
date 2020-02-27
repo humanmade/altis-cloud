@@ -14,8 +14,7 @@
 			"inc/healthcheck/namespace.php",
 			"inc/healthcheck/cavalcade/namespace.php",
 			"inc/environment_indicator/namespace.php",
-			"inc/namespace.php",
-			"wp-config.php"
+			"inc/namespace.php"
 		]
 	},
 	"require": {

@@ -45,3 +45,10 @@ add_action( 'altis.modules.init', function () {
 add_filter( 'altis.aws_sdk.params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
 add_filter( 's3_uploads_s3_client_params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
 add_filter( 'aws_ses_wp_mail_ses_client_params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
+
+// Load production wp-config.php after .config/load.php
+add_action( 'altis.loaded_autoloader', function () {
+	if ( file_exists( __DIR__ . '/wp-config.php' ) ) {
+		require_once __DIR__ . '/wp-config.php';
+	}
+}, 11 );
