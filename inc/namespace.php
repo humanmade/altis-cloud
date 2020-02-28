@@ -220,6 +220,19 @@ function load_object_cache_memcached() {
  * Load the Redis Object Cache dropin.
  */
 function load_object_cache_redis() {
+	global $redis_server;
+
+	// Configure Redis Server.
+	if ( defined( 'REDIS_HOST' ) && defined( 'REDIS_PORT' ) ) {
+		$redis_server = [
+			'host' => REDIS_HOST,
+			'port' => REDIS_PORT,
+			'auth' => defined( 'REDIS_AUTH' ) ? REDIS_AUTH : null,
+			'ssl' => [], // this can remain empty
+			'persistent' => true,
+		];
+	}
+
 	wp_using_ext_object_cache( true );
 	require __DIR__ . '/alloptions_fix/namespace.php';
 	if ( ! defined( 'WP_REDIS_DISABLE_FAILBACK_FLUSH' ) ) {
@@ -450,4 +463,25 @@ function on_request_stats( TransferStats $stats ) {
 	}
 
 	on_aws_guzzle_request_stats( $stats );
+}
+
+/**
+ * Copies environment variables to constants, optionally scoped by a prefix.
+ *
+ * @param string $prefix An optional prefix env vars must have to be copied.
+ */
+function populate_constants_from_env( string $prefix = '' ) {
+	$prefix = strtoupper( $prefix );
+
+	foreach ( $_ENV as $key => $value ) {
+		$capitalized = strtoupper( $key );
+
+		if ( ! empty( $prefix ) && strpos( $capitalized, $prefix ) !== 0 ) {
+			continue;
+		}
+
+		if ( ! defined( $capitalized ) ) {
+			define( $capitalized, $value );
+		}
+	}
 }

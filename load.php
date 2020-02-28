@@ -2,7 +2,6 @@
 
 namespace Altis\Cloud; // @codingStandardsIgnoreLine
 
-use const Altis\ROOT_DIR;
 use function Altis\get_environment_architecture;
 use function Altis\register_module;
 
@@ -46,15 +45,25 @@ add_filter( 'altis.aws_sdk.params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback
 add_filter( 's3_uploads_s3_client_params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
 add_filter( 'aws_ses_wp_mail_ses_client_params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
 
-/**
- * On Altis, all configuration of DB constants (etc) will be put
- * in to a wp-config-production.php in the web root.
- *
- * Load wp-config-production.php on priority 11 after .config/load.php
- * to allow overrides.
- */
+// Set deployment revision constant.
+if ( ! defined( 'HM_DEPLOYMENT_REVISION' ) && file_exists( '.deployment-revision' ) ) {
+	define( 'HM_DEPLOYMENT_REVISION', trim( file_get_contents( '.deployment-revision' ) ) );
+}
+
+// Define the ElasticSearch port constant.
+if ( getenv( 'ELASTICSEARCH_PORT' ) && ! defined( 'ELASTICSEARCH_PORT' ) ) {
+	define(
+		'ELASTICSEARCH_PORT',
+		intval( getenv( 'ELASTICSEARCH_PORT' ) ?: 443 )
+	);
+}
+
+// Populate non-editable constants.
+populate_constants_from_env( 'ALTIS_' );
+populate_constants_from_env( 'AWS_' );
+populate_constants_from_env( 'HM_ENV_' );
+
+// Populate remaining constants after .config/load.php is included.
 add_action( 'altis.loaded_autoloader', function () {
-	if ( file_exists( ROOT_DIR . '/wp-config-production.php' ) ) {
-		require_once ROOT_DIR . '/wp-config-production.php';
-	}
+	populate_constants_from_env();
 }, 11 );
