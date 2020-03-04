@@ -486,6 +486,8 @@ function on_request_stats( TransferStats $stats ) {
 function get_ec2_instance_metadata() : array {
 	$has_cache = false;
 	$cache_key = 'altis.ec2_instance_metadata';
+	// Use apcu_* as we only want to store the cache on the current server,
+	// not across all servers (wp_cache_*).
 	$cached_data = apcu_fetch( $cache_key, $has_cache );
 	if ( $has_cache ) {
 		return $cached_data;
@@ -523,6 +525,9 @@ function get_ec2_instance_metadata() : array {
 
 /**
  * Add the EC2 instance data to the Xray root segment.
+ *
+ * This function is called pre-WordPress load, so we don't have access
+ * to all the WordPress functions, hence using Guzzle.
  *
  * @param array $trace
  * @return array
