@@ -3,9 +3,11 @@
 namespace Altis\Cloud;
 
 use const Altis\ROOT_DIR;
+use Exception;
 use function Altis\get_config as get_platform_config;
 use function Altis\get_environment_architecture;
 use function HM\Platform\XRay\on_aws_guzzle_request_stats;
+use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use HM\Platform\XRay;
 
@@ -23,8 +25,9 @@ function bootstrap() {
 	) {
 		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
 		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
-		XRay\bootstrap();
 		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
+		add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
+		XRay\bootstrap();
 	}
 
 	if ( $config['batcache'] && ! defined( 'WP_CACHE' ) ) {
@@ -450,4 +453,98 @@ function on_request_stats( TransferStats $stats ) {
 	}
 
 	on_aws_guzzle_request_stats( $stats );
+}
+
+/**
+ * Get the EC2 Instance metadata.
+ *
+ * This will cause a remote request to the metadata service when the cache is empty.
+ *
+ * @return array $array(
+ *    accountId: string,
+ *    architecture: string,
+ *    availabilityZone: string,
+ *    billingProducts: string,
+ *    devpayProductCodes: string,
+ *    marketplaceProductCodes: string,
+ *    imageId: string,
+ *    instanceId: string,
+ *    instanceType: string,
+ *    kernelId: string,
+ *    pendingTime: string,
+ *    privateIp: string,
+ *    ramdiskId: string,
+ *    region: string,
+ *    version: string,
+ * )
+ */
+function get_ec2_instance_metadata() : array {
+	$has_cache = false;
+	$cache_key = 'altis.ec2_instance_metadata';
+	// Use apcu_* as we only want to store the cache on the current server,
+	// not across all servers (wp_cache_*).
+	$cached_data = apcu_fetch( $cache_key, $has_cache );
+	if ( $has_cache ) {
+		return $cached_data;
+	}
+
+	$client = new Client();
+
+	try {
+		$request = $client->request( 'GET', 'http://169.254.169.254/latest/dynamic/instance-identity/document', [
+			'timeout' => 1,
+			'on_stats' => __NAMESPACE__ . '\\on_request_stats',
+		] );
+	} catch ( Exception $e ) {
+		trigger_error( sprintf( 'Unable to get instance metadata. Error: %s', $e->getMessage() ), E_USER_NOTICE );
+		apcu_store( $cache_key, [] );
+		return [];
+	}
+
+	if ( $request->getStatusCode() !== '200' ) {
+		trigger_error( sprintf( 'Unable to get instance metadata. Returned response code: %s', $request->getStatusCode() ), E_USER_NOTICE );
+		apcu_store( $cache_key, [] );
+		return [];
+	}
+
+	$metadata = json_decode( $request->getBody(), true );
+
+	if ( ! $metadata ) {
+		$metadata = [];
+	}
+
+	apcu_store( $cache_key, $metadata );
+
+	return $metadata;
+}
+
+/**
+ * Add the EC2 instance data to the Xray root segment.
+ *
+ * This function is called pre-WordPress load, so we don't have access
+ * to all the WordPress functions, hence using Guzzle.
+ *
+ * @param array $trace
+ * @return array
+ */
+function add_ec2_instance_data_to_xray( array $trace ) : array {
+	// Only add instance information to the root trace.
+	if ( ! empty( $trace['parent_id'] ) ) {
+		return $trace;
+	}
+
+	$metadata = get_ec2_instance_metadata();
+	if ( ! $metadata ) {
+		return $trace;
+	}
+
+	$trace['aws']['ec2']['availability_zone'] = $metadata['availabilityZone'];
+	$trace['aws']['instance_id'] = $metadata['instanceId'];
+
+	if ( get_environment_architecture() === 'ecs' ) {
+		$trace['aws']['ecs']['container'] = php_uname( 'n' );
+		$trace['origin'] = 'AWS::ECS::Container';
+	}
+
+	return $trace;
 }
