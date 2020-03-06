@@ -9,6 +9,7 @@
 namespace Altis\Cloud\CloudWatch_Error_Handler;
 
 use function Altis\Cloud\CloudWatch_Logs\send_events_to_stream;
+use function Altis\get_environment_name;
 
 function bootstrap() {
 	$GLOBALS['altis_cloudwatch_error_handler_errors'] = [];
@@ -27,9 +28,9 @@ function bootstrap() {
 }
 
 function error_handler( int $errno, string $errstr, string $errfile = null, int $errline = null ) : bool {
-	global $hm_altis_cloudwatch_error_handler_errors, $hm_altis_cloudwatch_error_handler_error_count;
+	global $altis_cloudwatch_error_handler_errors, $altis_cloudwatch_error_handler_error_count;
 	// Limit the amount of errors to hold in memory. Flush every 100.
-	if ( $hm_altis_cloudwatch_error_handler_error_count > 100 ) {
+	if ( $altis_cloudwatch_error_handler_error_count > 100 ) {
 		send_buffered_errors();
 	}
 	$error = [
@@ -39,11 +40,11 @@ function error_handler( int $errno, string $errstr, string $errfile = null, int 
 		'line'    => $errline,
 	];
 	$error = apply_filters( 'altis_cloudwatch_error_handler_error', $error );
-	$hm_altis_cloudwatch_error_handler_errors[ $errno ][] = [
+	$altis_cloudwatch_error_handler_errors[ $errno ][] = [
 		'timestamp' => time() * 1000,
 		'message'   => json_encode( $error ), // @codingStandardsIgnoreLine
 	];
-	$hm_altis_cloudwatch_error_handler_error_count++;
+	$altis_cloudwatch_error_handler_error_count++;
 	return false;
 }
 
@@ -68,7 +69,7 @@ function send_buffered_errors() {
 
 	foreach ( $errors as $errno => $errno_errors ) {
 		$type = get_error_type_for_error_number( $errno );
-		send_events_to_stream( $errno_errors, HM_ENV . '/php-structured', $type );
+		send_events_to_stream( $errno_errors, get_environment_name() . '/php-structured', $type );
 	}
 }
 
