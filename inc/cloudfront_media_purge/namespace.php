@@ -26,6 +26,8 @@ function get_aws_client() {
  * It sends a request to invalidate all sizes given for a media file
  *
  * @param int $media_id Attachment ID.
+ *
+ * @return bool
  */
 function purge_media_file_cache( $media_id ) {
 	$meta = wp_get_attachment_metadata( $media_id );
@@ -48,6 +50,7 @@ function purge_media_file_cache( $media_id ) {
 
 	if ( empty( $distribution_id ) ) {
 		trigger_error( 'Empty cloudfront distribution id for media purge request.', E_USER_WARNING );
+		return false;
 	}
 
 	try {
@@ -63,5 +66,8 @@ function purge_media_file_cache( $media_id ) {
 		] );
 	} catch ( Exception $e ) {
 		trigger_error( sprintf( 'Media URLs failed to be purged from CloudFront, error %s (%s)', $e->getMessage(), $e->getCode() ), E_USER_WARNING );
+		return false;
 	}
+
+	return true;
 }
