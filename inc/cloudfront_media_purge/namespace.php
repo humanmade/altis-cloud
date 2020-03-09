@@ -32,19 +32,19 @@ function get_aws_client() {
 function purge_media_file_cache( $media_id ) {
 	$meta = wp_get_attachment_metadata( $media_id );
 	if ( ! $meta ) {
-		return;
+		return false;
 	}
-	$baseurl = wp_parse_url( wp_upload_dir()['baseurl'], PHP_URL_PATH ) . '/';
+	$baseurl = '/tachyon/';
 	$basedir = trailingslashit( dirname( $meta['file'] ) );
-	$items   = [ $baseurl . $meta['file'] ];
+	$items   = [ $baseurl . $meta['file'] . '*' ];
 
 	if ( ! empty( $meta['sizes'] ) ) {
 		foreach ( $meta['sizes'] as $size => $size_meta ) {
-			$items[] = $baseurl . $basedir . $size_meta['file'];
+			$items[] = $baseurl . $basedir . $size_meta['file'] . '*';
 		}
 	}
 
-	$client = get_aws_client();
+	$client = Altis\Cloud\Cloudfront_Media_Purge\get_aws_client();
 
 	$distribution_id = apply_filters( 'altis_cloudfront_media_purge_distribution_id', defined( 'CLOUDFRONT_DISTRIBUTION_ID' ) ? CLOUDFRONT_DISTRIBUTION_ID : '' );
 
@@ -57,7 +57,7 @@ function purge_media_file_cache( $media_id ) {
 		$client->createInvalidation( [
 			'DistributionId'    => $distribution_id,
 			'InvalidationBatch' => [
-				'CallerReference' => wp_rand( 1, 100 ),
+				'CallerReference' => current_time( 'timestamp' ),
 				'Paths'           => [
 					'Items'    => $items,
 					'Quantity' => count( $items ),
