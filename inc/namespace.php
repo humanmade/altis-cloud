@@ -116,6 +116,10 @@ function load_platform( $wp_debug_enabled ) {
 		load_db();
 	}
 
+	if ( $config['cloudfront-media-purge'] ) {
+		load_cloudfront_media_purge();
+	}
+
 	global $wp_version;
 	if ( version_compare( '4.6', $wp_version, '>' ) ) {
 		die( 'Altis is only supported on WordPress 4.6+.' );
@@ -217,6 +221,14 @@ function load_object_cache_memcached() {
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
+}
+
+/**
+ * Load cloudfront media purge.
+ */
+function load_cloudfront_media_purge() {
+	require __DIR__ . '/cloudfront_media_purge/namespace.php';
+	Cloudfront_Media_Purge\bootstrap();
 }
 
 /**
