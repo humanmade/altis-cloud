@@ -4,12 +4,13 @@ namespace Altis\Cloud;
 
 use const Altis\ROOT_DIR;
 use Exception;
-use function Altis\get_config as get_platform_config;
-use function Altis\get_environment_architecture;
-use function HM\Platform\XRay\on_aws_guzzle_request_stats;
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use HM\Platform\XRay;
+use function Altis\get_aws_sdk;
+use function Altis\get_config as get_platform_config;
+use function Altis\get_environment_architecture;
+use function HM\Platform\XRay\on_aws_guzzle_request_stats;
 
 /**
  * Set up the Cloud Module.
@@ -116,8 +117,8 @@ function load_platform( $wp_debug_enabled ) {
 		load_db();
 	}
 
-	if ( $config['cloudfront-media-purge'] ) {
-		load_cloudfront_media_purge();
+	if ( $config['cdn-media-purge'] ) {
+		load_cdn_media_purge();
 	}
 
 	global $wp_version;
@@ -226,8 +227,7 @@ function load_object_cache_memcached() {
 /**
  * Load cloudfront media purge.
  */
-function load_cloudfront_media_purge() {
-	require __DIR__ . '/cloudfront_media_purge/namespace.php';
+function load_cdn_media_purge() {
 	Cloudfront_Media_Purge\bootstrap();
 }
 
@@ -559,4 +559,59 @@ function add_ec2_instance_data_to_xray( array $trace ) : array {
 	}
 
 	return $trace;
+}
+
+/**
+ * Return an AWS CloudFront Client instance
+ *
+ * @return \Aws\CloudFront\CloudFrontClient
+ */
+function get_cloudfront_client() {
+	return get_aws_sdk()->createCloudFront( [
+		'version' => '2019-03-26',
+	] );
+}
+
+/**
+ * Create purge request to invalidate CDN cache.
+ *
+ * @param array $paths_patterns
+ *
+ * @return bool
+ */
+function purge_cdn_path( array $paths_patterns ) {
+	$client = get_cloudfront_client();
+
+	$distribution_id = '';
+
+	if ( defined( 'CLOUDFRONT_DISTRIBUTION_ID' ) ) {
+		$distribution_id = CLOUDFRONT_DISTRIBUTION_ID;
+	}
+
+	$distribution_id = apply_filters( 'altis.cloud.cdn_distribution_id', $distribution_id );
+
+	if ( empty( $distribution_id ) ) {
+		trigger_error( 'Empty cloudfront distribution id for purge request.', E_USER_WARNING );
+
+		return false;
+	}
+
+	try {
+		$client->createInvalidation( [
+			'DistributionId'    => $distribution_id,
+			'InvalidationBatch' => [
+				'Paths' => [
+					'Items'    => $paths_patterns,
+					'Quantity' => count( $paths_patterns ),
+				],
+				'CallerReference' => md5( wp_json_encode( $paths_patterns ) ),
+			],
+		] );
+	} catch ( Exception $e ) {
+		trigger_error( sprintf( 'Failed to create purge request for CloudFront, error %s (%s)', $e->getMessage(), $e->getCode() ), E_USER_WARNING );
+
+		return false;
+	}
+
+	return true;
 }

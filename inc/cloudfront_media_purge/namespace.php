@@ -2,22 +2,10 @@
 
 namespace Altis\Cloud\Cloudfront_Media_Purge;
 
-use Exception;
-use function Altis\get_aws_sdk;
+use function Altis\Cloud\purge_cdn_path;
 
 function bootstrap() {
 	add_action( 'delete_attachment', __NAMESPACE__ . '\\purge_media_file_cache', 100 );
-}
-
-/**
- * Return an AWS CloudFront Client instance
- *
- * @return \Aws\CloudFront\CloudFrontClient
- */
-function get_aws_client() {
-	return get_aws_sdk()->createCloudFront( [
-		'version' => 'latest',
-	] );
 }
 
 /**
@@ -30,44 +18,17 @@ function get_aws_client() {
  * @return bool
  */
 function purge_media_file_cache( $media_id ) {
-	$meta = wp_get_attachment_metadata( $media_id );
-	if ( ! $meta ) {
-		return false;
-	}
-	$baseurl = '/tachyon/';
-	$basedir = trailingslashit( dirname( $meta['file'] ) );
-	$items   = [ $baseurl . $meta['file'] . '*' ];
-
-	if ( ! empty( $meta['sizes'] ) ) {
-		foreach ( $meta['sizes'] as $size => $size_meta ) {
-			$items[] = $baseurl . $basedir . $size_meta['file'] . '*';
-		}
+	$upload_url       = wp_get_attachment_url( $media_id );
+	$upload_path      = wp_parse_url( $upload_url, PHP_URL_PATH );
+	$upload_path_info = pathinfo( $upload_path );
+	$items            = [];
+	$items[]          = $upload_path_info['dirname'] . '/' . $upload_path_info['filename'] . '*';
+	if ( function_exists( 'tachyon_url' ) ) {
+		$tachyon_url       = tachyon_url( wp_get_attachment_url( $media_id ) );
+		$tachyon_path      = wp_parse_url( $tachyon_url, PHP_URL_PATH );
+		$tachyon_path_info = pathinfo( $tachyon_path );
+		$items[]           = $tachyon_path_info['dirname'] . '/' . $tachyon_path_info['filename'] . '*';
 	}
 
-	$client = get_aws_client();
-
-	$distribution_id = apply_filters( 'altis_cloudfront_media_purge_distribution_id', defined( 'CLOUDFRONT_DISTRIBUTION_ID' ) ? CLOUDFRONT_DISTRIBUTION_ID : '' );
-
-	if ( empty( $distribution_id ) ) {
-		trigger_error( 'Empty cloudfront distribution id for media purge request.', E_USER_WARNING );
-		return false;
-	}
-
-	try {
-		$client->createInvalidation( [
-			'DistributionId'    => $distribution_id,
-			'InvalidationBatch' => [
-				'CallerReference' => current_time( 'timestamp' ),
-				'Paths'           => [
-					'Items'    => $items,
-					'Quantity' => count( $items ),
-				],
-			],
-		] );
-	} catch ( Exception $e ) {
-		trigger_error( sprintf( 'Media URLs failed to be purged from CloudFront, error %s (%s)', $e->getMessage(), $e->getCode() ), E_USER_WARNING );
-		return false;
-	}
-
-	return true;
+	return purge_cdn_path( $items );
 }

@@ -22,7 +22,7 @@ add_action( 'altis.modules.init', function () {
 		'email-from-address' => 'no-reply@humanmade.com',
 		'audit-log-to-cloudwatch' => $is_cloud,
 		'php-errors-to-cloudwatch' => $is_cloud,
-		'cloudfront-media-purge' => false,
+		'cdn-media-purge' => false,
 		'page-cache' => [
 			'ignored-query-string-params' => [
 				'utm_campaign',
