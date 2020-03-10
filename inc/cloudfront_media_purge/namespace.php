@@ -44,7 +44,7 @@ function purge_media_file_cache( $media_id ) {
 		}
 	}
 
-	$client = Altis\Cloud\Cloudfront_Media_Purge\get_aws_client();
+	$client = get_aws_client();
 
 	$distribution_id = apply_filters( 'altis_cloudfront_media_purge_distribution_id', defined( 'CLOUDFRONT_DISTRIBUTION_ID' ) ? CLOUDFRONT_DISTRIBUTION_ID : '' );
 
