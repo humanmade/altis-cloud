@@ -4,13 +4,13 @@ namespace Altis\Cloud;
 
 use const Altis\ROOT_DIR;
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\TransferStats;
-use HM\Platform\XRay;
 use function Altis\get_aws_sdk;
 use function Altis\get_config as get_platform_config;
 use function Altis\get_environment_architecture;
 use function HM\Platform\XRay\on_aws_guzzle_request_stats;
+use GuzzleHttp\Client;
+use GuzzleHttp\TransferStats;
+use HM\Platform\XRay;
 
 /**
  * Set up the Cloud Module.
