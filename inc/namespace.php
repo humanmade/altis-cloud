@@ -604,7 +604,7 @@ function purge_cdn_path( array $paths_patterns ) {
 					'Items'    => $paths_patterns,
 					'Quantity' => count( $paths_patterns ),
 				],
-				'CallerReference' => md5( wp_json_encode( $paths_patterns ) ),
+				'CallerReference' => md5( time() . wp_json_encode( $paths_patterns ) ),
 			],
 		] );
 	} catch ( Exception $e ) {
