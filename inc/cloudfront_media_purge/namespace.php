@@ -11,10 +11,9 @@ function bootstrap() {
 /**
  * Purge an attachment file cache from CloudFront
  *
- * It sends a request to invalidate all sizes given for a media file
+ * It sends a request to invalidate all sizes given for a media file.
  *
  * @param int $media_id Attachment ID.
- *
  * @return bool
  */
 function purge_media_file_cache( int $media_id ) {
@@ -24,7 +23,7 @@ function purge_media_file_cache( int $media_id ) {
 	$items            = [];
 	$items[]          = $upload_path_info['dirname'] . '/' . $upload_path_info['filename'] . '*';
 	if ( function_exists( 'tachyon_url' ) ) {
-		$tachyon_url       = tachyon_url( wp_get_attachment_url( $media_id ) );
+		$tachyon_url       = tachyon_url( $upload_url );
 		$tachyon_path      = wp_parse_url( $tachyon_url, PHP_URL_PATH );
 		$tachyon_path_info = pathinfo( $tachyon_path );
 		$items[]           = $tachyon_path_info['dirname'] . '/' . $tachyon_path_info['filename'] . '*';

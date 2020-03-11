@@ -563,7 +563,7 @@ function add_ec2_instance_data_to_xray( array $trace ) : array {
 }
 
 /**
- * Return an AWS CloudFront Client instance
+ * Return an AWS CloudFront Client instance.
  *
  * @return \Aws\CloudFront\CloudFrontClient
  */
@@ -576,7 +576,7 @@ function get_cloudfront_client() : CloudFrontClient {
 /**
  * Create purge request to invalidate CDN cache.
  *
- * @param array $paths_patterns a list of the paths that you want to invalidate.
+ * @param array $paths_patterns A list of the paths that you want to invalidate.
  *                              The path is relative to the CDN host, A leading / is optional.
  *                              e.g  for http://altis-dxp.com/images/image2.jpg
  *                              specify images/image2.jpg or /images/image2.jpg
@@ -585,7 +585,7 @@ function get_cloudfront_client() : CloudFrontClient {
  *                              The *, which replaces 0 or more characters, must be the last character in the invalidation path.
  *                              e.g /images/* - will invalidate all files in a directory
  *
- * @return bool return true if invalidation successfully created, false on failure.
+ * @return bool Returns true if invalidation successfully created, false on failure.
  */
 function purge_cdn_paths( array $paths_patterns ): bool {
 	$client = get_cloudfront_client();
@@ -612,7 +612,7 @@ function purge_cdn_paths( array $paths_patterns ): bool {
 					'Items'    => $paths_patterns,
 					'Quantity' => count( $paths_patterns ),
 				],
-				'CallerReference' => md5( time() . wp_json_encode( $paths_patterns ) ),
+				'CallerReference' => sha1( time() . wp_json_encode( $paths_patterns ) ),
 			],
 		] );
 	} catch ( Exception $e ) {
