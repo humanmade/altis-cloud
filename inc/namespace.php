@@ -587,7 +587,7 @@ function get_cloudfront_client() : CloudFrontClient {
  *
  * @return bool Returns true if invalidation successfully created, false on failure.
  */
-function purge_cdn_paths( array $paths_patterns ): bool {
+function purge_cdn_paths( array $paths_patterns ) : bool {
 	$client = get_cloudfront_client();
 
 	$distribution_id = '';
