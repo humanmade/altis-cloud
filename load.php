@@ -4,7 +4,6 @@ namespace Altis\Cloud; // @codingStandardsIgnoreLine
 
 use function Altis\get_environment_architecture;
 use function Altis\register_module;
-use function HM\Platform\XRay\on_hm_platform_aws_sdk_params;
 
 add_action( 'altis.modules.init', function () {
 	$is_cloud = in_array( get_environment_architecture(), [ 'ec2', 'ecs' ], true );
@@ -22,6 +21,7 @@ add_action( 'altis.modules.init', function () {
 		'email-from-address' => 'no-reply@humanmade.com',
 		'audit-log-to-cloudwatch' => $is_cloud,
 		'php-errors-to-cloudwatch' => $is_cloud,
+		'cdn-media-purge' => false,
 		'page-cache' => [
 			'ignored-query-string-params' => [
 				'utm_campaign',
