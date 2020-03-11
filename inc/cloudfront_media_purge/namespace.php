@@ -2,7 +2,7 @@
 
 namespace Altis\Cloud\Cloudfront_Media_Purge;
 
-use function Altis\Cloud\purge_cdn_path;
+use function Altis\Cloud\purge_cdn_paths;
 
 function bootstrap() {
 	add_action( 'delete_attachment', __NAMESPACE__ . '\\purge_media_file_cache', 100 );
@@ -17,7 +17,7 @@ function bootstrap() {
  *
  * @return bool
  */
-function purge_media_file_cache( $media_id ) {
+function purge_media_file_cache( int $media_id ) {
 	$upload_url       = wp_get_attachment_url( $media_id );
 	$upload_path      = wp_parse_url( $upload_url, PHP_URL_PATH );
 	$upload_path_info = pathinfo( $upload_path );
@@ -30,5 +30,5 @@ function purge_media_file_cache( $media_id ) {
 		$items[]           = $tachyon_path_info['dirname'] . '/' . $tachyon_path_info['filename'] . '*';
 	}
 
-	return purge_cdn_path( $items );
+	return purge_cdn_paths( $items );
 }

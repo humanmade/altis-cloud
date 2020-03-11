@@ -1,10 +1,10 @@
 # CDN Purge
 
-The majority of the pages, media viewed on Altis will be cached on CDN to improve performance and delivery time to the user. You can add your own CDN purge rule directly in PHP using `Altis\Cloud\purge_cdn_path` helper function.   
+The majority of the requests, data served by Altis will be cached on the CDN to improve performance and delivery time to the user. In some situations you may need to invalidate specific URLs on the CDN. You can add your own CDN purge rule directly in PHP using `Altis\Cloud\purge_cdn_paths` helper function.
 
 ## Automatic media purge rule
 
-By default, Altis will not remove media from CDN on delete attachment. You can enable it from the project `composer.json`. The example below shows the default configuration:
+By default, Altis will not remove uploaded media from the CDN cache when deleting attachments. You can enable this beahviour from the project `composer.json`. The example below shows the default configuration:
 
 ```json
 {
@@ -20,4 +20,4 @@ By default, Altis will not remove media from CDN on delete attachment. You can e
 }
 ```
 
-Set `"cdn-media-purge": true` to initiate cdn purge for media on delete attachment.
+Set `"cdn-media-purge": true` to enabled cdn purging of media on when attachments are deleted

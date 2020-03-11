@@ -2,6 +2,7 @@
 
 namespace Altis\Cloud;
 
+use Aws\CloudFront\CloudFrontClient;
 use const Altis\ROOT_DIR;
 use Exception;
 use function Altis\get_aws_sdk;
@@ -566,7 +567,7 @@ function add_ec2_instance_data_to_xray( array $trace ) : array {
  *
  * @return \Aws\CloudFront\CloudFrontClient
  */
-function get_cloudfront_client() {
+function get_cloudfront_client() : CloudFrontClient {
 	return get_aws_sdk()->createCloudFront( [
 		'version' => '2019-03-26',
 	] );
@@ -575,11 +576,18 @@ function get_cloudfront_client() {
 /**
  * Create purge request to invalidate CDN cache.
  *
- * @param array $paths_patterns
+ * @param array $paths_patterns a list of the paths that you want to invalidate.
+ *                              The path is relative to the CDN host, A leading / is optional.
+ *                              e.g  for http://altis-dxp.com/images/image2.jpg
+ *                              specify images/image2.jpg or /images/image2.jpg
  *
- * @return bool
+ *                              You can also invalidate multiple files simultaneously by using the * wildcard.
+ *                              The *, which replaces 0 or more characters, must be the last character in the invalidation path.
+ *                              e.g /images/* - will invalidate all files in a directory
+ *
+ * @return bool return true if invalidation successfully created, false on failure.
  */
-function purge_cdn_path( array $paths_patterns ) {
+function purge_cdn_paths( array $paths_patterns ): bool {
 	$client = get_cloudfront_client();
 
 	$distribution_id = '';
@@ -600,7 +608,7 @@ function purge_cdn_path( array $paths_patterns ) {
 		$client->createInvalidation( [
 			'DistributionId'    => $distribution_id,
 			'InvalidationBatch' => [
-				'Paths' => [
+				'Paths'           => [
 					'Items'    => $paths_patterns,
 					'Quantity' => count( $paths_patterns ),
 				],
