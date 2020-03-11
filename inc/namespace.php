@@ -596,6 +596,11 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 		$distribution_id = CLOUDFRONT_DISTRIBUTION_ID;
 	}
 
+	/**
+	 * Filters the CloudFront Distribution ID used when purging CDN paths.
+	 *
+	 * @param string $distribution_id The ID to set.
+	 */
 	$distribution_id = apply_filters( 'altis.cloud.cdn_distribution_id', $distribution_id );
 
 	if ( empty( $distribution_id ) ) {
