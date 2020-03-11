@@ -9,7 +9,7 @@ function bootstrap() {
 }
 
 /**
- * Purge an attachment file cache from CloudFront
+ * Purge an attachment file cache from CloudFront.
  *
  * It sends a request to invalidate all sizes given for a media file.
  *
