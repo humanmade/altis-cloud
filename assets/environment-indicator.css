@@ -2,7 +2,7 @@
 	display: flex;
 }
 
-#wpadminbar #wp-admin-bar-altis > .ab-item .icon {
+#wpadminbar #wp-admin-bar-altis > .ab-item .altis-logo-wrapper {
 	flex: 1;
 }
 
