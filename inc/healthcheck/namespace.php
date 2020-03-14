@@ -10,7 +10,8 @@ function bootstrap() {
 		require_once __DIR__ . '/class-cli-command.php';
 		WP_CLI::add_command( 'healthcheck', __NAMESPACE__ . '\\CLI_Command' );
 	}
-	if ( ! isset( $_SERVER['REQUEST_URI'] ) || '/healthcheck/' !== $_SERVER['REQUEST_URI'] ) {
+
+	if ( ! isset( $_SERVER['REQUEST_URI'] ) || strpos( $_SERVER['REQUEST_URI'], '__healthcheck' ) == false ) {
 		return;
 	}
 	output_page( run_checks() );
@@ -39,9 +40,14 @@ function output_page( array $checks ) {
 		$format = 'json';
 	}
 
+	$json_response = [
+		'status' => $passed ? 'OK' : 'Failure!',
+		'checks' => $checks,
+	];
+
 	if ( $format === 'json' ) {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-		echo json_encode( $checks );
+		echo json_encode( $json_response );
 		exit;
 	}
 	?>
