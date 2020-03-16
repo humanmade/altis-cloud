@@ -10,8 +10,8 @@ function bootstrap() {
 		require_once __DIR__ . '/class-cli-command.php';
 		WP_CLI::add_command( 'healthcheck', __NAMESPACE__ . '\\CLI_Command' );
 	}
-
-	if ( ! isset( $_SERVER['REQUEST_URI'] ) || strpos( $_SERVER['REQUEST_URI'], '__healthcheck' ) == false ) {
+	
+	if ( ! isset( $_SERVER['REQUEST_URI'] ) || strpos( $_SERVER['REQUEST_URI'], '/__healthcheck' ) !== 0 ) {
 		return;
 	}
 	output_page( run_checks() );
@@ -41,7 +41,7 @@ function output_page( array $checks ) {
 	}
 
 	$json_response = [
-		'status' => $passed ? 'OK' : 'Failure!',
+		'status' => $passed ? 'ok' : 'failed',
 		'checks' => $checks,
 	];
 
