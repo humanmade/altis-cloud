@@ -10,7 +10,7 @@ function bootstrap() {
 		require_once __DIR__ . '/class-cli-command.php';
 		WP_CLI::add_command( 'healthcheck', __NAMESPACE__ . '\\CLI_Command' );
 	}
-	
+
 	if ( ! isset( $_SERVER['REQUEST_URI'] ) || strpos( $_SERVER['REQUEST_URI'], '/__healthcheck' ) !== 0 ) {
 		return;
 	}
