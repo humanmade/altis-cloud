@@ -21,6 +21,7 @@ add_action( 'altis.modules.init', function () {
 		'email-from-address' => 'no-reply@humanmade.com',
 		'audit-log-to-cloudwatch' => $is_cloud,
 		'php-errors-to-cloudwatch' => $is_cloud,
+		'cdn-media-purge' => false,
 		'page-cache' => [
 			'ignored-query-string-params' => [
 				'utm_campaign',
@@ -39,3 +40,8 @@ add_action( 'altis.modules.init', function () {
 
 	register_module( 'cloud', __DIR__, 'Cloud', $default_settings, __NAMESPACE__ . '\\bootstrap' );
 } );
+
+// Early hook for logging AWS SDK HTTP requests.
+add_filter( 'altis.aws_sdk.params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
+add_filter( 's3_uploads_s3_client_params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
+add_filter( 'aws_ses_wp_mail_ses_client_params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );

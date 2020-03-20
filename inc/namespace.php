@@ -2,9 +2,15 @@
 
 namespace Altis\Cloud;
 
+use Aws\CloudFront\CloudFrontClient;
 use const Altis\ROOT_DIR;
+use Exception;
+use function Altis\get_aws_sdk;
 use function Altis\get_config as get_platform_config;
 use function Altis\get_environment_architecture;
+use function HM\Platform\XRay\on_aws_guzzle_request_stats;
+use GuzzleHttp\Client;
+use GuzzleHttp\TransferStats;
 use HM\Platform\XRay;
 
 /**
@@ -21,8 +27,9 @@ function bootstrap() {
 	) {
 		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
 		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
-		XRay\bootstrap();
 		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
+		add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
+		XRay\bootstrap();
 	}
 
 	if ( $config['batcache'] && ! defined( 'WP_CACHE' ) ) {
@@ -109,6 +116,10 @@ function load_platform( $wp_debug_enabled ) {
 
 	if ( $config['ludicrousdb'] ) {
 		load_db();
+	}
+
+	if ( $config['cdn-media-purge'] ) {
+		load_cdn_media_purge();
 	}
 
 	global $wp_version;
@@ -215,6 +226,13 @@ function load_object_cache_memcached() {
 }
 
 /**
+ * Load cloudfront media purge.
+ */
+function load_cdn_media_purge() {
+	Cloudfront_Media_Purge\bootstrap();
+}
+
+/**
  * Load the Redis Object Cache dropin.
  */
 function load_object_cache_redis() {
@@ -299,11 +317,6 @@ function load_plugins() {
 			define( 'DISABLE_WP_CRON', true );
 		}
 		require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
-		// Wait until tables have been created to bootstrap cavalcade during install.
-		if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
-			remove_action( 'plugins_loaded', 'HM\\Cavalcade\\Plugin\\bootstrap' );
-			add_action( 'populate_options', 'HM\\Cavalcade\\Plugin\\bootstrap' );
-		}
 	}
 
 	// Define TACHYON_URL, as in the Cloud environment is "always on"
@@ -426,4 +439,192 @@ function remove_xray_metadata( array $metadata ) : array {
 	}, ARRAY_FILTER_USE_KEY );
 
 	return $metadata;
+}
+
+/**
+ * Add the XRay logging callback to the AWS SDK HTTP configuration.
+ *
+ * @param array $params AWS SDK parameters.
+ * @return array
+ */
+function add_aws_sdk_xray_callback( array $params ) : array {
+	$params['stats'] = true;
+	$params['http']['on_stats'] = __NAMESPACE__ . '\\on_request_stats';
+	return $params;
+}
+
+/**
+ * Callback function for GuzzleHTTP's `on_stats` param.
+ *
+ * This allows us to send all AWS SDK requests to xray
+ *
+ * @param TransferStats $stats
+ */
+function on_request_stats( TransferStats $stats ) {
+	if ( ! function_exists( 'HM\\Platform\\XRay\\on_aws_guzzle_request_stats' ) ) {
+		return;
+	}
+
+	on_aws_guzzle_request_stats( $stats );
+}
+
+/**
+ * Get the EC2 Instance metadata.
+ *
+ * This will cause a remote request to the metadata service when the cache is empty.
+ *
+ * @return array $array(
+ *    accountId: string,
+ *    architecture: string,
+ *    availabilityZone: string,
+ *    billingProducts: string,
+ *    devpayProductCodes: string,
+ *    marketplaceProductCodes: string,
+ *    imageId: string,
+ *    instanceId: string,
+ *    instanceType: string,
+ *    kernelId: string,
+ *    pendingTime: string,
+ *    privateIp: string,
+ *    ramdiskId: string,
+ *    region: string,
+ *    version: string,
+ * )
+ */
+function get_ec2_instance_metadata() : array {
+	$has_cache = false;
+	$cache_key = 'altis.ec2_instance_metadata';
+	// Use apcu_* as we only want to store the cache on the current server,
+	// not across all servers (wp_cache_*).
+	$cached_data = apcu_fetch( $cache_key, $has_cache );
+	if ( $has_cache ) {
+		return $cached_data;
+	}
+
+	$client = new Client();
+
+	try {
+		$request = $client->request( 'GET', 'http://169.254.169.254/latest/dynamic/instance-identity/document', [
+			'timeout' => 1,
+			'on_stats' => __NAMESPACE__ . '\\on_request_stats',
+		] );
+	} catch ( Exception $e ) {
+		trigger_error( sprintf( 'Unable to get instance metadata. Error: %s', $e->getMessage() ), E_USER_NOTICE );
+		apcu_store( $cache_key, [] );
+		return [];
+	}
+
+	if ( $request->getStatusCode() !== '200' ) {
+		trigger_error( sprintf( 'Unable to get instance metadata. Returned response code: %s', $request->getStatusCode() ), E_USER_NOTICE );
+		apcu_store( $cache_key, [] );
+		return [];
+	}
+
+	$metadata = json_decode( $request->getBody(), true );
+
+	if ( ! $metadata ) {
+		$metadata = [];
+	}
+
+	apcu_store( $cache_key, $metadata );
+
+	return $metadata;
+}
+
+/**
+ * Add the EC2 instance data to the Xray root segment.
+ *
+ * This function is called pre-WordPress load, so we don't have access
+ * to all the WordPress functions, hence using Guzzle.
+ *
+ * @param array $trace
+ * @return array
+ */
+function add_ec2_instance_data_to_xray( array $trace ) : array {
+	// Only add instance information to the root trace.
+	if ( ! empty( $trace['parent_id'] ) ) {
+		return $trace;
+	}
+
+	$metadata = get_ec2_instance_metadata();
+	if ( ! $metadata ) {
+		return $trace;
+	}
+
+	$trace['aws']['ec2']['availability_zone'] = $metadata['availabilityZone'];
+	$trace['aws']['instance_id'] = $metadata['instanceId'];
+
+	if ( get_environment_architecture() === 'ecs' ) {
+		$trace['aws']['ecs']['container'] = php_uname( 'n' );
+		$trace['origin'] = 'AWS::ECS::Container';
+	}
+
+	return $trace;
+}
+
+/**
+ * Return an AWS CloudFront Client instance.
+ *
+ * @return \Aws\CloudFront\CloudFrontClient
+ */
+function get_cloudfront_client() : CloudFrontClient {
+	return get_aws_sdk()->createCloudFront( [
+		'version' => '2019-03-26',
+	] );
+}
+
+/**
+ * Create purge request to invalidate CDN cache.
+ *
+ * @param array $paths_patterns A list of the paths that you want to invalidate.
+ *                              The path is relative to the CDN host, A leading / is optional.
+ *                              e.g  for http://altis-dxp.com/images/image2.jpg
+ *                              specify images/image2.jpg or /images/image2.jpg
+ *
+ *                              You can also invalidate multiple files simultaneously by using the * wildcard.
+ *                              The *, which replaces 0 or more characters, must be the last character in the invalidation path.
+ *                              e.g /images/* - will invalidate all files in a directory
+ *
+ * @return bool Returns true if invalidation successfully created, false on failure.
+ */
+function purge_cdn_paths( array $paths_patterns ) : bool {
+	$client = get_cloudfront_client();
+
+	$distribution_id = '';
+
+	if ( defined( 'CLOUDFRONT_DISTRIBUTION_ID' ) ) {
+		$distribution_id = CLOUDFRONT_DISTRIBUTION_ID;
+	}
+
+	/**
+	 * Filters the CloudFront Distribution ID used when purging CDN paths.
+	 *
+	 * @param string $distribution_id The ID to set.
+	 */
+	$distribution_id = apply_filters( 'altis.cloud.cdn_distribution_id', $distribution_id );
+
+	if ( empty( $distribution_id ) ) {
+		trigger_error( 'Empty cloudfront distribution id for purge request.', E_USER_WARNING );
+
+		return false;
+	}
+
+	try {
+		$client->createInvalidation( [
+			'DistributionId'    => $distribution_id,
+			'InvalidationBatch' => [
+				'Paths'           => [
+					'Items'    => $paths_patterns,
+					'Quantity' => count( $paths_patterns ),
+				],
+				'CallerReference' => sha1( time() . wp_json_encode( $paths_patterns ) ),
+			],
+		] );
+	} catch ( Exception $e ) {
+		trigger_error( sprintf( 'Failed to create purge request for CloudFront, error %s (%s)', $e->getMessage(), $e->getCode() ), E_USER_WARNING );
+
+		return false;
+	}
+
+	return true;
 }

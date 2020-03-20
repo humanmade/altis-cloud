@@ -2,7 +2,7 @@
 	display: flex;
 }
 
-#wpadminbar #wp-admin-bar-altis > .ab-item .icon {
+#wpadminbar #wp-admin-bar-altis > .ab-item .altis-logo-wrapper {
 	flex: 1;
 }
 
@@ -25,7 +25,7 @@
 	line-height: inherit;
 }
 
-#wpadminbar #wp-admin-bar-altis-env-stack-url .dashicons-before::before {
+#wpadminbar #wp-admin-bar-altis .dashicons-before::before {
 	font-size: 16px;
 	vertical-align: middle;
 }
