@@ -20,7 +20,7 @@
 	"require": {
 		"php": ">=7.1",
 		"humanmade/wp-redis-predis-client": "0.1.0",
-		"humanmade/aws-xray": "1.2.3",
+		"humanmade/aws-xray": "~1.2.7",
 		"humanmade/s3-uploads": "~2.1",
 		"humanmade/cavalcade": "1.0.1",
 		"humanmade/wp-redis": "0.7.1",
