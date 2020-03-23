@@ -54,7 +54,6 @@ function check_health() {
 	switch_to_blog( 1 );
 	$last_run = get_option( LAST_RUN_OPTION, 0 );
 
-
 	if ( $last_run > ( time() - HEALTHY_THRESHOLD ) ) {
 		return true;
 	}
