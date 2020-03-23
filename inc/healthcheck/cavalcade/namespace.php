@@ -51,7 +51,7 @@ function set_last_run() {
  * @return boolean|WP_Error True if healthy, error otherwise.
  */
 function check_health() {
-	switch_to_blog( 1 );
+	switch_to_blog( get_network()->id );
 	$last_run = get_option( LAST_RUN_OPTION, 0 );
 
 	if ( $last_run > ( time() - HEALTHY_THRESHOLD ) ) {
