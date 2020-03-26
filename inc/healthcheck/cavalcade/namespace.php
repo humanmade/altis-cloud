@@ -51,10 +51,13 @@ function set_last_run() {
  * @return boolean|WP_Error True if healthy, error otherwise.
  */
 function check_health() {
+	switch_to_blog( get_main_site_id() );
 	$last_run = get_option( LAST_RUN_OPTION, 0 );
+
 	if ( $last_run > ( time() - HEALTHY_THRESHOLD ) ) {
 		return true;
 	}
+	restore_current_blog();
 
 	return new WP_Error(
 		'altis.healthcheck.cavalcade.not_running',
