@@ -52,8 +52,7 @@ function error_handler( int $errno, string $errstr, string $errfile = null, int 
  * When script execution ends, send any buffered errors to CloudWatch.
  */
 function send_buffered_errors_on_shutdown() {
-	$errors = $GLOBALS['altis_cloudwatch_error_handler_errors'];
-	if ( ! $errors ) {
+	if ( empty( $GLOBALS['altis_cloudwatch_error_handler_errors'] ) ) {
 		return;
 	}
 
