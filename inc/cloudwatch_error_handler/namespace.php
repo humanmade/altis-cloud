@@ -24,7 +24,7 @@ function bootstrap() {
 		return false;
 	} );
 
-	register_shutdown_function( __NAMESPACE__ . '\\send_buffered_errors' );
+	register_shutdown_function( __NAMESPACE__ . '\\send_buffered_errors_on_shutdown' );
 }
 
 function error_handler( int $errno, string $errstr, string $errfile = null, int $errline = null ) : bool {
@@ -48,6 +48,23 @@ function error_handler( int $errno, string $errstr, string $errfile = null, int 
 	return false;
 }
 
+/**
+ * When script execution ends, send any buffered errors to CloudWatch.
+ */
+function send_buffered_errors_on_shutdown() {
+	if ( empty( $GLOBALS['altis_cloudwatch_error_handler_errors'] ) ) {
+		return;
+	}
+
+	if ( function_exists( 'fastcgi_finish_request' ) ) {
+		fastcgi_finish_request();
+	}
+	send_buffered_errors();
+}
+
+/**
+ * Send all buffered errors to CloudWAtch.
+ */
 function send_buffered_errors() {
 
 	// Check if we were shut down by an error.
@@ -61,10 +78,6 @@ function send_buffered_errors() {
 	$GLOBALS['altis_cloudwatch_error_handler_error_count'] = 0;
 	if ( ! $errors ) {
 		return;
-	}
-
-	if ( function_exists( 'fastcgi_finish_request' ) ) {
-		fastcgi_finish_request();
 	}
 
 	foreach ( $errors as $errno => $errno_errors ) {
