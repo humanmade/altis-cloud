@@ -12,7 +12,8 @@
 	"autoload": {
 		"files": [
 			"load.php",
-			"wp-config.php"
+			"wp-config.php",
+			"inc/cloudfront_media_purge/namespace.php"
 		]
 	},
 	"require": {

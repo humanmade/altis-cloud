@@ -28,6 +28,7 @@ add_action( 'altis.modules.init', function () {
 		'email-from-address'       => 'no-reply@humanmade.com',
 		'audit-log-to-cloudwatch'  => $is_cloud,
 		'php-errors-to-cloudwatch' => $is_cloud,
+		'cdn-media-purge'          => false,
 	];
 
 	register_module( 'cloud', __DIR__, 'Cloud', $default_settings, __NAMESPACE__ . '\\bootstrap' );
