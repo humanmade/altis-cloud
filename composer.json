@@ -14,7 +14,8 @@
 			"inc/healthcheck/namespace.php",
 			"inc/healthcheck/cavalcade/namespace.php",
 			"inc/namespace.php",
-			"wp-config.php"
+			"wp-config.php",
+			"inc/cloudfront_media_purge/namespace.php"
 		]
 	},
 	"require": {

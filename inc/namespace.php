@@ -2,6 +2,7 @@
 
 namespace Altis\Cloud;
 
+use Aws\CloudFront\CloudFrontClient;
 use const Altis\ROOT_DIR;
 use function Altis\get_config as get_platform_config;
 use function Altis\get_environment_architecture;
@@ -108,6 +109,10 @@ function load_platform( $wp_debug_enabled ) {
 		load_db();
 	}
 
+	if ( $config['cdn-media-purge'] ) {
+		load_cdn_media_purge();
+	}
+
 	global $wp_version;
 	if ( version_compare( '4.6', $wp_version, '>' ) ) {
 		die( 'Altis is only supported on WordPress 4.6+.' );
@@ -209,6 +214,13 @@ function load_object_cache_memcached() {
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
+}
+
+/**
+ * Load cloudfront media purge.
+ */
+function load_cdn_media_purge() {
+	Cloudfront_Media_Purge\bootstrap();
 }
 
 /**
@@ -423,4 +435,71 @@ function remove_xray_metadata( array $metadata ) : array {
 	}, ARRAY_FILTER_USE_KEY );
 
 	return $metadata;
+}
+
+/**
+ * Return an AWS CloudFront Client instance.
+ *
+ * @return \Aws\CloudFront\CloudFrontClient
+ */
+function get_cloudfront_client() : CloudFrontClient {
+	return get_aws_sdk()->createCloudFront( [
+		'version' => '2019-03-26',
+	] );
+}
+
+/**
+ * Create purge request to invalidate CDN cache.
+ *
+ * @param array $paths_patterns A list of the paths that you want to invalidate.
+ *                              The path is relative to the CDN host, A leading / is optional.
+ *                              e.g  for http://altis-dxp.com/images/image2.jpg
+ *                              specify images/image2.jpg or /images/image2.jpg
+ *
+ *                              You can also invalidate multiple files simultaneously by using the * wildcard.
+ *                              The *, which replaces 0 or more characters, must be the last character in the invalidation path.
+ *                              e.g /images/* - will invalidate all files in a directory
+ *
+ * @return bool Returns true if invalidation successfully created, false on failure.
+ */
+function purge_cdn_paths( array $paths_patterns ) : bool {
+	$client = get_cloudfront_client();
+
+	$distribution_id = '';
+
+	if ( defined( 'CLOUDFRONT_DISTRIBUTION_ID' ) ) {
+		$distribution_id = CLOUDFRONT_DISTRIBUTION_ID;
+	}
+
+	/**
+	 * Filters the CloudFront Distribution ID used when purging CDN paths.
+	 *
+	 * @param string $distribution_id The ID to set.
+	 */
+	$distribution_id = apply_filters( 'altis.cloud.cdn_distribution_id', $distribution_id );
+
+	if ( empty( $distribution_id ) ) {
+		trigger_error( 'Empty cloudfront distribution id for purge request.', E_USER_WARNING );
+
+		return false;
+	}
+
+	try {
+		$client->createInvalidation( [
+			'DistributionId'    => $distribution_id,
+			'InvalidationBatch' => [
+				'Paths'           => [
+					'Items'    => $paths_patterns,
+					'Quantity' => count( $paths_patterns ),
+				],
+				'CallerReference' => sha1( time() . wp_json_encode( $paths_patterns ) ),
+			],
+		] );
+	} catch ( Exception $e ) {
+		trigger_error( sprintf( 'Failed to create purge request for CloudFront, error %s (%s)', $e->getMessage(), $e->getCode() ), E_USER_WARNING );
+
+		return false;
+	}
+
+	return true;
 }
