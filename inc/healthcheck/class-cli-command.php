@@ -45,6 +45,8 @@ class CLI_Command extends WP_CLI_Command {
 	 * @param array $args
 	 * @param array $args_assoc
 	 *
+	 * @since 4.0
+	 *
 	 * @return void
 	 */
 	function instance( array $args, array $args_assoc ) {
