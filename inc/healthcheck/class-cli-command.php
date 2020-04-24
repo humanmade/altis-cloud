@@ -11,10 +11,18 @@ class CLI_Command extends WP_CLI_Command {
 	/**
 	 * Run health checks.
 	 *
-	 * @param array $args
-	 * @param array $args_assoc
+	 * ## OPTIONS
 	 *
-	 * @return void
+	 * [--format=<format>]
+	 * : Output format e.g. yaml, json
+	 * default: table
+	 *
+	 * ## EXAMPLES
+	 *
+	 * wp healthcheck run
+	 *
+	 * wp healthcheck run --format=json
+	 *
 	 */
 	function run( array $args, array $args_assoc ) {
 		$args_assoc = wp_parse_args( $args_assoc, [
@@ -42,12 +50,18 @@ class CLI_Command extends WP_CLI_Command {
 	/**
 	 * Run instance health checks.
 	 *
-	 * @param array $args
-	 * @param array $args_assoc
+	 * ## OPTIONS
 	 *
-	 * @since 4.0
+	 * [--format=<format>]
+	 * : Output format e.g. yaml, json
+	 * default: table
 	 *
-	 * @return void
+	 * ## EXAMPLES
+	 *
+	 * wp healthcheck instance
+	 *
+	 * wp healthcheck instance --format=json
+	 *
 	 */
 	function instance( array $args, array $args_assoc ) {
 		$args_assoc = wp_parse_args( $args_assoc, [

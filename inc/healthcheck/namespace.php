@@ -111,7 +111,7 @@ function run_instance_checks() : array {
 	/**
 	 * Filters Instance Healthchecks response.
 	 *
-	 * @since 4.0
+	 * @param array $checks List of instance checks.
 	 */
 	return apply_filters( 'altis_instance_healthchecks', $checks );
 }
