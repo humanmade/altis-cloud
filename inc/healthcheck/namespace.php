@@ -93,7 +93,6 @@ function run_checks() : array {
 		'cron-waiting' => run_cron_healthcheck(),
 		'cron-canary'  => Cavalcade\check_health(),
 	];
-
 	$checks = apply_filters( 'altis_healthchecks', $checks );
 
 	return $checks;
@@ -109,6 +108,11 @@ function run_instance_checks() : array {
 		'php' => true,
 	];
 
+	/**
+	 * Filters Instance Healthchecks response.
+	 *
+	 * @since 4.0
+	 */
 	return apply_filters( 'altis_instance_healthchecks', $checks );
 }
 
