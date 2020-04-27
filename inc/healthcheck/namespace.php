@@ -11,10 +11,18 @@ function bootstrap() {
 		WP_CLI::add_command( 'healthcheck', __NAMESPACE__ . '\\CLI_Command' );
 	}
 
-	if ( ! isset( $_SERVER['REQUEST_URI'] ) || strpos( $_SERVER['REQUEST_URI'], '/__healthcheck' ) !== 0 ) {
+	if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 		return;
 	}
-	output_page( run_checks() );
+
+	if ( strpos( $_SERVER['REQUEST_URI'], '/__healthcheck' ) !== false ) {
+		output_page( run_checks() );
+		return;
+	}
+
+	if ( strpos( $_SERVER['REQUEST_URI'], '/__instance_healthcheck' ) !== false ) {
+		output_page( run_instance_checks() );
+	}
 }
 
 function output_page( array $checks ) {
@@ -75,6 +83,8 @@ function output_page( array $checks ) {
 
 /**
  * Run all health checks.
+ *
+ * @return array
  */
 function run_checks() : array {
 	$checks = [
@@ -83,10 +93,27 @@ function run_checks() : array {
 		'cron-waiting' => run_cron_healthcheck(),
 		'cron-canary'  => Cavalcade\check_health(),
 	];
-
 	$checks = apply_filters( 'altis_healthchecks', $checks );
 
 	return $checks;
+}
+
+/**
+ * Run all instance health checks.
+ *
+ * @return array
+ */
+function run_instance_checks() : array {
+	$checks = [
+		'php' => true,
+	];
+
+	/**
+	 * Filters Instance Healthchecks response.
+	 *
+	 * @param array $checks List of instance checks.
+	 */
+	return apply_filters( 'altis_instance_healthchecks', $checks );
 }
 
 /**
