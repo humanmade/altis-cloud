@@ -7,7 +7,10 @@ use function Altis\Cloud\get_config;
 
 function bootstrap() {
 	global $batcache;
-	$batcache = $batcache ?? [ 'ignored_query_string_params' => [], 'unique' => [] ];
+	$batcache = $batcache ?? [
+		'ignored_query_string_params' => [],
+		'unique' => []
+	];
 
 	$ignore_query_params = array_merge(
 		$batcache['ignored_query_string_params'] ?? [],
