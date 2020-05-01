@@ -9,7 +9,7 @@ function bootstrap() {
 	global $batcache;
 	$batcache = $batcache ?? [
 		'ignored_query_string_params' => [],
-		'unique' => []
+		'unique' => [],
 	];
 
 	$ignore_query_params = array_merge(
