@@ -137,7 +137,7 @@ class DB extends LudicrousDB {
 	 * This function can not use any WordPress functions that read from the database, as that
 	 * will risk a recursion call.
 	 *
-	 * @param string $message    The Error message
+	 * @param string $message The Error message
 	 * @param string $error_code Optional. A Computer readable string to identify the error.
 	 */
 	public function bail( $message, $error_code = '500' ) {
