@@ -129,4 +129,28 @@ class DB extends LudicrousDB {
 		}
 		parent::add_database( $db );
 	}
+
+	/**
+	 * Override the wpdb bail handler.
+	 *
+	 * We always want to bail and exit the script execution, not rely on $this->show_errors.
+	 * This function can not use any WordPress functions that read from the database, as that
+	 * will risk a recursion call.
+	 *
+	 * @param string $message The Error message
+	 * @param string $error_code Optional. A Computer readable string to identify the error.
+	 */
+	public function bail( $message, $error_code = '500' ) {
+		header( 'Content-Type: text/html; charset=utf-8' );
+		status_header( 500 );
+		nocache_headers();
+		?>
+		<h1>Database Connection Error</h1>
+		<p><pre><?php echo $message //@codingStandardsIgnoreLine No escaping functions available here. ?></pre></p>
+		<?php if ( $error_code ) : ?>
+			<p>Code: <pre><?php echo $error_code //@codingStandardsIgnoreLine No escaping functions available here. ?></pre></p>
+		<?php endif ?>
+		<?php
+		exit;
+	}
 }
