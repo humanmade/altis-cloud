@@ -4,6 +4,7 @@ namespace Altis\Cloud;
 
 use Aws\CloudFront\CloudFrontClient;
 use const Altis\ROOT_DIR;
+use function Altis\get_aws_sdk;
 use function Altis\get_config as get_platform_config;
 use function Altis\get_environment_architecture;
 use HM\Platform\XRay;
