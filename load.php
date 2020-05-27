@@ -35,6 +35,7 @@ add_action( 'altis.modules.init', function () {
 			],
 			'unique-cookies' => [],
 		],
+		'cdn-media-purge'          => false,
 	];
 
 	register_module( 'cloud', __DIR__, 'Cloud', $default_settings, __NAMESPACE__ . '\\bootstrap' );
