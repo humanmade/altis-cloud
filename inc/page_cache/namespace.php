@@ -1,10 +1,20 @@
 <?php
+/**
+ * Altis Cloud Page Cache Configuration.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\Page_Cache;
 
-use const Altis\ROOT_DIR;
-use function Altis\Cloud\get_config;
+use Altis;
+use Altis\Cloud;
 
+/**
+ * Configure page cache from config.
+ *
+ * @return void
+ */
 function bootstrap() {
 	global $batcache;
 	$batcache = $batcache ?? [
@@ -32,14 +42,14 @@ function bootstrap() {
 	$unique = array_unique( $unique );
 	$batcache['unique'] = $unique;
 
-	// Cache redirects
+	// Cache redirects.
 	$batcache['cache_redirects'] = true;
 
 	// No-priv AJAX requests are public and should be cached.
 	add_action( 'admin_init', __NAMESPACE__ . '\\disable_no_cache_headers_on_admin_ajax_nopriv' );
 
 	// Load Batcache.
-	require ROOT_DIR . '/vendor/humanmade/batcache/advanced-cache.php';
+	require Altis\ROOT_DIR . '/vendor/humanmade/batcache/advanced-cache.php';
 }
 
 /**
@@ -49,7 +59,7 @@ function bootstrap() {
  * @return array
  */
 function get_ignore_query_params() : array {
-	$config = get_config();
+	$config = Cloud\get_config();
 	$ignored_query_string_params = $config['page-cache']['ignored-query-string-params'] ?? [];
 	return $ignored_query_string_params;
 }
@@ -62,7 +72,7 @@ function get_ignore_query_params() : array {
  * @return array
  */
 function get_unique_headers() : array {
-	$config = get_config();
+	$config = Cloud\get_config();
 	$unique_headers = $config['page-cache']['unique-headers'] ?? [];
 	$unique_keys = [];
 
@@ -83,7 +93,7 @@ function get_unique_headers() : array {
  * @return array
  */
 function get_unique_cookies() : array {
-	$config = get_config();
+	$config = Cloud\get_config();
 	$unique_cookies = $config['page-cache']['unique-cookies'] ?? [];
 	$unique_keys = [];
 

@@ -1,9 +1,19 @@
 <?php
+/**
+ * Altis Cloud Media Purge from CDN.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\Cloudfront_Media_Purge;
 
-use function Altis\Cloud\purge_cdn_paths;
+use Altis\Cloud;
 
+/**
+ * Set up action hooks.
+ *
+ * @return void
+ */
 function bootstrap() {
 	add_action( 'delete_attachment', __NAMESPACE__ . '\\purge_media_file_cache', 100 );
 }
@@ -29,5 +39,5 @@ function purge_media_file_cache( int $media_id ) {
 		$items[]           = $tachyon_path_info['dirname'] . '/' . $tachyon_path_info['filename'] . '*';
 	}
 
-	return purge_cdn_paths( $items );
+	return Cloud\purge_cdn_paths( $items );
 }

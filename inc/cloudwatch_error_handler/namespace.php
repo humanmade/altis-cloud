@@ -1,16 +1,22 @@
 <?php
-
 /**
  * PHP Error Handler to send all PHP errors to CloudWatch
  *
  * We do this to get better structured data about the errors, and also tie XRay trace ids to the errors.
+ *
+ * @package altis-cloud
  */
 
 namespace Altis\Cloud\CloudWatch_Error_Handler;
 
-use function Altis\Cloud\CloudWatch_Logs\send_events_to_stream;
-use function Altis\get_environment_name;
+use Altis;
+use Altis\Cloud\CloudWatch_Logs;
 
+/**
+ * Set up shutdown function error handler to send to CloudWatch.
+ *
+ * @return void
+ */
 function bootstrap() {
 	$GLOBALS['altis_cloudwatch_error_handler_errors'] = [];
 	$GLOBALS['altis_cloudwatch_error_handler_error_count'] = 0;
@@ -27,6 +33,15 @@ function bootstrap() {
 	register_shutdown_function( __NAMESPACE__ . '\\send_buffered_errors_on_shutdown' );
 }
 
+/**
+ * Shutdown function error handler callback.
+ *
+ * @param integer $errno Error code.
+ * @param string $errstr Error message.
+ * @param string $errfile The file where the error occurred.
+ * @param integer $errline The line on which the error occurred.
+ * @return boolean
+ */
 function error_handler( int $errno, string $errstr, string $errfile = null, int $errline = null ) : bool {
 	global $altis_cloudwatch_error_handler_errors, $altis_cloudwatch_error_handler_error_count;
 	// Limit the amount of errors to hold in memory. Flush every 100.
@@ -82,10 +97,16 @@ function send_buffered_errors() {
 
 	foreach ( $errors as $errno => $errno_errors ) {
 		$type = get_error_type_for_error_number( $errno );
-		send_events_to_stream( $errno_errors, get_environment_name() . '/php-structured', $type );
+		CloudWatch_Logs\send_events_to_stream( $errno_errors, Altis\get_environment_name() . '/php-structured', $type );
 	}
 }
 
+/**
+ * Map error code to string value.
+ *
+ * @param integer $type The error type constant or integer.
+ * @return string
+ */
 function get_error_type_for_error_number( int $type ) : string {
 	switch ( $type ) {
 		case E_ERROR:

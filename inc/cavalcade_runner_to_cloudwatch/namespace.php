@@ -1,10 +1,16 @@
 <?php
+/**
+ * Send Cavalcade logs to CloudWatch.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\Cavalcade_Runner_To_CloudWatch;
 
+use Altis;
+use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Aws\CloudWatch\CloudWatchClient;
 use Exception;
-use function Altis\get_aws_sdk;
 use HM\Cavalcade\Runner\Job;
 use HM\Cavalcade\Runner\Runner;
 use HM\Cavalcade\Runner\Worker;
@@ -22,8 +28,8 @@ function bootstrap() {
 /**
  * Called when a new job is started via Cavalcade, and sends an Invocation metric to CloudWatch.
  *
- * @param  Worker $worker
- * @param  Job    $job
+ * @param Worker $worker The Cavalcade runner process.
+ * @param Job $job The current Cavalcade cron job.
  */
 function on_job_started( Worker $worker, Job $job ) {
 	global $job_start_times;
@@ -39,8 +45,8 @@ function on_job_started( Worker $worker, Job $job ) {
 /**
  * Called when a job is failed via Cavalcade, and sends an Completed metric to CloudWatch.
  *
- * @param  Worker $worker
- * @param  Job    $job
+ * @param Worker $worker The Cavalcade runner process.
+ * @param Job $job The current Cavalcade cron job.
  */
 function on_job_failed( Worker $worker, Job $job ) {
 	put_metric_data( 'Failed', 1, [
@@ -55,8 +61,8 @@ function on_job_failed( Worker $worker, Job $job ) {
 /**
  * Called when a job is completed via Cavalcade, and sends an Completed metric to CloudWatch.
  *
- * @param  Worker $worker
- * @param  Job    $job
+ * @param Worker $worker The Cavalcade runner process.
+ * @param Job $job The current Cavalcade cron job.
  */
 function on_job_completed( Worker $worker, Job $job ) {
 	put_metric_data( 'Completed', 1, [
@@ -71,8 +77,9 @@ function on_job_completed( Worker $worker, Job $job ) {
 /**
  * Called when a job completed or failed via Cavalcade, and sends a Dureaction metric to CloudWatch.
  *
- * @param  Worker $worker
- * @param  Job    $job
+ * @param Worker $worker The Cavalcade runner process.
+ * @param Job $job The current Cavalcade cron job.
+ * @param string $status The job status.
  */
 function on_end_job( Worker $worker, Job $job, string $status ) {
 	global $job_start_times;
@@ -119,10 +126,10 @@ function on_end_job( Worker $worker, Job $job, string $status ) {
 /**
  * Save metric data to CloudWatch.
  *
- * @param  string $metric_name
- * @param  float  $value
- * @param  array  $dimensions
- * @param  string $unit
+ * @param string $metric_name The CloudWatch metric name.
+ * @param float $value The metric value.
+ * @param array $dimensions Additional data for the metric.
+ * @param string $unit Units the metric is in.
  */
 function put_metric_data( $metric_name, $value, $dimensions = [], $unit = 'None' ) {
 	try {
@@ -147,6 +154,7 @@ function put_metric_data( $metric_name, $value, $dimensions = [], $unit = 'None'
 			'Namespace' => 'Cavalcade',
 		]);
 	} catch ( Exception $e ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Error from CloudWatch API: %s', $e->getMessage() ), E_USER_WARNING );
 	}
 }
@@ -157,29 +165,34 @@ function put_metric_data( $metric_name, $value, $dimensions = [], $unit = 'None'
  * @return CloudWatchClient
  */
 function cloudwatch_client() : CloudWatchClient {
-	return get_aws_sdk()->createCloudWatch([
+	return Altis\get_aws_sdk()->createCloudWatch( [
 		'version'     => '2010-08-01',
 		'http'        => [
 			'synchronous' => false,
 		],
-	]);
+	] );
 }
 
-function cloudwatch_logs_client() {
-	return get_aws_sdk()->createCloudWatchLogs([
+/**
+ * Get a configured CloudWatch Logs Client.
+ *
+ * @return CloudWatchLogsClient
+ */
+function cloudwatch_logs_client() : CloudWatchLogsClient {
+	return Altis\get_aws_sdk()->createCloudWatchLogs( [
 		'version'     => '2014-03-28',
 		'http'        => [
 			'synchronous' => true,
 		],
-	]);
+	] );
 }
 
 /**
  * Save an event to a cloudwatch logs stream
  *
- * @param  array  $event  The event data.
- * @param  string $group  The group name.
- * @param  string $stream The stream name.
+ * @param array $event The event data.
+ * @param string $group The group name.
+ * @param string $stream The stream name.
  */
 function send_event_to_stream( array $event, string $group, string $stream ) {
 	try {
@@ -199,6 +212,7 @@ function send_event_to_stream( array $event, string $group, string $stream ) {
 			$next_token = $streams[0]['uploadSequenceToken'];
 		}
 	} catch ( Exception $e ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( $e->getMessage(), E_USER_WARNING );
 	}
 	$params = [
@@ -212,6 +226,7 @@ function send_event_to_stream( array $event, string $group, string $stream ) {
 	try {
 		$result = cloudwatch_logs_client()->putLogEvents( $params );
 	} catch ( Exception $e ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( $e->getMessage(), E_USER_WARNING );
 	}
 }

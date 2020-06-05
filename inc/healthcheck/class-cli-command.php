@@ -1,4 +1,9 @@
 <?php
+/**
+ * Altis Cloud Healthcheck CLI.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\Healthcheck;
 
@@ -6,6 +11,9 @@ use cli;
 use WP_CLI;
 use WP_CLI_Command;
 
+/**
+ * CLI COmmand to run Altis Healthchecks.
+ */
 class CLI_Command extends WP_CLI_Command {
 
 	/**
@@ -23,6 +31,8 @@ class CLI_Command extends WP_CLI_Command {
 	 *
 	 * wp healthcheck run --format=json
 	 *
+	 * @param array $args Positional arguments array.
+	 * @param array $args_assoc Named arguments array.
 	 */
 	function run( array $args, array $args_assoc ) {
 		$args_assoc = wp_parse_args( $args_assoc, [
@@ -62,6 +72,8 @@ class CLI_Command extends WP_CLI_Command {
 	 *
 	 * wp healthcheck instance --format=json
 	 *
+	 * @param array $args Positional arguments array.
+	 * @param array $args_assoc Named arguments array.
 	 */
 	function instance( array $args, array $args_assoc ) {
 		$args_assoc = wp_parse_args( $args_assoc, [

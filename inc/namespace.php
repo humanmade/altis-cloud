@@ -1,14 +1,15 @@
 <?php
+/**
+ * Altis Cloud Module.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud;
 
+use Altis;
 use Aws\CloudFront\CloudFrontClient;
-use const Altis\ROOT_DIR;
 use Exception;
-use function Altis\get_aws_sdk;
-use function Altis\get_config as get_platform_config;
-use function Altis\get_environment_architecture;
-use function HM\Platform\XRay\on_aws_guzzle_request_stats;
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use HM\Platform\XRay;
@@ -25,8 +26,8 @@ function bootstrap() {
 		&& ( ! defined( 'WP_CLI' ) || ! WP_CLI )
 		&& ! class_exists( 'HM\\Cavalcade\\Runner\\Runner' )
 	) {
-		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
-		require_once ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
+		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
+		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
 		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
 		add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
 		XRay\bootstrap();
@@ -78,8 +79,10 @@ function bootstrap() {
 	Environment_Indicator\bootstrap();
 }
 
-// Load the Cavalcade Runner CloudWatch extension.
-// This is loaded on the Cavalcade-Runner, not WordPress, crazy I know.
+/**
+ * Load the Cavalcade Runner CloudWatch extension.
+ * This is loaded on the Cavalcade-Runner, not WordPress, crazy I know.
+ */
 function boostrap_cavalcade_runner() {
 	if ( defined( 'HM_ENV' ) && HM_ENV ) {
 		require_once __DIR__ . '/cavalcade_runner_to_cloudwatch/namespace.php';
@@ -92,6 +95,9 @@ function boostrap_cavalcade_runner() {
  *
  * This function is hooked into to enable_wp_debug_mode_checks so we have to return the value
  * that was passed in at the end of the function.
+ *
+ * @param bool $wp_debug_enabled True if WP_DEBUG is defined and set to true.
+ * @return bool
  */
 function load_platform( $wp_debug_enabled ) {
 	$config = get_config();
@@ -127,7 +133,7 @@ function load_platform( $wp_debug_enabled ) {
 		die( 'Altis is only supported on WordPress 4.6+.' );
 	}
 
-	// Disable indexing when not in production
+	// Disable indexing when not in production.
 	$disable_indexing = (
 		( ! defined( 'HM_ENV_TYPE' ) || HM_ENV_TYPE !== 'production' )
 		&&
@@ -147,7 +153,7 @@ function load_platform( $wp_debug_enabled ) {
 	add_action( 'muplugins_loaded', __NAMESPACE__ . '\\load_plugins', 0 );
 
 	// Remove plugin install / update caps on AWS.
-	if ( in_array( get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
+	if ( in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
 		add_filter( 'map_meta_cap', __NAMESPACE__ . '\\disable_install_capability', 10, 2 );
 	}
 
@@ -181,7 +187,7 @@ function load_platform( $wp_debug_enabled ) {
 function get_config() {
 	global $hm_platform;
 
-	$defaults = get_platform_config()['modules']['cloud'];
+	$defaults = Altis\get_config()['modules']['cloud'];
 
 	return array_merge( $defaults, $hm_platform ? $hm_platform : [] );
 }
@@ -219,7 +225,7 @@ function load_object_cache() {
  */
 function load_object_cache_memcached() {
 	wp_using_ext_object_cache( true );
-	require ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
+	require Altis\ROOT_DIR . '/vendor/humanmade/wordpress-pecl-memcached-object-cache/object-cache.php';
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
@@ -245,7 +251,7 @@ function load_object_cache_redis() {
 	Alloptions_Fix\bootstrap();
 	\WP_Predis\add_filters();
 
-	require ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
+	require Altis\ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
@@ -254,7 +260,7 @@ function load_object_cache_redis() {
 /**
  * Load the advanced-cache dropin.
  *
- * @param  bool $should_load
+ * @param bool $should_load If true WordPress will load the advanced cache dropin.
  * @return bool
  */
 function load_advanced_cache( $should_load ) {
@@ -274,7 +280,7 @@ function load_advanced_cache( $should_load ) {
  */
 function load_db() {
 	require_once ABSPATH . WPINC . '/wp-db.php';
-	require_once ROOT_DIR . '/vendor/stuttter/ludicrousdb/ludicrousdb/includes/class-ludicrousdb.php';
+	require_once Altis\ROOT_DIR . '/vendor/stuttter/ludicrousdb/ludicrousdb/includes/class-ludicrousdb.php';
 	require_once __DIR__ . '/class-db.php';
 	if ( ! defined( 'DB_CHARSET' ) ) {
 		define( 'DB_CHARSET', 'utf8mb4' );
@@ -316,7 +322,7 @@ function load_plugins() {
 		if ( ! defined( 'DISABLE_WP_CRON' ) ) {
 			define( 'DISABLE_WP_CRON', true );
 		}
-		require_once ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+		require_once Altis\ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
 	}
 
 	// Define TACHYON_URL, as in the Cloud environment is "always on"
@@ -328,15 +334,15 @@ function load_plugins() {
 	}
 
 	if ( $config['s3-uploads'] ) {
-		require_once ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
+		require_once Altis\ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
 	}
 
 	if ( $config['redis'] ) {
-		require_once ROOT_DIR . '/vendor/humanmade/wp-redis/wp-redis.php';
+		require_once Altis\ROOT_DIR . '/vendor/humanmade/wp-redis/wp-redis.php';
 	}
 
 	if ( $config['aws-ses-wp-mail'] ) {
-		require_once ROOT_DIR . '/vendor/humanmade/aws-ses-wp-mail/aws-ses-wp-mail.php';
+		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-ses-wp-mail/aws-ses-wp-mail.php';
 	}
 
 	if ( $config['healthcheck'] ) {
@@ -408,7 +414,9 @@ function reflect_cloudfront_headers() {
  * We have a lot of superfluous information in the $_SERVER super-global
  * that doesn't need to be sent to xray. It's a lot of wasted bytes to
  * send to xray on every request.
- * @return void
+ *
+ * @param array $metadata XRay request metadata.
+ * @return array
  */
 function remove_xray_metadata( array $metadata ) : array {
 	if ( ! isset( $metadata['$_SERVER'] ) ) {
@@ -435,7 +443,7 @@ function remove_xray_metadata( array $metadata ) : array {
 			'REQUEST_TIME',
 		];
 
-		return in_array( $key, $allowed_keys );
+		return in_array( $key, $allowed_keys, true );
 	}, ARRAY_FILTER_USE_KEY );
 
 	return $metadata;
@@ -458,14 +466,14 @@ function add_aws_sdk_xray_callback( array $params ) : array {
  *
  * This allows us to send all AWS SDK requests to xray
  *
- * @param TransferStats $stats
+ * @param TransferStats $stats Object of stats for a Guzzle request.
  */
 function on_request_stats( TransferStats $stats ) {
 	if ( ! function_exists( 'HM\\Platform\\XRay\\on_aws_guzzle_request_stats' ) ) {
 		return;
 	}
 
-	on_aws_guzzle_request_stats( $stats );
+	XRay\on_aws_guzzle_request_stats( $stats );
 }
 
 /**
@@ -509,12 +517,14 @@ function get_ec2_instance_metadata() : array {
 			'on_stats' => __NAMESPACE__ . '\\on_request_stats',
 		] );
 	} catch ( Exception $e ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Unable to get instance metadata. Error: %s', $e->getMessage() ), E_USER_NOTICE );
 		apcu_store( $cache_key, [] );
 		return [];
 	}
 
 	if ( $request->getStatusCode() !== '200' ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Unable to get instance metadata. Returned response code: %s', $request->getStatusCode() ), E_USER_NOTICE );
 		apcu_store( $cache_key, [] );
 		return [];
@@ -537,7 +547,7 @@ function get_ec2_instance_metadata() : array {
  * This function is called pre-WordPress load, so we don't have access
  * to all the WordPress functions, hence using Guzzle.
  *
- * @param array $trace
+ * @param array $trace EC2 trace data.
  * @return array
  */
 function add_ec2_instance_data_to_xray( array $trace ) : array {
@@ -554,7 +564,7 @@ function add_ec2_instance_data_to_xray( array $trace ) : array {
 	$trace['aws']['ec2']['availability_zone'] = $metadata['availabilityZone'];
 	$trace['aws']['instance_id'] = $metadata['instanceId'];
 
-	if ( get_environment_architecture() === 'ecs' ) {
+	if ( Altis\get_environment_architecture() === 'ecs' ) {
 		$trace['aws']['ecs']['container'] = php_uname( 'n' );
 		$trace['origin'] = 'AWS::ECS::Container';
 	}
@@ -568,7 +578,7 @@ function add_ec2_instance_data_to_xray( array $trace ) : array {
  * @return \Aws\CloudFront\CloudFrontClient
  */
 function get_cloudfront_client() : CloudFrontClient {
-	return get_aws_sdk()->createCloudFront( [
+	return Altis\get_aws_sdk()->createCloudFront( [
 		'version' => '2019-03-26',
 	] );
 }
@@ -583,7 +593,7 @@ function get_cloudfront_client() : CloudFrontClient {
  *
  *                              You can also invalidate multiple files simultaneously by using the * wildcard.
  *                              The *, which replaces 0 or more characters, must be the last character in the invalidation path.
- *                              e.g /images/* - will invalidate all files in a directory
+ *                              e.g /images/* - will invalidate all files in a directory.
  *
  * @return bool Returns true if invalidation successfully created, false on failure.
  */
@@ -621,8 +631,8 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 			],
 		] );
 	} catch ( Exception $e ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Failed to create purge request for CloudFront, error %s (%s)', $e->getMessage(), $e->getCode() ), E_USER_WARNING );
-
 		return false;
 	}
 

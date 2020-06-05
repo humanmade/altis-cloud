@@ -1,13 +1,22 @@
 <?php
+/**
+ * Altis Cloud Environment Indicator.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\Environment_Indicator;
 
-use function Altis\get_environment_name;
-use function Altis\get_environment_type;
+use Altis;
 use WP_Admin_Bar;
 
 const SUPPORT_URL = 'https://dashboard.altis-dxp.com/#/support/new';
 
+/**
+ * Set up environment indicator hooks.
+ *
+ * @return void
+ */
 function bootstrap() {
 	add_action( 'admin_bar_init', __NAMESPACE__ . '\\enqueue_admin_scripts' );
 	// Allow other modules to add sub-menu items to Altis admin bar menu first.
@@ -29,8 +38,8 @@ function add_admin_bar_env_info( WP_Admin_Bar $wp_admin_bar ) {
 	}
 
 	// Specify environments for which to show indicator in the admin bar.
-	$show_indicator = in_array( get_environment_type(), [ 'local', 'development', 'staging' ], true );
-	$show_indicator = apply_filters( 'altis.show_environment_indicator', $show_indicator, get_environment_type() );
+	$show_indicator = in_array( Altis\get_environment_type(), [ 'local', 'development', 'staging' ], true );
+	$show_indicator = apply_filters( 'altis.show_environment_indicator', $show_indicator, Altis\get_environment_type() );
 	if ( ! $show_indicator ) {
 		return;
 	}
@@ -51,7 +60,7 @@ function add_admin_bar_env_info( WP_Admin_Bar $wp_admin_bar ) {
 
 	// Add environment indicator to the Altis logo menu item in the admin bar.
 	$node = $wp_admin_bar->get_node( 'altis' );
-	$node->title .= ' ' . sprintf( '<span class="altis-env-indicator">%s</span>', $envs[ get_environment_type() ] );
+	$node->title .= ' ' . sprintf( '<span class="altis-env-indicator">%s</span>', $envs[ Altis\get_environment_type() ] );
 	$wp_admin_bar->add_menu( $node );
 }
 
@@ -76,16 +85,16 @@ function add_admin_bar_dashboard_link( WP_Admin_Bar $wp_admin_bar ) {
 		$url = 'https://dashboard.altis-dxp.com/';
 	} else {
 		$title = __( 'Open in Altis Dashboard', 'altis' );
-		$url = esc_url( sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', HM_ENV_REGION, get_environment_name() ) );
+		$url = esc_url( sprintf( 'https://dashboard.altis-dxp.com/#/%s/%s', HM_ENV_REGION, Altis\get_environment_name() ) );
 	}
 
 	// Add environment's Altis dashboard URL as a sub-menu item to Altis logo menu in the admin bar.
 	$wp_admin_bar->add_menu( [
 		'parent' => 'altis',
-		'id'     => 'altis-env-stack-url',
-		'title'  => $title . ' <span class="dashicons-before dashicons-external"></span>',
-		'href'   => $url,
-		'meta'   => [
+		'id' => 'altis-env-stack-url',
+		'title' => $title . ' <span class="dashicons-before dashicons-external"></span>',
+		'href' => $url,
+		'meta' => [
 			'target' => '_blank',
 		],
 	] );
@@ -101,7 +110,7 @@ function add_admin_bar_support_ticket_link( WP_Admin_Bar $wp_admin_bar ) {
 		return;
 	}
 
-	$env_name    = get_environment_name();
+	$env_name = Altis\get_environment_name();
 	$support_url = SUPPORT_URL;
 	if ( 'unknown' !== $env_name ) {
 		$support_url .= sprintf( '?applications[]=%s', urlencode( $env_name ) );
@@ -110,10 +119,10 @@ function add_admin_bar_support_ticket_link( WP_Admin_Bar $wp_admin_bar ) {
 	// Add support ticket URL as a sub-menu item to the Altis logo menu in the admin bar.
 	$wp_admin_bar->add_menu( [
 		'parent' => 'altis',
-		'id'     => 'altis-support-ticket',
-		'title'  => __( 'Open Support Ticket', 'altis' ) . ' <span class="dashicons-before dashicons-external"></span>',
-		'href'   => $support_url,
-		'meta'   => [
+		'id' => 'altis-support-ticket',
+		'title' => __( 'Open Support Ticket', 'altis' ) . ' <span class="dashicons-before dashicons-external"></span>',
+		'href' => $support_url,
+		'meta' => [
 			'target' => '_blank',
 		],
 	] );

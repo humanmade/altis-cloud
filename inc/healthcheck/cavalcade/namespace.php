@@ -1,4 +1,9 @@
 <?php
+/**
+ * Altis Cloud Cavalcade Healthcheck.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\Healthcheck\Cavalcade;
 
@@ -27,7 +32,7 @@ function bootstrap() {
 /**
  * Add custom cron schedule.
  *
- * @param array $schedules Existing wp-cron schedules
+ * @param array $schedules Existing wp-cron schedules.
  * @return array Altered schedules
  */
 function add_cron_schedule( $schedules ) {

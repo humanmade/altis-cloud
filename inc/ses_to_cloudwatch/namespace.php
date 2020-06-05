@@ -1,9 +1,14 @@
 <?php
+/**
+ * Altis Cloud SES Logs.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\SES_To_CloudWatch;
 
+use Altis\Cloud\CloudWatch_Logs;
 use Exception;
-use function Altis\Cloud\CloudWatch_Logs\send_events_to_stream;
 
 /**
  * Set up actions.
@@ -16,11 +21,11 @@ function bootstrap() {
 /**
  * Called when the AWS SES plugin has sent an email.
  *
- * @param  AWS\Result $result
- * @param  array $message
+ * @param AWS\Result $result SES email delivery result.
+ * @param array $message The response message.
  */
 function on_sent_message( $result, $message ) {
-	send_events_to_stream(
+	CloudWatch_Logs\send_events_to_stream(
 		[
 			[
 				'timestamp' => time() * 1000,
@@ -36,19 +41,19 @@ function on_sent_message( $result, $message ) {
 /**
  * Called when the AWS SES plugin has an error sending mail.
  *
- * @param  AWS\Result $result
- * @param  array $message
+ * @param Exception $error The SES email delivery error.
+ * @param array $message The error message.
  */
-function on_error_sending_message( Exception $e, $message ) {
-	send_events_to_stream(
+function on_error_sending_message( Exception $error, $message ) {
+	CloudWatch_Logs\send_events_to_stream(
 		[
 			[
 				'timestamp' => time() * 1000,
 				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 				'message'   => json_encode( [
 					'error'     => [
-						'class'   => get_class( $e ),
-						'message' => $e->getMessage(),
+						'class'   => get_class( $error ),
+						'message' => $error->getMessage(),
 					],
 					'message' => $message,
 				] ),

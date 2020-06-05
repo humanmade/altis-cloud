@@ -1,26 +1,34 @@
 <?php
+/**
+ * Altis Cloud Audit Log to CloudWatch Driver.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
+use Altis;
+use Altis\Cloud\CloudWatch_Logs;
 use Aws\CloudWatch\CloudWatchClient;
 use Exception;
-
-use function Altis\Cloud\CloudWatch_Logs\cloudwatch_logs_client;
-use function Altis\Cloud\CloudWatch_Logs\send_events_to_stream;
-use function Altis\get_aws_sdk;
-use function Altis\get_environment_name;
 use WP_Stream\DB_Driver as DB_Driver_Interface;
 
+/**
+ * Audit Log Database Driver.
+ *
+ * @package altis-cloud
+ */
 class CloudWatch_Driver implements DB_Driver_Interface {
 	/**
-	 * Holds Query class
+	 * Holds Query class.
 	 *
 	 * @var Query
 	 */
 	protected $query;
 
 	/**
-	 * Holds error message
+	 * Holds error message.
+	 *
 	 * @var string
 	 */
 	public static $error = '';
@@ -47,7 +55,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		// Track the timestamp in an integer so we can do range queries for it.
 		$data['created_timestamp'] = strtotime( $data['created'] ) * 1000;
 
-		$result = send_events_to_stream(
+		$result = CloudWatch_Logs\send_events_to_stream(
 			[
 				[
 					'timestamp' => time() * 1000,
@@ -55,14 +63,14 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 					'message' => json_encode( $data ),
 				],
 			],
-			get_environment_name() . '/audit-log',
+			Altis\get_environment_name() . '/audit-log',
 			'items'
 		);
 
 		if ( ! $result ) {
 			return false;
 		}
-		// Add the values to the column values caches if they exist
+		// Add the values to the column values caches if they exist.
 		foreach ( $data as $column => $value ) {
 			$cache = wp_cache_get( $column, 'stream_column_values' );
 			if ( $cache === false || in_array( $value, $cache, true ) ) {
@@ -76,10 +84,9 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 	}
 
 	/**
-	 * Retrieve records
+	 * Retrieve records.
 	 *
-	 * @param array $args
-	 *
+	 * @param array $args Search query arguments.
 	 * @return array
 	 */
 	public function get_records( $args ) {
@@ -107,7 +114,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		}
 
 		if ( $args['date_to'] ) {
-			// Because date_to is in the format 2019/04/17, we want to really say the create date is less then 2019/04/17 23:59:59
+			// Because date_to is in the format 2019/04/17, we want to really say the create date is less then 2019/04/17 23:59:59.
 			$field_where[] = sprintf( 'created_timestamp < %d ', ( strtotime( $args['date_to'] ) + DAY_IN_SECONDS ) * 1000 );
 		}
 
@@ -126,7 +133,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		$query = "fields @message $where | sort created_timestamp $order";
 
 		$params = [
-			'logGroupName'   => get_environment_name() . '/audit-log',
+			'logGroupName'   => Altis\get_environment_name() . '/audit-log',
 			'limit'          => $limit,
 			'endTime'        => time() * 1000,
 			'startTime'      => 0,
@@ -134,7 +141,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		];
 
 		try {
-			$query = cloudwatch_logs_client()->startQuery( $params );
+			$query = CloudWatch_Logs\cloudwatch_logs_client()->startQuery( $params );
 		} catch ( Exception $e ) {
 			self::$error = $e->getMessage();
 			return [];
@@ -146,7 +153,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			// Queries take at a minimum 1 second, so we `sleep` before even
 			// making the first call.
 			sleep( 1 );
-			$results = cloudwatch_logs_client()->getQueryResults([
+			$results = CloudWatch_Logs\cloudwatch_logs_client()->getQueryResults([
 				'queryId' => $query['queryId'],
 			] );
 		}
@@ -182,8 +189,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * @param string $column
-	 *
+	 * @param string $column The audit log table column name.
 	 * @return array
 	 */
 	public function get_column_values( $column ) {
@@ -192,14 +198,14 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			$query = "stats distinct( $column ) by $column";
 
 			$params = [
-				'logGroupName'   => get_environment_name() . '/audit-log',
+				'logGroupName'   => Altis\get_environment_name() . '/audit-log',
 				'endTime'        => time() * 1000,
 				'startTime'      => 0,
 				'queryString'    => $query,
 			];
 
 			try {
-				$query = cloudwatch_logs_client()->startQuery( $params );
+				$query = CloudWatch_Logs\cloudwatch_logs_client()->startQuery( $params );
 			} catch ( Exception $e ) {
 				return [];
 			}
@@ -210,7 +216,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 				// Queries take at a minimum 1 second, so we `sleep` before even
 				// making the first call.
 				sleep( 1 );
-				$results = cloudwatch_logs_client()->getQueryResults([
+				$results = CloudWatch_Logs\cloudwatch_logs_client()->getQueryResults([
 					'queryId' => $query['queryId'],
 				] );
 			}
@@ -260,8 +266,13 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		return;
 	}
 
+	/**
+	 * Undocumented function
+	 *
+	 * @return CloudWatchClient
+	 */
 	protected function get_cloudwatch_client() : CloudWatchClient {
-		$client = get_aws_sdk()->createCloudWatch();
+		$client = Altis\get_aws_sdk()->createCloudWatch();
 		return $client;
 	}
 }
