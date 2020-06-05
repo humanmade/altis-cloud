@@ -5,7 +5,7 @@
  * @package altis-cloud
  */
 
-namespace Altis\Cloud;
+namespace Altis\Cloud; // phpcs:ignore
 
 use Altis;
 
