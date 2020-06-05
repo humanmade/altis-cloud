@@ -3,7 +3,7 @@
  * On Altis, all configuration of DB constants (etc) will be put
  * in to a wp-config-production.php in the web root.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 use Altis;

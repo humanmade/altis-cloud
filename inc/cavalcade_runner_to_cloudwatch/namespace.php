@@ -2,7 +2,7 @@
 /**
  * Send Cavalcade logs to CloudWatch.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Cavalcade_Runner_To_CloudWatch;

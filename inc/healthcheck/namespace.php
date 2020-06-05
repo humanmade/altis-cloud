@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Healthchecks.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Healthcheck;

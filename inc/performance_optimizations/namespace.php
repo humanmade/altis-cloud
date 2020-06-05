@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Performance Optimizations.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Performance_Optimizations;

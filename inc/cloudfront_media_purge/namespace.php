@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Media Purge from CDN.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Cloudfront_Media_Purge;

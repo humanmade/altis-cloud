@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Audit Log to CloudWatch.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Audit_Log_To_CloudWatch;

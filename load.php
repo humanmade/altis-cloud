@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Module Loader.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud; // phpcs:ignore

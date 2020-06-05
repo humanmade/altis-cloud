@@ -2,7 +2,7 @@
 /**
  * Altis Cloud SES Logs.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\SES_To_CloudWatch;
