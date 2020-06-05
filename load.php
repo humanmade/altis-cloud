@@ -1,12 +1,16 @@
 <?php
+/**
+ * Altis Cloud Module Loader.
+ *
+ * @package altis-cloud
+ */
 
-namespace Altis\Cloud; // @codingStandardsIgnoreLine
+namespace Altis\Cloud;
 
-use function Altis\get_environment_architecture;
-use function Altis\register_module;
+use Altis;
 
 add_action( 'altis.modules.init', function () {
-	$is_cloud = in_array( get_environment_architecture(), [ 'ec2', 'ecs' ], true );
+	$is_cloud = in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true );
 	$default_settings = [
 		'enabled' => true,
 		'cavalcade' => true,
@@ -14,7 +18,7 @@ add_action( 'altis.modules.init', function () {
 		'aws-ses-wp-mail' => $is_cloud,
 		'batcache' => $is_cloud,
 		'redis' => true,
-		'memcached' => get_environment_architecture() === 'ec2',
+		'memcached' => Altis\get_environment_architecture() === 'ec2',
 		'ludicrousdb' => true,
 		'healthcheck' => true,
 		'xray' => true,
@@ -38,7 +42,7 @@ add_action( 'altis.modules.init', function () {
 		],
 	];
 
-	register_module( 'cloud', __DIR__, 'Cloud', $default_settings, __NAMESPACE__ . '\\bootstrap' );
+	Altis\register_module( 'cloud', __DIR__, 'Cloud', $default_settings, __NAMESPACE__ . '\\bootstrap' );
 } );
 
 // Early hook for logging AWS SDK HTTP requests.

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Altis Cloud Database Dropin.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud;
 
@@ -7,13 +12,23 @@ use LudicrousDB;
 use QM_Backtrace;
 use WP_Error;
 
+/**
+ * Ludicrous DB integration class.
+ *
+ * @package altis-cloud
+ */
 class DB extends LudicrousDB {
+	/**
+	 * Whether to check TCP responsiveness.
+	 *
+	 * @var bool
+	 */
 	public $check_tcp_responsiveness = false;
 
 	/**
 	 * Whether to use mysql_pconnect instead of mysql_connect
 	 *
-	 * @public bool
+	 * @var bool
 	 */
 	public $persistent = true;
 
@@ -29,8 +44,8 @@ class DB extends LudicrousDB {
 	 *
 	 * @see wpdb::query()
 	 *
-	 * @param string $query Database query
-	 * @return int|false Number of rows affected/selected or false on error
+	 * @param string $query Database query.
+	 * @return int|false Number of rows affected/selected or false on error.
 	 */
 	public function query( $query ) {
 		$start = microtime( true );
@@ -74,7 +89,7 @@ class DB extends LudicrousDB {
 			} else {
 				if ( is_resource( $this->dbh ) ) {
 					// Please do not report this code as a PHP 7 incompatibility. Observe the surrounding logic.
-					// @codingStandardsIgnoreLine
+					// phpcs:ignore
 					$code = mysql_errno( $this->dbh );
 				}
 			}
@@ -137,7 +152,7 @@ class DB extends LudicrousDB {
 	 * This function can not use any WordPress functions that read from the database, as that
 	 * will risk a recursion call.
 	 *
-	 * @param string $message The Error message
+	 * @param string $message The Error message.
 	 * @param string $error_code Optional. A Computer readable string to identify the error.
 	 */
 	public function bail( $message, $error_code = '500' ) {
@@ -146,9 +161,9 @@ class DB extends LudicrousDB {
 		nocache_headers();
 		?>
 		<h1>Database Connection Error</h1>
-		<p><pre><?php echo $message //@codingStandardsIgnoreLine No escaping functions available here. ?></pre></p>
+		<p><pre><?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></pre></p>
 		<?php if ( $error_code ) : ?>
-			<p>Code: <pre><?php echo $error_code //@codingStandardsIgnoreLine No escaping functions available here. ?></pre></p>
+			<p>Code: <pre><?php echo $error_code; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></pre></p>
 		<?php endif ?>
 		<?php
 		exit;

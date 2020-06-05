@@ -1,10 +1,20 @@
 <?php
+/**
+ * Altis Cloud Healthchecks.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\Healthcheck;
 
 use WP_CLI;
 use WP_Error;
 
+/**
+ * Handle healthcheck requests.
+ *
+ * @return void
+ */
 function bootstrap() {
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		require_once __DIR__ . '/class-cli-command.php';
@@ -25,6 +35,12 @@ function bootstrap() {
 	}
 }
 
+/**
+ * Generate healthcheck HTML page.
+ *
+ * @param array $checks The checks to output.
+ * @return void
+ */
 function output_page( array $checks ) {
 	global $wpdb, $wp_object_cache;
 	$passed = true;

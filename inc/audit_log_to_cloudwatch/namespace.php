@@ -1,4 +1,9 @@
 <?php
+/**
+ * Altis Cloud Audit Log to CloudWatch.
+ *
+ * @package altis-cloud
+ */
 
 namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
@@ -15,8 +20,7 @@ function bootstrap() {
  *
  * This is only done when we we are deemed to have a connection to CloudWatch available.
  *
- * @param string $db_driver
- *
+ * @param string $db_driver The current DB driver.
  * @return string
  */
 function set_stream_db_driver( string $db_driver ) : string {
@@ -27,7 +31,6 @@ function set_stream_db_driver( string $db_driver ) : string {
 
 /**
  * Display error message.
- *
  *
  * @return void
  */
