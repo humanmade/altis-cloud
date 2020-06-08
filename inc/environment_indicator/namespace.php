@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Environment Indicator.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Environment_Indicator;

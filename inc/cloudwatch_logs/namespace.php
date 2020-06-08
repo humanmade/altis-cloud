@@ -2,7 +2,7 @@
 /**
  * Altis Cloud CloudWatch Logging Helper.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\CloudWatch_Logs;

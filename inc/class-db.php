@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Database Dropin.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud;
@@ -15,7 +15,7 @@ use WP_Error;
 /**
  * Ludicrous DB integration class.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 class DB extends LudicrousDB {
 	/**

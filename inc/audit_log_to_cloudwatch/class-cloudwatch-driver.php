@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Audit Log to CloudWatch Driver.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Audit_Log_To_CloudWatch;
@@ -16,7 +16,7 @@ use WP_Stream\DB_Driver as DB_Driver_Interface;
 /**
  * Audit Log Database Driver.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 class CloudWatch_Driver implements DB_Driver_Interface {
 	/**

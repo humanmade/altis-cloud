@@ -4,7 +4,7 @@
  *
  * We do this to get better structured data about the errors, and also tie XRay trace ids to the errors.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\CloudWatch_Error_Handler;

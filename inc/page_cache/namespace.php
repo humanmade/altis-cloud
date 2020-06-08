@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Page Cache Configuration.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Page_Cache;

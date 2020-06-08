@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Module.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud;

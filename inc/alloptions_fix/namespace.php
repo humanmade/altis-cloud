@@ -2,7 +2,7 @@
 /**
  * Altis Cloud All Options Fix.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Alloptions_Fix;

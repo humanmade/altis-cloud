@@ -2,7 +2,7 @@
 /**
  * Altis Cloud Cavalcade Healthcheck.
  *
- * @package altis-cloud
+ * @package altis/cloud
  */
 
 namespace Altis\Cloud\Healthcheck\Cavalcade;
