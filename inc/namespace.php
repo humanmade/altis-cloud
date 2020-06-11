@@ -342,12 +342,30 @@ function load_plugins() {
 	}
 
 	if ( $config['aws-ses-wp-mail'] ) {
+		add_filter( 'aws_ses_wp_mail_ses_client_params', __NAMESPACE__ . '\\configure_aws_ses_client' );
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-ses-wp-mail/aws-ses-wp-mail.php';
 	}
 
 	if ( $config['healthcheck'] ) {
 		add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck' );
 	}
+}
+
+/**
+ * Configure AWS SES Sending region.
+ *
+ * @param array $params The AWS SES Email Client parameters.
+ * @return array
+ */
+function configure_aws_ses_client( array $params ) : array {
+	$config = get_config();
+
+	// Set the sending region from config if provided.
+	if ( $config['email-region'] ) {
+		$params['region'] = $config['email-region'];
+	}
+
+	return $params;
 }
 
 /**

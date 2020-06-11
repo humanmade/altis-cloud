@@ -11,9 +11,11 @@ Once you have requested a domain for verification, you will be provided DNS entr
 It's also required to configure the code base to send emails from the domain. This can be done by setting the `altis.modules.cloud.email-from-address` setting.
 
 ```json
-"modules": {
-	"cloud": {
-		"email-from-address": "webmaster@mydomainname.com"
+{
+	"modules": {
+		"cloud": {
+			"email-from-address": "webmaster@mydomainname.com"
+		}
 	}
 }
 ```
@@ -35,6 +37,22 @@ add_filter( 'wp_mail_from_name', function ( $name ) {
 ```
 
 Any email address can be used as long as they are all from a verified sending domain. Multiple sending domains can also be used, just get each one verified.
+
+## Email Sending Region
+
+In the event of migrating from one region to another or setting up AWS SES in a region other than the one your application is hosted in you may need to override the default region.
+
+To configure the sending region set the `email-region` configuration option to a valid AWS region code as shown in the following example.
+
+```json
+{
+	"modules": {
+		"cloud": {
+			"email-region": "us-east-1"
+		}
+	}
+}
+```
 
 ## Email Logging
 
