@@ -23,6 +23,7 @@ add_action( 'altis.modules.init', function () {
 		'healthcheck' => true,
 		'xray' => true,
 		'email-from-address' => 'no-reply@humanmade.com',
+		'email-region' => false,
 		'audit-log-to-cloudwatch' => $is_cloud,
 		'php-errors-to-cloudwatch' => $is_cloud,
 		'cdn-media-purge' => false,
