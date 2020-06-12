@@ -42,7 +42,7 @@ Any email address can be used as long as they are all from a verified sending do
 
 In the event of migrating from one region to another or setting up AWS SES in a region other than the one your application is hosted in you may need to override the default region.
 
-To configure the sending region set the `email-region` configuration option to a valid AWS region code as shown in the following example.
+To configure the sending region set the `email-region` configuration option to a valid AWS region code as shown in the following example. (By default this is set to `false`, which uses the default region.)
 
 ```json
 {
