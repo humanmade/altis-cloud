@@ -6,8 +6,6 @@
  * @package altis/cloud
  */
 
-use Altis;
-
 // Don't self-initialize if this is not an Altis execution.
 if ( ! function_exists( 'add_action' ) ) {
 	return;
