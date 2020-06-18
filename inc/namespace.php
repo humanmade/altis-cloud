@@ -4,14 +4,14 @@ namespace Altis\Cloud;
 
 use Altis;
 use Aws\CloudFront\CloudFrontClient;
-use const Altis\ROOT_DIR;
-use function Altis\get_aws_sdk;
-use function Altis\get_config as get_platform_config;
-use function Altis\get_environment_architecture;
 use Aws\Credentials;
 use Aws\Credentials\CredentialProvider;
 use Aws\Signature\SignatureV4;
+use const Altis\ROOT_DIR;
 use Exception;
+use function Altis\get_aws_sdk;
+use function Altis\get_config as get_platform_config;
+use function Altis\get_environment_architecture;
 use GuzzleHttp\Psr7\Request;
 use HM\Platform\XRay;
 use Psr\Http\Message\RequestInterface;
