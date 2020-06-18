@@ -2,12 +2,19 @@
 
 namespace Altis\Cloud;
 
+use Altis;
 use Aws\CloudFront\CloudFrontClient;
 use const Altis\ROOT_DIR;
 use function Altis\get_aws_sdk;
 use function Altis\get_config as get_platform_config;
 use function Altis\get_environment_architecture;
+use Aws\Credentials;
+use Aws\Credentials\CredentialProvider;
+use Aws\Signature\SignatureV4;
+use Exception;
+use GuzzleHttp\Psr7\Request;
 use HM\Platform\XRay;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Set up the Cloud Module.
@@ -68,6 +75,13 @@ function bootstrap() {
 		define( 'MULTISITE', false );
 		define( 'SUBDOMAIN_INSTALL', false );
 	}
+
+	// Display environment details in admin sidebar.
+	Environment_Indicator\bootstrap();
+
+	// Sign ElasticSearch HTTP requests and log errors.
+	add_action( 'http_api_debug', __NAMESPACE__ . '\\log_elasticsearch_request_errors', 10, 5 );
+	add_filter( 'http_request_args', __NAMESPACE__ . '\\on_http_request_args', 11, 2 );
 }
 
 // Load the Cavalcade Runner CloudWatch extension.
@@ -176,6 +190,129 @@ function get_config() {
 	$defaults = get_platform_config()['modules']['cloud'];
 
 	return array_merge( $defaults, $hm_platform ? $hm_platform : [] );
+}
+
+/**
+ * Get the URL to the elasticsearch cluster.
+ *
+ * The URL will have no trailing slash.
+ *
+ * @return string|null
+ */
+function get_elasticsearch_url() : ?string {
+	if ( ! defined( 'ELASTICSEARCH_HOST' ) ) {
+		return null;
+	}
+	$host = sprintf( '%s://%s:%d', ELASTICSEARCH_PORT === 443 ? 'https' : 'http', ELASTICSEARCH_HOST, ELASTICSEARCH_PORT );
+	return $host;
+}
+
+/**
+ * Process HTTP request arguments.
+ *
+ * @param array $args Request arguments.
+ * @param string $url Request URL.
+ * @return array
+ */
+function on_http_request_args( array $args, string $url ) : array {
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+	$host = parse_url( $url, PHP_URL_HOST );
+
+	if ( ELASTICSEARCH_HOST !== $host ) {
+		return $args;
+	}
+
+	if ( Altis\get_environment_type() === 'local' || ! in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
+		return $args;
+	}
+
+	// Request already signed.
+	// Note that this is here for back compat with the search module's request signing code.
+	if ( isset( $args['headers']['Authorization'] ) ) {
+		return $args;
+	}
+
+	return sign_wp_request( $args, $url );
+}
+
+/**
+ * Sign requests made to Elasticsearch.
+ *
+ * @param array $args Request arguments.
+ * @param string $url Request URL.
+ * @return array
+ */
+function sign_wp_request( array $args, string $url ) : array {
+	if ( isset( $args['headers']['Host'] ) ) {
+		unset( $args['headers']['Host'] );
+	}
+	if ( is_array( $args['body'] ) ) {
+		$args['body'] = http_build_query( $args['body'], null, '&' );
+	}
+	$request = new Request( $args['method'], $url, $args['headers'], $args['body'] );
+	$signed_request = sign_psr7_request( $request );
+	$args['headers']['Authorization'] = $signed_request->getHeader( 'Authorization' )[0];
+	$args['headers']['X-Amz-Date'] = $signed_request->getHeader( 'X-Amz-Date' )[0];
+	if ( $signed_request->getHeader( 'X-Amz-Security-Token' ) ) {
+		$args['headers']['X-Amz-Security-Token'] = $signed_request->getHeader( 'X-Amz-Security-Token' )[0];
+	}
+	return $args;
+}
+
+/**
+ * Sign a request object with authentication headers for sending to Elasticsearch.
+ *
+ * @param RequestInterface $request The request object to sign.
+ * @return RequestInterface
+ */
+function sign_psr7_request( RequestInterface $request ) : RequestInterface {
+	if ( Altis\get_environment_type() === 'local' ) {
+		return $request;
+	}
+
+	$signer = new SignatureV4( 'es', HM_ENV_REGION );
+	if ( defined( 'ELASTICSEARCH_AWS_KEY' ) ) {
+		$credentials = new Credentials\Credentials( ELASTICSEARCH_AWS_KEY, ELASTICSEARCH_AWS_SECRET );
+	} else {
+		$provider = CredentialProvider::defaultProvider();
+		$credentials = call_user_func( $provider )->wait();
+	}
+	$signed_request = $signer->signRequest( $request, $credentials );
+
+	return $signed_request;
+}
+
+/**
+ * Log ElasticSearch request errors.
+ *
+ * @param array|WP_Error $response Response data.
+ * @param string $context The http_api_debug action context.
+ * @param string $class The HTTP transport class name.
+ * @param array $parsed_args The request arguments.
+ * @param string $url The request URL.
+ * @return void
+ */
+function log_elasticsearch_request_errors( $response, string $context, string $class, array $parsed_args, string $url ) {
+	if ( $context !== 'response' ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+	$host = parse_url( $url, PHP_URL_HOST );
+	if ( ! defined( 'ELASTICSEARCH_HOST' ) || ELASTICSEARCH_HOST !== $host ) {
+		return;
+	}
+
+	$request_response_code = (int) wp_remote_retrieve_response_code( $response );
+	$is_valid_res = ( $request_response_code >= 200 && $request_response_code <= 299 );
+
+	if ( is_wp_error( $response ) ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		trigger_error( sprintf( 'Error in ElasticSearch request: %s (%s)', $response->get_error_message(), $response->get_error_code() ), E_USER_WARNING );
+	} elseif ( ! $is_valid_res ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		trigger_error( sprintf( 'Error in ElasticSearch request: %s (%s)', wp_remote_retrieve_body( $response ), $request_response_code ), E_USER_WARNING );
+	}
 }
 
 /**
