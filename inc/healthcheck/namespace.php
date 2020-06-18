@@ -7,6 +7,7 @@
 
 namespace Altis\Cloud\Healthcheck;
 
+use Altis\Cloud;
 use WP_CLI;
 use WP_Error;
 
@@ -104,10 +105,11 @@ function output_page( array $checks ) {
  */
 function run_checks() : array {
 	$checks = [
-		'mysql'        => run_mysql_healthcheck(),
+		'mysql' => run_mysql_healthcheck(),
 		'object-cache' => run_object_cache_healthcheck(),
 		'cron-waiting' => run_cron_healthcheck(),
-		'cron-canary'  => Cavalcade\check_health(),
+		'cron-canary' => Cavalcade\check_health(),
+		'elasticsearch' => run_elasticsearch_healthcheck(),
 	];
 	$checks = apply_filters( 'altis_healthchecks', $checks );
 
@@ -224,6 +226,30 @@ function run_cron_healthcheck() {
 
 	if ( $passed_due ) {
 		return new WP_Error( 'cron-passed-due', sprintf( '%d jobs passed their run date.', $passed_due ) );
+	}
+
+	return true;
+}
+
+/**
+ * Run ElasticSearch health check.
+ */
+function run_elasticsearch_healthcheck() {
+	$host = Cloud\get_elasticsearch_url();
+
+	// If no host is set then ElasticSearch not in use.
+	if ( empty( $host ) ) {
+		return true;
+	}
+
+	$response = wp_remote_get( $host . '/_cluster/health' );
+	if ( is_wp_error( $response ) ) {
+		return new WP_Error( 'elasticsearch-unhealthy', $response->get_error_message() );
+	}
+
+	$body = wp_remote_retrieve_body( $response );
+	if ( is_wp_error( $body ) ) {
+		return new WP_Error( 'elasticsearch-unhealthy', $body->get_error_message() );
 	}
 
 	return true;
