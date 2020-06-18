@@ -76,9 +76,6 @@ function bootstrap() {
 		define( 'SUBDOMAIN_INSTALL', false );
 	}
 
-	// Display environment details in admin sidebar.
-	Environment_Indicator\bootstrap();
-
 	// Sign ElasticSearch HTTP requests and log errors.
 	add_action( 'http_api_debug', __NAMESPACE__ . '\\log_elasticsearch_request_errors', 10, 5 );
 	add_filter( 'http_request_args', __NAMESPACE__ . '\\on_http_request_args', 11, 2 );
