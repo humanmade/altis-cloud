@@ -141,7 +141,9 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		}
 
 		$results = [ 'status' => 'Running' ];
+		$start_searching_time = time();
 		while ( ! in_array( $results['status'], [ 'Failed', 'Cancelled', 'Complete' ], true ) ) {
+
 			// Limit how fast we poll CloudWatch via calls to getQueryResults.
 			// Queries take at a minimum 1 second, so we `sleep` before even
 			// making the first call.
@@ -149,6 +151,22 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			$results = cloudwatch_logs_client()->getQueryResults([
 				'queryId' => $query['queryId'],
 			] );
+
+			$time_taken = time() - $start_searching_time;
+			// If we are looking for most recent results, we can short-circuit once we have enough
+			// in the results array, even if the query has not completed searching all records.
+			// We only trigger this behaviour at a minimum of 15 seconds, which gives the query time to
+			// complete as usual, which will mean that the total found results is correctly set.
+			// Short-circuiting the query early means the total counts will not be accurate, so we fix to 10k.
+			if ( $order === 'desc' && $results['status'] === 'Running' && count( $results['results'] ) === $limit && $time_taken > 15 ) {
+				$results['statistics']['recordsMatched'] = 10000;
+
+				// Stop the running query, as we won't be reading from it again.
+				CloudWatch_Logs\cloudwatch_logs_client()->stopQuery( [
+					'queryId' => $query['queryId'],
+				] );
+				break;
+			}
 		}
 
 		/**
