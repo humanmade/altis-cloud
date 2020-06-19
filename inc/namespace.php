@@ -20,6 +20,13 @@ use HM\Platform\XRay;
 use Psr\Http\Message\RequestInterface;
 
 /**
+ * CloudFront invalidation limit.
+ *
+ * @see purge_cdn_paths()
+ */
+const INVALIDATION_LIMIT = 10;
+
+/**
  * Set up the Cloud Module.
  */
 function bootstrap() {
@@ -736,6 +743,11 @@ function get_cloudfront_client() : CloudFrontClient {
 /**
  * Create purge request to invalidate CDN cache.
  *
+ * There is a hard limit of 10 invalidations per HTTP request, due to
+ * underlying limitations in AWS.
+ *
+ * @see https://www.altis-dxp.com/resources/docs/cloud/cdn-purge/
+ *
  * @param array $paths_patterns A list of the paths that you want to invalidate.
  *                              The path is relative to the CDN host, A leading / is optional.
  *                              e.g  for http://altis-dxp.com/images/image2.jpg
@@ -748,6 +760,20 @@ function get_cloudfront_client() : CloudFrontClient {
  * @return bool Returns true if invalidation successfully created, false on failure.
  */
 function purge_cdn_paths( array $paths_patterns ) : bool {
+	static $invalidated = 0;
+	$invalidated += count( $paths_patterns );
+	if ( $invalidated > INVALIDATION_LIMIT ) {
+		trigger_error(
+			sprintf(
+				'Cannot invalidate more than %d items per request, contact Altis support',
+				INVALIDATION_LIMIT
+			),
+			E_USER_WARNING
+		);
+
+		return false;
+	}
+
 	$client = get_cloudfront_client();
 
 	$distribution_id = '';
