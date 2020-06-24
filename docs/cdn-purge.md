@@ -12,7 +12,7 @@ purge_cdn_paths( [
 
 Note that purging paths should be kept to only essential items as purging more than 1000 paths per month will incur overage charges.
 
-**Important note:** Due to AWS limitations, you **cannot** purge large numbers of paths at once. Do not call this function in bulk; contact the Altis Cloud team if you need to perform large numbers of invalidations.
+**Important note:** Due to AWS limitations, you **cannot** purge large numbers of paths at once. Do not call this function in bulk; contact the Altis Cloud team if you need to perform large numbers of invalidations. The `purge_cdn_paths()` function is limited to 10 wildcards or 2000 static paths.
 
 ## Automatic media purge rule
 
