@@ -17,11 +17,22 @@ use HM\Platform\XRay;
 use Psr\Http\Message\RequestInterface;
 
 /**
- * CloudFront invalidation limit.
+ * CloudFront static paths invalidation limit.
+ *
+ * We can only invalidate 3000 total at once, so 2000 gives us some wiggle room.
  *
  * @see purge_cdn_paths()
  */
-const INVALIDATION_LIMIT = 10;
+const PATHS_INVALIDATION_LIMIT = 2000;
+
+/**
+ * CloudFront wildcard invalidation limit.
+ *
+ * We can only invalidate 15 total at once, so 10 gives us some wiggle room.
+ *
+ * @see purge_cdn_paths()
+ */
+const WILDCARD_INVALIDATION_LIMIT = 10;
 
 /**
  * Set up the Cloud Module.
@@ -593,8 +604,9 @@ function get_cloudfront_client() : CloudFrontClient {
 /**
  * Create purge request to invalidate CDN cache.
  *
- * There is a hard limit of 10 invalidations per HTTP request, due to
- * underlying limitations in AWS.
+ * This is limited to 10 wildcard invalidations and 2000 static path
+ * invalidations due to underlying limits in the CloudFront API. Consult the
+ * Altis Cloud team if you need to invalidate en masse.
  *
  * @see https://www.altis-dxp.com/resources/docs/cloud/cdn-purge/
  *
@@ -610,13 +622,21 @@ function get_cloudfront_client() : CloudFrontClient {
  * @return bool Returns true if invalidation successfully created, false on failure.
  */
 function purge_cdn_paths( array $paths_patterns ) : bool {
-	static $invalidated = 0;
-	$invalidated += count( $paths_patterns );
-	if ( $invalidated > INVALIDATION_LIMIT ) {
+	static $invalidated_static = 0;
+	static $invalidated_wild = 0;
+	foreach ( $paths_patterns as $pattern ) {
+		if ( strpos( $pattern, '*' ) !== null ) {
+			$invalidated_wild++;
+		} else {
+			$invalidated_static++;
+		}
+	}
+	if ( $invalidated_static > PATHS_INVALIDATION_LIMIT || $invalidated_wild > WILDCARD_INVALIDATION_LIMIT ) {
 		trigger_error(
 			sprintf(
-				'Cannot invalidate more than %d items per request, contact Altis support',
-				INVALIDATION_LIMIT
+				'Cannot invalidate more than %d wildcards or %d items per request, contact Altis support',
+				WILDCARD_INVALIDATION_LIMIT,
+				PATHS_INVALIDATION_LIMIT
 			),
 			E_USER_WARNING
 		);
