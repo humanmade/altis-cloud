@@ -625,7 +625,7 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 	static $invalidated_static = 0;
 	static $invalidated_wild = 0;
 	foreach ( $paths_patterns as $pattern ) {
-		if ( strpos( $pattern, '*' ) !== null ) {
+		if ( strpos( $pattern, '*' ) !== false ) {
 			$invalidated_wild++;
 		} else {
 			$invalidated_static++;
