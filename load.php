@@ -9,6 +9,8 @@ namespace Altis\Cloud; // phpcs:ignore
 
 use Altis;
 
+defined( 'ALTIS_PERSISTENT_DB_CONNS' ) or define( 'ALTIS_PERSISTENT_DB_CONNS', true );
+
 add_action( 'altis.modules.init', function () {
 	$is_cloud = in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true );
 	$default_settings = [

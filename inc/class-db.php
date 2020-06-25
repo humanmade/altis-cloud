@@ -30,7 +30,7 @@ class DB extends LudicrousDB {
 	 *
 	 * @var bool
 	 */
-	public $persistent = false;
+	public $persistent = ALTIS_PERSISTENT_DB_CONNS;
 
 	/**
 	 * Track total time waiting for database responses;
