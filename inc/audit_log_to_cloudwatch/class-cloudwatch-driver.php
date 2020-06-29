@@ -162,7 +162,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 				$results['statistics']['recordsMatched'] = 10000;
 
 				// Stop the running query, as we won't be reading from it again.
-				CloudWatch_Logs\cloudwatch_logs_client()->stopQuery( [
+				cloudwatch_logs_client()->stopQuery( [
 					'queryId' => $query['queryId'],
 				] );
 				break;
