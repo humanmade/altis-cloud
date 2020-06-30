@@ -168,10 +168,14 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			if ( $order === 'desc' && $results['status'] === 'Running' && count( $results['results'] ) === $limit && $time_taken > 15 ) {
 				$results['statistics']['recordsMatched'] = 10000;
 
-				// Stop the running query, as we won't be reading from it again.
-				CloudWatch_Logs\cloudwatch_logs_client()->stopQuery( [
-					'queryId' => $query['queryId'],
-				] );
+				try {
+					// Stop the running query, as we won't be reading from it again.
+					CloudWatch_Logs\cloudwatch_logs_client()->stopQuery( [
+						'queryId' => $query['queryId'],
+					] );
+				} catch ( Exception $e ) {
+					trigger_error( sprintf( 'Error stopping CloudWatch Logs query: %s', $e->getMessage() ), E_USER_WARNING );
+				}
 				break;
 			}
 		}
