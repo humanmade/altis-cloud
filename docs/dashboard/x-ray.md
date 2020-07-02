@@ -9,7 +9,7 @@ XRay traces provide performance profiling, database queries, remote requests and
 
 ![Example XRay Summary](../assets/xray-summary.png)
 
-When debugging requests in Altis Cloud, it's typical to find the specific HTTP request you want to debug. The XRay interface is limited to showing 500 HTTP requests at a time, so it's advices to narrow your search down by timeframe, URL, or IP address. The "Before" and "After" fields accept any human readable format, or absolute timestamps. URLs, IPs or other fields can be specified via the "Filter Express" search box. The Altis Dashboard provides contextual help via the "?" icon. Below are some common examples when using Filter Expressions:
+When debugging requests in Altis Cloud, it's typical to find the specific HTTP request you want to debug. The XRay interface is limited to showing 500 HTTP requests at a time, so it's advised to narrow your search down by timeframe, URL, or IP address. The "Before" and "After" fields accept any human readable format such as "30 minutes ago", or absolute timestamps. URLs, IPs or other fields can be specified via the "Filter Expression" search box. The Altis Dashboard provides contextual help via the "?" icon. Below are some common examples when using Filter Expressions:
 
 **Show all requests to a specific URL**
 ```
@@ -34,7 +34,7 @@ Each HTTP request is called an "XRay trace" and provides many useful pieces of d
 
 ![Example Flamegrapth](../assets/xray-flamegraph.png)
 
-XRay Flamegraphs provide you with a full performance view of the whole HTTP request. Flamegraphs make it very easy to understand why a specific request is slow, and what the call-stack is for all parts of the page load.
+XRay Flamegraphs provide you with a full performance profile of the HTTP request. Flamegraphs make it very easy to understand why a specific request is slow, and what the call-stack is for all parts of the page load.
 
 The Flamegraph is a graph showing the request time on the X axis, and the call stack / depth on the Y axis. A tall Flamegraph segment represents a deep call-stack (not necessarily an indication of a problem) and a wide segment represents a slow operation (which can indicate a performance bottleneck).
 
