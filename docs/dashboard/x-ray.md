@@ -4,6 +4,7 @@ The Altis Dashboard provides a way to view all backend PHP requests for develope
 
 XRay traces provide performance profiling, database queries, remote requests and exposes all request data for each backend PHP request.
 
+<video controls src="https://www.altis-dxp.com/uploads/2020/07/altis-cloud-dashboard-xray.mp4"></video>
 
 ## Searching XRay Requests
 
