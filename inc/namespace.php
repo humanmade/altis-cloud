@@ -499,6 +499,11 @@ function load_plugins() {
 	if ( $config['healthcheck'] ) {
 		add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck' );
 	}
+
+	// Bootstrap integration with AES API.
+	if ( Altis\get_config()['modules']['search']['enabled'] ?? false ) {
+		AES_Packages\setup();
+	}
 }
 
 /**
