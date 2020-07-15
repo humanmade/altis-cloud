@@ -52,7 +52,9 @@ function bootstrap() {
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
 		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
-		add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
+		if ( in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
+			add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
+		}
 		XRay\bootstrap();
 	}
 
