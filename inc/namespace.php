@@ -52,7 +52,9 @@ function bootstrap() {
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
 		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
-		add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
+		if ( in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
+			add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
+		}
 		XRay\bootstrap();
 	}
 
@@ -696,7 +698,7 @@ function get_ec2_instance_metadata() : array {
 		return [];
 	}
 
-	if ( $request->getStatusCode() !== '200' ) {
+	if ( $request->getStatusCode() !== 200 ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Unable to get instance metadata. Returned response code: %s', $request->getStatusCode() ), E_USER_NOTICE );
 		apcu_store( $cache_key, [] );
