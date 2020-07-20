@@ -484,12 +484,12 @@ function load_plugins() {
 	// at the infra level currently.
 	if ( ! defined( 'TACHYON_URL' ) ) {
 		// Override the default host name for Tachyon to match the current site.
-		add_filter( 'tachyon_url', __NAMESPACE__ . '\\set_tachyon_hostname' );
+		add_filter( 'tachyon_url', __NAMESPACE__ . '\\set_tachyon_hostname', 11 );
 		define( 'TACHYON_URL', get_site_url( get_main_site_id( get_main_network_id() ), '/tachyon' ) );
 	}
 
 	if ( $config['s3-uploads'] ) {
-		add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname' );
+		add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname', 11 );
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
 	}
 
