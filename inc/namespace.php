@@ -15,6 +15,7 @@ use function Altis\get_environment_architecture;
 use GuzzleHttp\Psr7\Request;
 use HM\Platform\XRay;
 use Psr\Http\Message\RequestInterface;
+use S3_Uploads;
 
 /**
  * CloudFront static paths invalidation limit.
@@ -470,13 +471,16 @@ function load_plugins() {
 
 	// Define TACHYON_URL, as in the Cloud environment is "always on"
 	// but the constant is not defined at the infra. level as we want
-	// it to be the network primary domain which isn't available
-	// at the infra level current.
+	// it to default to the network primary domain which isn't available
+	// at the infra level currently.
 	if ( ! defined( 'TACHYON_URL' ) ) {
+		// Override the default host name for Tachyon to match the current site.
+		add_filter( 'tachyon_url', __NAMESPACE__ . '\\set_tachyon_hostname' );
 		define( 'TACHYON_URL', get_site_url( get_main_site_id( get_main_network_id() ), '/tachyon' ) );
 	}
 
 	if ( $config['s3-uploads'] ) {
+		add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname' );
 		require_once ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
 	}
 
@@ -491,6 +495,52 @@ function load_plugins() {
 	if ( $config['healthcheck'] ) {
 		add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck' );
 	}
+}
+
+/**
+ * Ensure Tachyon URL is using the current site hostname.
+ *
+ * @param string $tachyon_url The current tachyon URL.
+ * @return string The updated Tachyon URL.
+ */
+function set_tachyon_hostname( string $tachyon_url ) : string {
+	$tachyon_host = wp_parse_url( $tachyon_url, PHP_URL_HOST );
+	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
+
+	// Only do the replacement if the host name is not a subdomain of the Tachyon host.
+	if ( strpos( $current_host, $tachyon_host ) === false ) {
+		return str_replace( $tachyon_host, $current_host, $tachyon_url, 1 );
+	}
+
+	return $tachyon_url;
+}
+
+/**
+ * Ensure the S3 Uploads Bucket URL matches the current site hostname.
+ *
+ * @param array $dirs Uploads directories array.
+ * @return array
+ */
+function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
+	$s3_uploads = S3_Uploads::get_instance();
+
+	$primary_host = wp_parse_url( get_site_url( get_main_site_id( get_main_network_id() ) ), PHP_URL_HOST );
+	$s3_host = wp_parse_url( $s3_uploads->get_s3_url(), PHP_URL_HOST );
+	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
+
+	// Ensure uploads host at least matches primary site host.
+	if ( strpos( $primary_host, $s3_host ) === false ) {
+		$dirs['url'] = str_replace( $s3_host, $primary_host, $dirs['url'], 1 );
+		$dirs['baseurl'] = str_replace( $s3_host, $primary_host, $dirs['baseurl'], 1 );
+	}
+
+	// Only do the replacement if the host name is not a subdomain of the S3 host.
+	if ( strpos( $current_host, $primary_host ) === false ) {
+		$dirs['url'] = str_replace( $primary_host, $current_host, $dirs['url'], 1 );
+		$dirs['baseurl'] = str_replace( $primary_host, $current_host, $dirs['baseurl'], 1 );
+	}
+
+	return $dirs;
 }
 
 /**
