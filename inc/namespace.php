@@ -529,9 +529,6 @@ function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
 	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
 
 	// Ensure uploads host at least matches primary site host.
-	error_log( $primary_host );
-	error_log( $s3_host );
-	error_log( $current_host );
 	if ( strpos( $primary_host, $s3_host ) === false ) {
 		$dirs['url'] = str_replace( $s3_host, $primary_host, $dirs['url'] );
 		$dirs['baseurl'] = str_replace( $s3_host, $primary_host, $dirs['baseurl'] );
