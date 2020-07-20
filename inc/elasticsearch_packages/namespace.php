@@ -5,7 +5,7 @@
  * @package altis/cloud
  */
 
-namespace Altis\Cloud\AES_Packages;
+namespace Altis\Cloud\Elasticsearch_Packages;
 
 use Altis;
 use Aws\ElasticsearchService\ElasticsearchServiceClient;
@@ -18,7 +18,7 @@ use Exception;
  */
 function setup() {
 	// Check the current environment and bail if it isn't AWS.
-	if ( ! in_array( Altis\get_environment_type(), [ 'development', 'staging', 'production' ], true ) ) {
+	if ( ! in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
 		return;
 	}
 
@@ -29,6 +29,12 @@ function setup() {
 	add_action( 'altis.search.dissociate_package', __NAMESPACE__ . '\\dissociate_package' );
 	add_action( 'altis.search.delete_package', __NAMESPACE__ . '\\delete_package' );
 	add_action( 'altis.search.deleted_package', __NAMESPACE__ . '\\on_deleted_package', 10, 4 );
+
+	// Remove default packages updated hook so we don't try to update indexes until
+	// packages have been associated with the domain.
+	add_action( 'plugins_loaded', function () {
+		remove_action( 'altis.search.updated_packages', 'Altis\\Enhanced_Search\\Packages\\on_updated_packages', 10, 2 );
+	}, 20 );
 }
 
 /**
@@ -50,7 +56,7 @@ function packages_dir( string $path ) : string {
  *
  * @return ElasticsearchServiceClient
  */
-function get_aes_client() : ElasticsearchServiceClient {
+function get_es_client() : ElasticsearchServiceClient {
 	return Altis\get_aws_sdk()->createElasticsearchService( [
 		'version' => '2015-01-01',
 		'region' => Altis\get_environment_region(),
@@ -89,7 +95,7 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 	}
 
 	// Get AES client.
-	$client = get_aes_client();
+	$client = get_es_client();
 
 	// Get Domain ID from host.
 	$domain = get_elasticsearch_domain();
@@ -123,7 +129,7 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 		$s3_key = $s3_file_parts[2];
 
 		// Create a new package.
-		$new_package = $client->createPackage( [
+		$result = $client->createPackage( [
 			'PackageName' => $name, // required.
 			'PackageDescription' => $file,
 			'PackageSource' => [ // required.
@@ -133,29 +139,33 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 			'PackageType' => 'TXT-DICTIONARY',
 		] );
 
-		// Association can fail the first time if we run it too quickly.
-		usleep( 100000 );
-
-		// Associate the package with the ES domain.
-		// NOTE: This process is async so cannot be applied immediately.
-		$client->associatePackage( [
-			'DomainName' => $domain, // required.
-			'PackageID' => $new_package['PackageDetails']['PackageID'], // required.
-		] );
+		$package = $result['PackageDetails'];
+		$status = $package['PackageStatus'];
 
 		// Set package status.
 		if ( $for_network ) {
-			update_site_option( "altis_search_package_status_{$slug}", 'ASSOCIATING' );
+			update_site_option( "altis_search_package_status_{$slug}", $status );
+			update_site_option( "altis_search_package_error_{$slug}", $package['ErrorDetails'] ?? null );
 		} else {
-			update_option( "altis_search_package_status_{$slug}", 'ASSOCIATING' );
+			update_option( "altis_search_package_status_{$slug}", $status );
+			update_option( "altis_search_package_error_{$slug}", $package['ErrorDetails'] ?? null );
+		}
+
+		// Queue up package status check & association routine.
+		if ( in_array( $status, [ 'AVAILABLE', 'COPYING', 'VALIDATING' ], true ) ) {
+			wp_schedule_single_event( time() + 10, 'altis.search.check_package_status', [
+				$package_id,
+				$slug,
+				$for_network,
+			] );
 		}
 	} catch ( Exception $e ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( 'Error creating package on AES: ' . $e->getMessage(), E_USER_WARNING );
+		trigger_error( 'Error creating package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
 		return null;
 	}
 
-	$package_id = sprintf( 'analyzers/%s', $new_package['PackageDetails']['PackageID'] );
+	$package_id = sprintf( 'analyzers/%s', $package['PackageID'] );
 
 	// Return the AES package ID string.
 	return $package_id;
@@ -173,16 +183,9 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 function get_package_id( ?string $package_id, string $slug, bool $for_network = false ) {
 	// Check status.
 	if ( $for_network ) {
-		$status = get_site_option( "altis_search_package_status_{$slug}", 'ASSOCIATING' );
+		$status = get_site_option( "altis_search_package_status_{$slug}", 'COPYING' );
 	} else {
-		$status = get_option( "altis_search_package_status_{$slug}", 'ASSOCIATING' );
-	}
-
-	// Queue up a background task if this is still pending.
-	// Association usually takes 1-5 minutes so use a 30 second resolution.
-	$hook_args = [ $package_id, $slug, $for_network ];
-	if ( $package_id && $status !== 'ACTIVE' && ! wp_next_scheduled( 'altis.search.check_package_status', $hook_args ) ) {
-		wp_schedule_single_event( time() + 60, 'altis.search.check_package_status', $hook_args );
+		$status = get_option( "altis_search_package_status_{$slug}", 'COPYING' );
 	}
 
 	if ( $status !== 'ACTIVE' ) {
@@ -203,7 +206,7 @@ function get_package_id( ?string $package_id, string $slug, bool $for_network = 
  */
 function on_check_package_status( string $package_id, string $slug, bool $for_network = false ) {
 
-	$client = get_aes_client();
+	$client = get_es_client();
 
 	$real_package_id = str_replace( 'analyzers/', '', $package_id );
 
@@ -212,18 +215,49 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 			'PackageID' => $real_package_id,
 		] );
 
+		// Package may not have finished copying over yet.
 		if ( empty( $packages['DomainPackageDetailsList'] ) ) {
-			throw new Exception( sprintf( 'Package with ID %s has not been associated with this domain.', $package_id ) );
-		}
+			$packages = $client->describePackages( [
+				'Filters' => [
+					[
+						'Name' => 'PackageID',
+						'Value' => [ $real_package_id ],
+					],
+				],
+			] );
 
-		$package = $packages['DomainPackageDetailsList'][0];
-		$status = $package['DomainPackageStatus'];
+			// We shouldn't get to this point without having run the create package step
+			// but this ensures we handle that scenario in case it comes up.
+			if ( empty( $packages['PackageDetailsList'] ) ) {
+				throw new Exception( sprintf( 'Elasticsearch package %s not found. Try saving it again or contact support.', $package_id ) );
+			}
+
+			$package = $packages['PackageDetailsList'][0];
+			$status = $package['PackageStatus'];
+
+			// Associate the package with the ES domain.
+			// NOTE: This process is async so cannot be applied immediately.
+			if ( $package['PackageStatus'] === 'AVAILABLE' ) {
+				$result = $client->associatePackage( [
+					'DomainName' => get_elasticsearch_domain(), // required.
+					'PackageID' => $real_package_id, // required.
+				] );
+				$package = $result['DomainPackageDetails'];
+				$status = $package['DomainPackageStatus'];
+			}
+		} else {
+			// Package is currently being associated or is active.
+			$package = $packages['DomainPackageDetailsList'][0];
+			$status = $package['DomainPackageStatus'];
+		}
 
 		// Update the stored status.
 		if ( $for_network ) {
 			update_site_option( "altis_search_package_status_{$slug}", $status );
+			update_site_option( "altis_search_package_error_{$slug}", $package['ErrorDetails'] ?? null );
 		} else {
 			update_option( "altis_search_package_status_{$slug}", $status );
+			update_option( "altis_search_package_error_{$slug}", $package['ErrorDetails'] ?? null );
 		}
 
 		// If the package is now active then resend the settings after a short delay to avoid thrashing.
@@ -232,29 +266,19 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 			wp_schedule_single_event( time() + 30, 'altis.search.update_index_settings', $update_index_hook_args );
 		}
 
-		// Retry if association failed.
-		if ( $status === 'ASSOCIATION_FAILED' ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			trigger_error( sprintf( 'AES package %s domain association failed, retrying.', $package_id ), E_USER_WARNING );
-			$client->associatePackage( [
-				'DomainName' => get_elasticsearch_domain(), // required.
-				'PackageID' => $real_package_id, // required.
-			] );
-		}
-
-		// Queue up another check if we're still associating.
+		// Queue up another check if we're still copying, associating or validating.
 		$hook_args = [ $package_id, $slug, $for_network ];
-		if ( in_array( $status, [ 'ASSOCIATING', 'ASSOCIATION_FAILED' ], true ) ) {
+		$recheck_statuses = [
+			'COPYING',
+			'ASSOCIATING',
+			'VALIDATING',
+		];
+		if ( in_array( $status, $recheck_statuses, true ) ) {
 			wp_schedule_single_event( time() + 30, 'altis.search.check_package_status', $hook_args );
-		}
-
-		// Something has gone terribly wrong.
-		if ( ! in_array( $status, [ 'ACTIVE', 'ASSOCIATING', 'ASSOCIATION_FAILED' ], true ) ) {
-			throw new Exception( sprintf( 'Error associating AES package %s. Status is %s', $package_id, $status ) );
 		}
 	} catch ( Exception $e ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( 'Error checking AES package status: ' . $e->getMessage(), E_USER_WARNING );
+		trigger_error( $e->getMessage(), E_USER_WARNING );
 	}
 }
 
@@ -266,7 +290,7 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
  */
 function dissociate_package( string $package_id ) {
 
-	$client = get_aes_client();
+	$client = get_es_client();
 
 	$real_package_id = str_replace( 'analyzers/', '', $package_id );
 
@@ -282,7 +306,7 @@ function dissociate_package( string $package_id ) {
 		] );
 	} catch ( Exception $e ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( 'Error dissociating package on AES: ' . $e->getMessage(), E_USER_WARNING );
+		trigger_error( 'Error dissociating package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
 	}
 }
 
@@ -294,7 +318,7 @@ function dissociate_package( string $package_id ) {
  */
 function delete_package( string $package_id ) {
 
-	$client = get_aes_client();
+	$client = get_es_client();
 
 	$real_package_id = str_replace( 'analyzers/', '', $package_id );
 
@@ -304,7 +328,7 @@ function delete_package( string $package_id ) {
 		] );
 	} catch ( Exception $e ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( 'Error deleting package on AES: ' . $e->getMessage(), E_USER_WARNING );
+		trigger_error( 'Error deleting package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
 	}
 }
 
