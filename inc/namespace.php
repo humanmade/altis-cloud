@@ -528,8 +528,8 @@ function set_tachyon_hostname( string $tachyon_url ) : string {
 	}
 
 	// Only do the replacement if the host name is not a subdomain of the Tachyon host.
-	if ( substr( $current_host, -strlen( $tachyon_host ) ) !== $tachyon_host ) {
-		return str_replace( $tachyon_host, $current_host, $tachyon_url );
+	if ( substr( $current_host, -1 * strlen( $tachyon_host ) ) !== $tachyon_host ) {
+		return str_replace( "://{$tachyon_host}", "://{$current_host}", $tachyon_url );
 	}
 
 	return $tachyon_url;
@@ -571,14 +571,14 @@ function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
 
 	// Ensure uploads host at least matches primary site host.
 	if ( $s3_host !== $primary_host ) {
-		$dirs['url'] = str_replace( $s3_host, $primary_host, $dirs['url'] );
-		$dirs['baseurl'] = str_replace( $s3_host, $primary_host, $dirs['baseurl'] );
+		$dirs['url'] = str_replace( "://{$s3_host}", "://{$primary_host}", $dirs['url'] );
+		$dirs['baseurl'] = str_replace( "://{$s3_host}", "://{$primary_host}", $dirs['baseurl'] );
 	}
 
 	// Only do the replacement if the host name is not a subdomain of the S3 host.
-	if ( substr( $current_host, -strlen( $primary_host ) ) !== $primary_host ) {
-		$dirs['url'] = str_replace( $primary_host, $current_host, $dirs['url'] );
-		$dirs['baseurl'] = str_replace( $primary_host, $current_host, $dirs['baseurl'] );
+	if ( substr( $current_host, -1 * strlen( $primary_host ) ) !== $primary_host ) {
+		$dirs['url'] = str_replace( "://{$primary_host}", "://{$current_host}", $dirs['url'] );
+		$dirs['baseurl'] = str_replace( "://{$primary_host}", "://{$current_host}", $dirs['baseurl'] );
 	}
 
 	return $dirs;
