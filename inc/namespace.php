@@ -451,6 +451,16 @@ function load_db() {
 }
 
 /**
+ * Return the site URL for the main site on the network.
+ *
+ * @param string $path Optional path to append to URL.
+ * @return string
+ */
+function get_main_site_url( string $path = '' ) : string {
+	return get_site_url( get_main_site_id( get_main_network_id() ), $path );
+}
+
+/**
  * Load the plugins in altis.
  */
 function load_plugins() {
@@ -475,12 +485,12 @@ function load_plugins() {
 	// at the infra level currently.
 	if ( ! defined( 'TACHYON_URL' ) ) {
 		// Override the default host name for Tachyon to match the current site.
-		add_filter( 'tachyon_url', __NAMESPACE__ . '\\set_tachyon_hostname', 11 );
-		define( 'TACHYON_URL', get_site_url( get_main_site_id( get_main_network_id() ), '/tachyon' ) );
+		add_filter( 'tachyon_url', __NAMESPACE__ . '\\set_tachyon_hostname', 20 );
+		define( 'TACHYON_URL', get_main_site_url( '/tachyon' ) );
 	}
 
 	if ( $config['s3-uploads'] ) {
-		add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname', 11 );
+		add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname', 20 );
 		require_once ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
 	}
 
@@ -507,8 +517,18 @@ function set_tachyon_hostname( string $tachyon_url ) : string {
 	$tachyon_host = wp_parse_url( $tachyon_url, PHP_URL_HOST );
 	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
 
+	if ( ! $tachyon_host ) {
+		trigger_error( sprintf( 'Error parsing Tachyon URL: %s', esc_url_raw( $tachyon_url ) ), E_USER_WARNING );
+		return $tachyon_url;
+	}
+
+	if ( ! $current_host ) {
+		trigger_error( sprintf( 'Error parsing current site URL: %s', esc_url_raw( site_url() ) ), E_USER_WARNING );
+		return $tachyon_url;
+	}
+
 	// Only do the replacement if the host name is not a subdomain of the Tachyon host.
-	if ( strpos( $current_host, $tachyon_host ) === false ) {
+	if ( substr( $current_host, -strlen( $tachyon_host ) ) !== $tachyon_host ) {
 		return str_replace( $tachyon_host, $current_host, $tachyon_url );
 	}
 
@@ -524,18 +544,39 @@ function set_tachyon_hostname( string $tachyon_url ) : string {
 function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
 	$s3_uploads = S3_Uploads::get_instance();
 
-	$primary_host = wp_parse_url( get_site_url( get_main_site_id( get_main_network_id() ) ), PHP_URL_HOST );
+	$primary_host = wp_parse_url( get_main_site_url(), PHP_URL_HOST );
 	$s3_host = wp_parse_url( $s3_uploads->get_s3_url(), PHP_URL_HOST );
 	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
 
+	if ( ! $primary_host ) {
+		trigger_error( sprintf( 'Error parsing main site URL: %s', esc_url_raw( get_main_site_url() ) ), E_USER_WARNING );
+		return $dirs;
+	}
+
+	if ( ! $s3_host ) {
+		trigger_error( sprintf( 'Error parsing S3 bucket URL: %s', esc_url_raw( $s3_uploads->get_s3_url() ) ), E_USER_WARNING );
+		return $dirs;
+	}
+
+	if ( ! $current_host ) {
+		trigger_error( sprintf( 'Error parsing site URL: %s', esc_url_raw( site_url() ) ), E_USER_WARNING );
+		return $dirs;
+	}
+
+	// To support 3rd party CDNs leave the host names as is if the direct
+	// amazonaws.com URL is in use.
+	if ( strpos( $s3_host, '.amazonaws.com' ) !== false ) {
+		return $dirs;
+	}
+
 	// Ensure uploads host at least matches primary site host.
-	if ( strpos( $primary_host, $s3_host ) === false ) {
+	if ( $s3_host !== $primary_host ) {
 		$dirs['url'] = str_replace( $s3_host, $primary_host, $dirs['url'] );
 		$dirs['baseurl'] = str_replace( $s3_host, $primary_host, $dirs['baseurl'] );
 	}
 
 	// Only do the replacement if the host name is not a subdomain of the S3 host.
-	if ( strpos( $current_host, $primary_host ) === false ) {
+	if ( substr( $current_host, -strlen( $primary_host ) ) !== $primary_host ) {
 		$dirs['url'] = str_replace( $primary_host, $current_host, $dirs['url'] );
 		$dirs['baseurl'] = str_replace( $primary_host, $current_host, $dirs['baseurl'] );
 	}
