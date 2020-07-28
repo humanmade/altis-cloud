@@ -18,6 +18,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\TransferStats;
 use HM\Platform\XRay;
 use Psr\Http\Message\RequestInterface;
+use S3_Uploads;
 
 /**
  * CloudFront static paths invalidation limit.
@@ -464,6 +465,16 @@ function load_db() {
 }
 
 /**
+ * Return the site URL for the main site on the network.
+ *
+ * @param string $path Optional path to append to URL.
+ * @return string
+ */
+function get_main_site_url( string $path = '' ) : string {
+	return get_site_url( get_main_site_id( get_main_network_id() ), $path );
+}
+
+/**
  * Load the plugins in altis.
  */
 function load_plugins() {
@@ -479,13 +490,16 @@ function load_plugins() {
 
 	// Define TACHYON_URL, as in the Cloud environment is "always on"
 	// but the constant is not defined at the infra. level as we want
-	// it to be the network primary domain which isn't available
-	// at the infra level current.
+	// it to default to the network primary domain which isn't available
+	// at the infra level currently.
 	if ( ! defined( 'TACHYON_URL' ) ) {
-		define( 'TACHYON_URL', get_site_url( get_main_site_id( get_main_network_id() ), '/tachyon' ) );
+		// Override the default host name for Tachyon to match the current site.
+		add_filter( 'tachyon_url', __NAMESPACE__ . '\\set_tachyon_hostname', 20 );
+		define( 'TACHYON_URL', get_main_site_url( '/tachyon' ) );
 	}
 
 	if ( $config['s3-uploads'] ) {
+		add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname', 20 );
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
 	}
 
@@ -506,6 +520,83 @@ function load_plugins() {
 	if ( Altis\get_config()['modules']['search']['enabled'] ?? false ) {
 		Elasticsearch_Packages\setup();
 	}
+}
+
+/**
+ * Ensure Tachyon URL is using the current site hostname.
+ *
+ * @param string $tachyon_url The current tachyon URL.
+ * @return string The updated Tachyon URL.
+ */
+function set_tachyon_hostname( string $tachyon_url ) : string {
+	$tachyon_host = wp_parse_url( $tachyon_url, PHP_URL_HOST );
+	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
+
+	if ( ! $tachyon_host ) {
+		trigger_error( sprintf( 'Error parsing Tachyon URL: %s', esc_url_raw( $tachyon_url ) ), E_USER_WARNING );
+		return $tachyon_url;
+	}
+
+	if ( ! $current_host ) {
+		trigger_error( sprintf( 'Error parsing current site URL: %s', esc_url_raw( site_url() ) ), E_USER_WARNING );
+		return $tachyon_url;
+	}
+
+	// Only do the replacement if the host name is not a subdomain of the Tachyon host.
+	if ( substr( $current_host, -1 * strlen( $tachyon_host ) ) !== $tachyon_host ) {
+		return str_replace( "://{$tachyon_host}", "://{$current_host}", $tachyon_url );
+	}
+
+	return $tachyon_url;
+}
+
+/**
+ * Ensure the S3 Uploads Bucket URL matches the current site hostname.
+ *
+ * @param array $dirs Uploads directories array.
+ * @return array
+ */
+function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
+	$s3_uploads = S3_Uploads::get_instance();
+
+	$primary_host = wp_parse_url( get_main_site_url(), PHP_URL_HOST );
+	$s3_host = wp_parse_url( $s3_uploads->get_s3_url(), PHP_URL_HOST );
+	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
+
+	if ( ! $primary_host ) {
+		trigger_error( sprintf( 'Error parsing main site URL: %s', esc_url_raw( get_main_site_url() ) ), E_USER_WARNING );
+		return $dirs;
+	}
+
+	if ( ! $s3_host ) {
+		trigger_error( sprintf( 'Error parsing S3 bucket URL: %s', esc_url_raw( $s3_uploads->get_s3_url() ) ), E_USER_WARNING );
+		return $dirs;
+	}
+
+	if ( ! $current_host ) {
+		trigger_error( sprintf( 'Error parsing site URL: %s', esc_url_raw( site_url() ) ), E_USER_WARNING );
+		return $dirs;
+	}
+
+	// To support 3rd party CDNs leave the host names as is if the direct
+	// amazonaws.com URL is in use.
+	if ( strpos( $s3_host, '.amazonaws.com' ) !== false ) {
+		return $dirs;
+	}
+
+	// Ensure uploads host at least matches primary site host.
+	if ( $s3_host !== $primary_host ) {
+		$dirs['url'] = str_replace( "://{$s3_host}", "://{$primary_host}", $dirs['url'] );
+		$dirs['baseurl'] = str_replace( "://{$s3_host}", "://{$primary_host}", $dirs['baseurl'] );
+	}
+
+	// Only do the replacement if the host name is not a subdomain of the S3 host.
+	if ( substr( $current_host, -1 * strlen( $primary_host ) ) !== $primary_host ) {
+		$dirs['url'] = str_replace( "://{$primary_host}", "://{$current_host}", $dirs['url'] );
+		$dirs['baseurl'] = str_replace( "://{$primary_host}", "://{$current_host}", $dirs['baseurl'] );
+	}
+
+	return $dirs;
 }
 
 /**
