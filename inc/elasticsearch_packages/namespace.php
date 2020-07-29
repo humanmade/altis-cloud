@@ -28,8 +28,8 @@ function setup() {
 	add_filter( 'altis.search.create_package_id', __NAMESPACE__ . '\\create_package_id', 10, 4 );
 	add_filter( 'altis.search.get_package_id', __NAMESPACE__ . '\\get_package_id', 10, 2 );
 	add_action( 'altis.search.check_package_status', __NAMESPACE__ . '\\on_check_package_status', 10, 3 );
-	add_action( 'altis.search.dissociate_package', __NAMESPACE__ . '\\dissociate_package' );
-	add_action( 'altis.search.delete_package', __NAMESPACE__ . '\\delete_package' );
+	add_action( 'altis.search.dissociate_package', __NAMESPACE__ . '\\dissociate_package', 10, 2 );
+	add_action( 'altis.search.delete_package', __NAMESPACE__ . '\\delete_package', 10, 2 );
 	add_action( 'altis.search.deleted_package', __NAMESPACE__ . '\\on_deleted_package', 10, 4 );
 
 	// Remove default packages updated hook so we don't try to update indexes until
@@ -119,6 +119,7 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 		// to let the settings updates and data indexing complete.
 		wp_schedule_single_event( time() + HOUR_IN_SECONDS, 'altis.search.dissociate_package', [
 			$existing_package_id,
+			$for_network,
 		] );
 	}
 
@@ -274,7 +275,7 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 			wp_schedule_single_event( time() + 30, 'altis.search.check_package_status', $hook_args );
 		}
 	} catch ( Exception $e ) {
-		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ) );
+		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ), $for_network );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( $e->getMessage(), E_USER_WARNING );
 	}
@@ -284,9 +285,10 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
  * Dissociate and delete a package.
  *
  * @param string $package_id The existing package to remove.
+ * @param bool $for_network Whether this was a network package or not.
  * @return void
  */
-function dissociate_package( string $package_id ) {
+function dissociate_package( string $package_id, bool $for_network = false ) {
 
 	$client = get_es_client();
 
@@ -301,9 +303,10 @@ function dissociate_package( string $package_id ) {
 		// Allow 10 minutes for package to be dissociated before removing.
 		wp_schedule_single_event( time() + ( 10 * MINUTE_IN_SECONDS ), 'altis.search.delete_package', [
 			$package_id,
+			$for_network,
 		] );
 	} catch ( Exception $e ) {
-		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ) );
+		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ), $for_network );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( 'Error dissociating package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
 	}
@@ -313,9 +316,10 @@ function dissociate_package( string $package_id ) {
  * Delete a package off AES.
  *
  * @param string $package_id The package ID to delete.
+ * @param bool $for_network Whether this was a network package or not.
  * @return void
  */
-function delete_package( string $package_id ) {
+function delete_package( string $package_id, bool $for_network = false ) {
 
 	$client = get_es_client();
 
@@ -326,7 +330,7 @@ function delete_package( string $package_id ) {
 			'PackageID' => $real_package_id,
 		] );
 	} catch ( Exception $e ) {
-		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ) );
+		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ), $for_network );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( 'Error deleting package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
 	}
@@ -336,7 +340,9 @@ function delete_package( string $package_id ) {
  * Hook triggered when deleting a package directly.
  *
  * @param string $package_id The old package ID that has been deleted.
+ * @param string $slug The package slug.
+ * @param bool $for_network Whether this was a network package or not.
  */
-function on_deleted_package( string $package_id ) {
-	dissociate_package( $package_id );
+function on_deleted_package( string $package_id, string $slug, bool $for_network ) {
+	dissociate_package( $package_id, $for_network );
 }
