@@ -8,8 +8,10 @@
 namespace Altis\Cloud\Elasticsearch_Packages;
 
 use Altis;
+use Altis\Enhanced_Search\Packages;
 use Aws\ElasticsearchService\ElasticsearchServiceClient;
 use Exception;
+use WP_Error;
 
 /**
  * Hook into search module package support.
@@ -77,21 +79,19 @@ function get_elasticsearch_domain() : string {
  * @param string $slug The package slug.
  * @param string $file The package file path.
  * @param bool $for_network Whether this is a network level package or not.
- * @return string|null
+ * @return string|WP_Error
  */
 function create_package_id( ?string $package_id, string $slug, string $file, bool $for_network = false ) : ?string {
 
 	// Check file is an S3 file path.
 	if ( strpos( $file, 's3://' ) !== 0 ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( sprintf( 'The given package filepath %s is not a valid S3 file path.', $file ), E_USER_WARNING );
-		return null;
+		return new WP_Error( 'package_file_missing', sprintf( 'The given package filepath %s is not a valid S3 file path.', $file ) );
 	}
 
 	// Check domain.
 	if ( ! defined( 'ELASTICSEARCH_HOST' ) || ! ELASTICSEARCH_HOST ) {
-		trigger_error( 'Could not find an AWS ElasticSearch Service Domain to associate the package with.', E_USER_WARNING );
-		return null;
+		return new WP_Error( 'elasticsearch_host_not_found', 'Could not find an AWS ElasticSearch Service Domain to associate the package with.' );
 	}
 
 	// Get AES client.
@@ -160,9 +160,7 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 			] );
 		}
 	} catch ( Exception $e ) {
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( 'Error creating package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
-		return null;
+		return new WP_Error( $e->getCode(), $e->getMessage() );
 	}
 
 	$package_id = sprintf( 'analyzers/%s', $package['PackageID'] );
@@ -202,7 +200,6 @@ function get_package_id( ?string $package_id, string $slug, bool $for_network = 
  * @param string $slug The package slug.
  * @param boolean $for_network Whether this is a network level package.
  * @return void
- * @throws Exception Thrown if there is any issue contacting the AES API, exceptions are caught.
  */
 function on_check_package_status( string $package_id, string $slug, bool $for_network = false ) {
 
@@ -277,6 +274,7 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 			wp_schedule_single_event( time() + 30, 'altis.search.check_package_status', $hook_args );
 		}
 	} catch ( Exception $e ) {
+		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ) );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( $e->getMessage(), E_USER_WARNING );
 	}
@@ -305,6 +303,7 @@ function dissociate_package( string $package_id ) {
 			$package_id,
 		] );
 	} catch ( Exception $e ) {
+		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ) );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( 'Error dissociating package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
 	}
@@ -327,6 +326,7 @@ function delete_package( string $package_id ) {
 			'PackageID' => $real_package_id,
 		] );
 	} catch ( Exception $e ) {
+		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ) );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( 'Error deleting package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
 	}
