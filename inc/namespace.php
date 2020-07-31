@@ -47,7 +47,7 @@ function bootstrap() {
 	if (
 		$config['xray']
 		&& function_exists( 'xhprof_sample_enable' )
-		&& ( ! defined( 'WP_CLI' ) || ! WP_CLI )
+		&& php_sapi_name() !== 'cli'
 		&& ! class_exists( 'HM\\Cavalcade\\Runner\\Runner' )
 	) {
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
