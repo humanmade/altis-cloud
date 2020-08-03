@@ -8,7 +8,6 @@
 namespace Altis\Cloud\Elasticsearch_Packages;
 
 use Altis;
-use Altis\Enhanced_Search\Packages;
 use Aws\ElasticsearchService\ElasticsearchServiceClient;
 use Exception;
 use WP_Error;
@@ -24,19 +23,37 @@ function setup() {
 		return;
 	}
 
+	// Add a short time out cron hook.
+	add_filter( 'cron_schedules', __NAMESPACE__ . '\\cron_schedules' );
+
+	// Hook into search module.
 	add_filter( 'altis.search.packages_dir', __NAMESPACE__ . '\\packages_dir', 9 );
 	add_filter( 'altis.search.create_package_id', __NAMESPACE__ . '\\create_package_id', 10, 4 );
 	add_filter( 'altis.search.get_package_id', __NAMESPACE__ . '\\get_package_id', 10, 2 );
 	add_action( 'altis.search.check_package_status', __NAMESPACE__ . '\\on_check_package_status', 10, 3 );
-	add_action( 'altis.search.dissociate_package', __NAMESPACE__ . '\\dissociate_package', 10, 2 );
 	add_action( 'altis.search.delete_package', __NAMESPACE__ . '\\delete_package', 10, 2 );
 	add_action( 'altis.search.deleted_package', __NAMESPACE__ . '\\on_deleted_package', 10, 4 );
+	add_action( 'altis.search.updated_all_index_settings', __NAMESPACE__ . '\\on_update_index_settings' );
 
 	// Remove default packages updated hook so we don't try to update indexes until
 	// packages have been associated with the domain.
 	add_action( 'plugins_loaded', function () {
 		remove_action( 'altis.search.updated_packages', 'Altis\\Enhanced_Search\\Packages\\on_updated_packages', 10, 2 );
 	}, 20 );
+}
+
+/**
+ * Filter the cron schedules list.
+ *
+ * @param array $schedules The list of available cron schedules.
+ * @return array
+ */
+function cron_schedules( array $schedules ) : array {
+	$schedules['1minute'] = [
+		'display' => __( 'Every minute', 'altis' ),
+		'interval' => 60,
+	];
+	return $schedules;
 }
 
 /**
@@ -61,7 +78,6 @@ function packages_dir( string $path ) : string {
 function get_es_client() : ElasticsearchServiceClient {
 	return Altis\get_aws_sdk()->createElasticsearchService( [
 		'version' => '2015-01-01',
-		'region' => Altis\get_environment_region(),
 	] );
 }
 
@@ -69,7 +85,7 @@ function get_es_client() : ElasticsearchServiceClient {
  * Return the domain ID portion of the Elasticsearch Service host name.
  */
 function get_elasticsearch_domain() : string {
-	return preg_replace( '#^search-([a-z][a-z0-9\-]+)-[a-z0-9]+\..*$#', '$1', 'search-platform-test-36c2d870-ylbu5ldvhmnb2blhnfiqxabzdq.eu-west-1.es.amazonaws.com' ); // ELASTICSEARCH_HOST );
+	return preg_replace( '#^search-([a-z][a-z0-9\-]+)-[a-z0-9]+\..*$#', '$1', ELASTICSEARCH_HOST );
 }
 
 /**
@@ -81,7 +97,7 @@ function get_elasticsearch_domain() : string {
  * @param bool $for_network Whether this is a network level package or not.
  * @return string|WP_Error
  */
-function create_package_id( ?string $package_id, string $slug, string $file, bool $for_network = false ) : ?string {
+function create_package_id( ?string $package_id, string $slug, string $file, bool $for_network = false ) {
 
 	// Check file is an S3 file path.
 	if ( strpos( $file, 's3://' ) !== 0 ) {
@@ -108,21 +124,6 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 		trim( basename( $file, '.txt' ), '-' )
 	), 0, 28 );
 
-	// Get old package ID to remove if one exists - access options directly to bypass status check.
-	if ( $for_network ) {
-		$existing_package_id = get_site_option( "altis_search_package_{$slug}", false );
-	} else {
-		$existing_package_id = get_option( "altis_search_package_{$slug}", false );
-	}
-	if ( $existing_package_id ) {
-		// The cleanup does not have to happen straight away so postpone it for an hour
-		// to let the settings updates and data indexing complete.
-		wp_schedule_single_event( time() + HOUR_IN_SECONDS, 'altis.search.dissociate_package', [
-			$existing_package_id,
-			$for_network,
-		] );
-	}
-
 	try {
 		// Derive S3 bucket and path.
 		preg_match( '#^s3://([^/]+)/(.*?)$#', $file, $s3_file_parts );
@@ -139,32 +140,42 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 			],
 			'PackageType' => 'TXT-DICTIONARY',
 		] );
-
-		$package = $result['PackageDetails'];
-		$status = $package['PackageStatus'];
-
-		// Set package status.
-		if ( $for_network ) {
-			update_site_option( "altis_search_package_status_{$slug}", $status );
-			update_site_option( "altis_search_package_error_{$slug}", $package['ErrorDetails'] ?? null );
-		} else {
-			update_option( "altis_search_package_status_{$slug}", $status );
-			update_option( "altis_search_package_error_{$slug}", $package['ErrorDetails'] ?? null );
-		}
-
-		// Queue up package status check & association routine.
-		if ( in_array( $status, [ 'AVAILABLE', 'COPYING', 'VALIDATING' ], true ) ) {
-			wp_schedule_single_event( time() + 10, 'altis.search.check_package_status', [
-				$package_id,
-				$slug,
-				$for_network,
-			] );
-		}
 	} catch ( Exception $e ) {
-		return new WP_Error( $e->getCode(), $e->getMessage() );
+		return new WP_Error( 'create_package_error', $e->getMessage() );
+	}
+
+	$package = $result['PackageDetails'];
+	$status = $package['PackageStatus'];
+
+	// Set package status.
+	if ( $for_network ) {
+		update_site_option( "altis_search_package_status_{$slug}", $status );
+		update_site_option( "altis_search_package_error_{$slug}", $package['ErrorDetails']['ErrorMessage'] ?? null );
+	} else {
+		update_option( "altis_search_package_status_{$slug}", $status );
+		update_option( "altis_search_package_error_{$slug}", $package['ErrorDetails']['ErrorMessage'] ?? null );
 	}
 
 	$package_id = sprintf( 'analyzers/%s', $package['PackageID'] );
+
+	// Get old package ID to remove if one exists - access options directly to bypass status check.
+	if ( $for_network ) {
+		$existing_package_id = get_site_option( "altis_search_package_{$slug}", null );
+	} else {
+		$existing_package_id = get_option( "altis_search_package_{$slug}", null );
+	}
+
+	// Queue up package status check & association routine.
+	if ( in_array( $status, [ 'AVAILABLE', 'COPYING', 'VALIDATING' ], true ) ) {
+		wp_schedule_event( time(), '1minute', 'altis.search.check_package_status', [
+			$package_id,
+			$slug,
+			$for_network,
+			$existing_package_id,
+		] );
+	} else {
+		return new WP_Error( 'create_package_error', sprintf( 'Package upload error, current status is %s', $status ) );
+	}
 
 	// Return the AES package ID string.
 	return $package_id;
@@ -195,18 +206,45 @@ function get_package_id( ?string $package_id, string $slug, bool $for_network = 
 }
 
 /**
+ * Add a package ID to the list of packages to be removed.
+ *
+ * @param string $package_id The package ID to remove.
+ * @return void
+ */
+function add_package_to_remove( string $package_id ) {
+	$packages = get_site_option( 'altis_search_packages_to_remove', [] );
+	$packages[] = $package_id;
+	$packages = array_unique( $packages );
+	update_site_option( 'altis_search_packages_to_remove', $packages );
+}
+
+/**
+ * Get the list of packages to remove.
+ *
+ * @return array
+ */
+function get_packages_to_remove() : array {
+	return get_site_option( 'altis_search_packages_to_remove', [] );
+}
+
+/**
  * Check and update the package association status.
  *
  * @param string $package_id The package ID to look up.
  * @param string $slug The package slug.
  * @param boolean $for_network Whether this is a network level package.
+ * @param string|null $existing_package_id An existing package ID to be removed.
  * @return void
  */
-function on_check_package_status( string $package_id, string $slug, bool $for_network = false ) {
+function on_check_package_status( string $package_id, string $slug, bool $for_network = false, ?string $existing_package_id = null ) {
 
 	$client = get_es_client();
 
 	$real_package_id = str_replace( 'analyzers/', '', $package_id );
+
+	// Set scheduled event hook arguments.
+	$check_status_hook_args = [ $package_id, $slug, $for_network, $existing_package_id ];
+	$update_index_hook_args = [ $for_network, strpos( $slug, 'user-dictionary' ) !== false ];
 
 	try {
 		$packages = $client->listDomainsForPackage( [
@@ -252,97 +290,142 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 		// Update the stored status.
 		if ( $for_network ) {
 			update_site_option( "altis_search_package_status_{$slug}", $status );
-			update_site_option( "altis_search_package_error_{$slug}", $package['ErrorDetails'] ?? null );
+			update_site_option( "altis_search_package_error_{$slug}", $package['ErrorDetails']['ErrorMessage'] ?? null );
 		} else {
 			update_option( "altis_search_package_status_{$slug}", $status );
-			update_option( "altis_search_package_error_{$slug}", $package['ErrorDetails'] ?? null );
+			update_option( "altis_search_package_error_{$slug}", $package['ErrorDetails']['ErrorMessage'] ?? null );
 		}
 
-		// If the package is now active then resend the settings after a short delay to avoid thrashing.
-		$update_index_hook_args = [ $for_network, strpos( $slug, 'user-dictionary' ) !== false ];
-		if ( $status === 'ACTIVE' && ! wp_next_scheduled( 'altis.search.update_index_settings', $update_index_hook_args ) ) {
-			wp_schedule_single_event( time() + 30, 'altis.search.update_index_settings', $update_index_hook_args );
+		// If the package is now active then update the index settings.
+		if ( $status === 'ACTIVE' ) {
+			// Add the existing package ID to list of packages to remove.
+			// These packages are removed after the index settings are updated.
+			add_package_to_remove( $existing_package_id );
+
+			// Unschedule this status check.
+			$next = wp_next_scheduled( 'altis.search.check_package_status', $check_status_hook_args );
+			if ( $next ) {
+				wp_unschedule_event( $next, 'altis.search.check_package_status', $check_status_hook_args );
+			}
+
+			// Schedule the index settings update.
+			if ( ! wp_next_scheduled( 'altis.search.update_index_settings', $update_index_hook_args ) ) {
+				wp_schedule_single_event( time() + MINUTE_IN_SECONDS, 'altis.search.update_index_settings', $update_index_hook_args );
+			}
+			return;
 		}
 
 		// Queue up another check if we're still copying, associating or validating.
-		$hook_args = [ $package_id, $slug, $for_network ];
 		$recheck_statuses = [
 			'COPYING',
 			'ASSOCIATING',
 			'VALIDATING',
 		];
-		if ( in_array( $status, $recheck_statuses, true ) ) {
-			wp_schedule_single_event( time() + 30, 'altis.search.check_package_status', $hook_args );
+		if ( ! in_array( $status, $recheck_statuses, true ) ) {
+			$error_message = sprintf( 'Package %s has encountered an error. See the status for more details.', $package_id );
+			throw new Exception( $error_message );
 		}
 	} catch ( Exception $e ) {
-		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ), $for_network );
+		// Unschedule this hook.
+		$next = wp_next_scheduled( 'altis.search.check_package_status', $check_status_hook_args );
+		if ( $next ) {
+			wp_unschedule_event( $next, 'altis.search.check_package_status', $check_status_hook_args );
+		}
+
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( $e->getMessage(), E_USER_WARNING );
 	}
 }
 
 /**
- * Dissociate and delete a package.
+ * Loop over packages to remove and delete them. Called on
+ * the altis.search.updated_all_index_settings hook.
  *
- * @param string $package_id The existing package to remove.
- * @param bool $for_network Whether this was a network package or not.
  * @return void
  */
-function dissociate_package( string $package_id, bool $for_network = false ) {
+function on_update_index_settings() {
+	$packages_to_remove = get_packages_to_remove();
 
-	$client = get_es_client();
-
-	$real_package_id = str_replace( 'analyzers/', '', $package_id );
-
-	try {
-		$client->dissociatePackage( [
-			'DomainName' => get_elasticsearch_domain(), // required.
-			'PackageID' => $real_package_id, // required.
-		] );
-
-		// Allow 10 minutes for package to be dissociated before removing.
-		wp_schedule_single_event( time() + ( 10 * MINUTE_IN_SECONDS ), 'altis.search.delete_package', [
-			$package_id,
-			$for_network,
-		] );
-	} catch ( Exception $e ) {
-		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ), $for_network );
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( 'Error dissociating package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
+	foreach ( $packages_to_remove as $package_id ) {
+		delete_package( $package_id );
 	}
-}
 
-/**
- * Delete a package off AES.
- *
- * @param string $package_id The package ID to delete.
- * @param bool $for_network Whether this was a network package or not.
- * @return void
- */
-function delete_package( string $package_id, bool $for_network = false ) {
-
-	$client = get_es_client();
-
-	$real_package_id = str_replace( 'analyzers/', '', $package_id );
-
-	try {
-		$client->deletePackage( [
-			'PackageID' => $real_package_id,
-		] );
-	} catch ( Exception $e ) {
-		Packages\add_error_message( new WP_Error( $e->getCode(), $e->getMessage() ), $for_network );
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( 'Error deleting package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
-	}
+	// Empty the array of packages to be removed.
+	update_site_option( 'altis_search_packages_to_remove', [] );
 }
 
 /**
  * Hook triggered when deleting a package directly.
  *
  * @param string $package_id The old package ID that has been deleted.
- * @param string $slug The package slug.
- * @param bool $for_network Whether this was a network package or not.
  */
-function on_deleted_package( string $package_id, string $slug, bool $for_network ) {
-	dissociate_package( $package_id, $for_network );
+function on_deleted_package( string $package_id ) {
+	delete_package( $package_id );
+}
+
+/**
+ * Delete a package off Elasticsearch Service.
+ *
+ * @param string $package_id The package ID to delete.
+ * @param int $max_retries The maximum number of times to attempt deletion.
+ * @return void
+ */
+function delete_package( string $package_id, int $max_retries = 5 ) {
+
+	$client = get_es_client();
+
+	$real_package_id = str_replace( 'analyzers/', '', $package_id );
+
+	// Check if we've hit the retry limit.
+	if ( $max_retries === 0 ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		trigger_error( sprintf( 'Error deleting package %s on Elasticsearch Service', $real_package_id ), E_USER_WARNING );
+		return;
+	}
+
+	try {
+		// First check the package is no longer associated with the domain.
+		$packages = $client->listDomainsForPackage( [
+			'PackageID' => $real_package_id,
+		] );
+
+		if ( ! empty( $packages['DomainPackageDetailsList'] ) ) {
+			// Package is currently being associated or is active.
+			$package = $packages['DomainPackageDetailsList'][0];
+			$status = $package['DomainPackageStatus'];
+
+			// Dissociate the package if it's currently active or dissociation failed.
+			if ( $status === 'DISSOCIATION_FAILED' || $status === 'ACTIVE' ) {
+				$client->dissociatePackage( [
+					'DomainName' => get_elasticsearch_domain(), // required.
+					'PackageID' => $real_package_id, // required.
+				] );
+			}
+
+			// Reschedule deletion attempt.
+			wp_schedule_single_event( time() + ( 5 * MINUTE_IN_SECONDS ), 'altis.search.delete_package', [
+				$package_id,
+				$max_retries - 1,
+			] );
+
+			return;
+		}
+
+		// Package is not associated so we can safely delete it.
+		$result = $client->deletePackage( [
+			'PackageID' => $real_package_id,
+		] );
+
+		$package = $result['PackageDetails'];
+		$status = $package['PackageStatus'];
+
+		// Log an error if the delete failed.
+		if ( $status === 'DELETE_FAILED' ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			trigger_error( $package['ErrorDetails']['ErrorMessage'] ?? sprintf( 'Error deleting package %s on Elasticsearch Service', $real_package_id ), E_USER_WARNING );
+		}
+	} catch ( Exception $e ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		trigger_error( 'Error deleting package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
+	}
 }
