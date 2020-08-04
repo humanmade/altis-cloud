@@ -33,7 +33,7 @@ console.log( 'Starting build...' )
 The build script is run in an integration environment, not in the context of the application servers. The following packages are available to your script:
 
 - PHP 7.2
-- Composer
-- NodeJS 8.11
-- NPM 5.6
-- Git 2.7
+- Composer 1.10
+- NodeJS 12.18
+- NPM 6.14
+- Git 2.25
