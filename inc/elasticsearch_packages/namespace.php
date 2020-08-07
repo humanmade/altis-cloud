@@ -27,6 +27,7 @@ function setup() {
 	add_filter( 'cron_schedules', __NAMESPACE__ . '\\cron_schedules' );
 
 	// Hook into search module.
+	// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 	add_filter( 'altis.search.packages_dir', __NAMESPACE__ . '\\packages_dir', 9 );
 	add_filter( 'altis.search.create_package_id', __NAMESPACE__ . '\\create_package_id', 10, 4 );
 	add_filter( 'altis.search.get_package_id', __NAMESPACE__ . '\\get_package_id', 10, 2 );
