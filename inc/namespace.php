@@ -234,7 +234,7 @@ function on_http_request_args( array $args, string $url ) : array {
 	// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
 	$host = parse_url( $url, PHP_URL_HOST );
 
-	if ( ELASTICSEARCH_HOST !== $host ) {
+	if ( ! defined( 'ELASTICSEARCH_HOST' ) || ELASTICSEARCH_HOST !== $host ) {
 		return $args;
 	}
 
