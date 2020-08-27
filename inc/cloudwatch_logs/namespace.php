@@ -8,8 +8,8 @@
 namespace Altis\Cloud\CloudWatch_Logs;
 
 use Altis;
-use Aws\Exception\AwsException;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
+use Aws\Exception\AwsException;
 use Exception;
 
 const OBJECT_CACHE_GROUP = 'cloudwatch-stream-tokens';
