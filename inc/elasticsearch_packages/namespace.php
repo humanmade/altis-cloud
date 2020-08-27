@@ -17,7 +17,7 @@ use WP_Error;
  *
  * @return void
  */
-function setup() {
+function bootstrap() : void {
 	// Check the current environment and bail if it isn't AWS.
 	if ( ! in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
 		return;
