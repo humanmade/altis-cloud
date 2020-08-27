@@ -7,14 +7,14 @@
 
 namespace Altis\Cloud\Elasticsearch_Packages;
 
-// Package deletion status constants.
-const DELETED = 'DELETED';
-const DELETE_SCHEDULED = 'DELETE_SCHEDULED';
-
 use Altis;
 use Aws\ElasticsearchService\ElasticsearchServiceClient;
 use Exception;
 use WP_Error;
+
+// Package deletion status constants.
+const DELETED = 'DELETED';
+const DELETE_SCHEDULED = 'DELETE_SCHEDULED';
 
 /**
  * Hook into search module package support.
