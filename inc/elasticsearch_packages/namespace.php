@@ -99,7 +99,6 @@ function get_elasticsearch_domain() : string {
  * @return string|WP_Error
  */
 function create_package_id( ?string $package_id, string $slug, string $file, bool $for_network = false ) {
-
 	// Check file is an S3 file path.
 	if ( strpos( $file, 's3://' ) !== 0 ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -167,31 +166,33 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 	}
 
 	// Queue up package status check & association routine.
-	if ( in_array( $status, [ 'AVAILABLE', 'COPYING', 'VALIDATING' ], true ) ) {
-		wp_schedule_event( time(), '1minute', 'altis.search.check_package_status', [
-			$package_id,
-			$slug,
-			$for_network,
-			$existing_package_id,
-		] );
-	} else {
+	if ( ! in_array( $status, [ 'AVAILABLE', 'COPYING', 'VALIDATING' ], true ) ) {
 		return new WP_Error( 'create_package_error', sprintf( 'Package upload error, current status is %s', $status ) );
 	}
+
+	wp_schedule_event( time(), '1minute', 'altis.search.check_package_status', [
+		$package_id,
+		$slug,
+		$for_network,
+		$existing_package_id,
+	] );
 
 	// Return the AES package ID string.
 	return $package_id;
 }
 
 /**
- * Check whether the package has finished associating with the AES domain
- * before returning it.
+ * Get the package ID.
+ *
+ * This callback checks whether the package has finished associating with the AES domain
+ * before returning its ID.
  *
  * @param string|null $package_id The stored package ID.
  * @param string $slug The slug for the package.
  * @param boolean $for_network Whether this is a network level package.
  * @return string|null
  */
-function get_package_id( ?string $package_id, string $slug, bool $for_network = false ) {
+function get_package_id( ?string $package_id, string $slug, bool $for_network = false ) : ?string {
 	// Check status.
 	if ( $for_network ) {
 		$status = get_site_option( "altis_search_package_status_{$slug}", 'COPYING' );
@@ -212,7 +213,7 @@ function get_package_id( ?string $package_id, string $slug, bool $for_network = 
  * @param string $package_id The package ID to remove.
  * @return void
  */
-function add_package_to_remove( string $package_id ) {
+function add_package_to_remove( string $package_id ) : void {
 	$packages = get_site_option( 'altis_search_packages_to_remove', [] );
 	$packages[] = $package_id;
 	$packages = array_unique( $packages );
@@ -238,7 +239,6 @@ function get_packages_to_remove() : array {
  * @return void
  */
 function on_check_package_status( string $package_id, string $slug, bool $for_network = false, ?string $existing_package_id = null ) {
-
 	$client = get_es_client();
 
 	$real_package_id = str_replace( 'analyzers/', '', $package_id );
@@ -344,7 +344,7 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
  *
  * @return void
  */
-function on_update_index_settings() {
+function on_update_index_settings() : void {
 	$packages_to_remove = get_packages_to_remove();
 
 	foreach ( $packages_to_remove as $package_id ) {
@@ -356,11 +356,12 @@ function on_update_index_settings() {
 }
 
 /**
- * Hook triggered when deleting a package directly.
+ * Handle direct package deletion.
  *
  * @param string $package_id The old package ID that has been deleted.
+ * @return void
  */
-function on_deleted_package( string $package_id ) {
+function on_deleted_package( string $package_id ) : void {
 	delete_package( $package_id );
 }
 
@@ -371,8 +372,7 @@ function on_deleted_package( string $package_id ) {
  * @param int $max_retries The maximum number of times to attempt deletion.
  * @return void
  */
-function delete_package( string $package_id, int $max_retries = 5 ) {
-
+function delete_package( string $package_id, int $max_retries = 5 ) : void {
 	$client = get_es_client();
 
 	$real_package_id = str_replace( 'analyzers/', '', $package_id );

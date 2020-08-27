@@ -518,7 +518,7 @@ function load_plugins() {
 
 	// Bootstrap integration with Elasticsearch Service API.
 	if ( ! empty( Altis\get_config()['modules']['search']['enabled'] ) ) {
-		Elasticsearch_Packages\setup();
+		Elasticsearch_Packages\bootstrap();
 	}
 }
 
