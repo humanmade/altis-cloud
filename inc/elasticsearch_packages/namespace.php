@@ -50,7 +50,7 @@ function bootstrap() : void {
  * @return array
  */
 function cron_schedules( array $schedules ) : array {
-	$schedules['1minute'] = [
+	$schedules['minutely'] = [
 		'display' => __( 'Every minute', 'altis' ),
 		'interval' => 60,
 	];
@@ -123,10 +123,15 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 		hash( 'crc32', $domain . $file . time() ),
 		trim( basename( $file, '.txt' ), '-' )
 	), 0, 28 );
+	$name = sanitize_key( $name );
 
 	try {
 		// Derive S3 bucket and path.
-		preg_match( '#^s3://([^/]+)/(.*?)$#', $file, $s3_file_parts );
+		if ( ! preg_match( '#^s3://([^/]+)/(.*?)$#', $file, $s3_file_parts ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			return new WP_Error( 'elasticsearch_s3_path', sprintf( 'Unable to extract S3 bucket name and key from file path: %s', $file ) );
+		}
+
 		$s3_bucket = $s3_file_parts[1];
 		$s3_key = $s3_file_parts[2];
 
@@ -170,7 +175,7 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 		return new WP_Error( 'create_package_error', sprintf( 'Package upload error, current status is %s', $status ) );
 	}
 
-	wp_schedule_event( time(), '1minute', 'altis.search.check_package_status', [
+	wp_schedule_event( time(), 'minutely', 'altis.search.check_package_status', [
 		$package_id,
 		$slug,
 		$for_network,
@@ -297,34 +302,30 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 			update_option( "altis_search_package_error_{$slug}", $package['ErrorDetails']['ErrorMessage'] ?? null );
 		}
 
-		// If the package is now active then update the index settings.
-		if ( $status === 'ACTIVE' ) {
-			// Add the existing package ID to list of packages to remove.
-			// These packages are removed after the index settings are updated.
-			add_package_to_remove( $existing_package_id );
-
-			// Unschedule this status check.
-			$next = wp_next_scheduled( 'altis.search.check_package_status', $check_status_hook_args );
-			if ( $next ) {
-				wp_unschedule_event( $next, 'altis.search.check_package_status', $check_status_hook_args );
+		// Queue up another check if we're still copying, associating or validating.
+		if ( $status !== 'ACTIVE' ) {
+			$recheck_statuses = [ 'COPYING', 'ASSOCIATING', 'VALIDATING' ];
+			if ( ! in_array( $status, $recheck_statuses, true ) ) {
+				$error_message = sprintf( 'Package %s has encountered an error. See the status for more details.', $package_id );
+				throw new Exception( $error_message );
 			}
-
-			// Schedule the index settings update.
-			if ( ! wp_next_scheduled( 'altis.search.update_index_settings', $update_index_hook_args ) ) {
-				wp_schedule_single_event( time() + MINUTE_IN_SECONDS, 'altis.search.update_index_settings', $update_index_hook_args );
-			}
+			// We only want to continue processing if the package is now active.
 			return;
 		}
 
-		// Queue up another check if we're still copying, associating or validating.
-		$recheck_statuses = [
-			'COPYING',
-			'ASSOCIATING',
-			'VALIDATING',
-		];
-		if ( ! in_array( $status, $recheck_statuses, true ) ) {
-			$error_message = sprintf( 'Package %s has encountered an error. See the status for more details.', $package_id );
-			throw new Exception( $error_message );
+		// Add the existing package ID to the list of packages to remove.
+		// These packages are removed after the index settings are updated.
+		add_package_to_remove( $existing_package_id );
+
+		// Unschedule this status check.
+		$next = wp_next_scheduled( 'altis.search.check_package_status', $check_status_hook_args );
+		if ( $next ) {
+			wp_unschedule_event( $next, 'altis.search.check_package_status', $check_status_hook_args );
+		}
+
+		// Schedule the index settings update.
+		if ( ! wp_next_scheduled( 'altis.search.update_index_settings', $update_index_hook_args ) ) {
+			wp_schedule_single_event( time() + MINUTE_IN_SECONDS, 'altis.search.update_index_settings', $update_index_hook_args );
 		}
 	} catch ( Exception $e ) {
 		// Unschedule this hook.
