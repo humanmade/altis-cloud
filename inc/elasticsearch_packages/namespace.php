@@ -7,6 +7,10 @@
 
 namespace Altis\Cloud\Elasticsearch_Packages;
 
+// Package deletion status constants.
+const DELETED = 'DELETED';
+const DELETE_SCHEDULED = 'DELETE_SCHEDULED';
+
 use Altis;
 use Aws\ElasticsearchService\ElasticsearchServiceClient;
 use Exception;
@@ -369,11 +373,14 @@ function on_deleted_package( string $package_id ) : void {
 /**
  * Delete a package off Elasticsearch Service.
  *
+ * Returns the status DELETED or DELETE_SCHEDULED on success, otherwise
+ * a WP_Error object is returned.
+ *
  * @param string $package_id The package ID to delete.
  * @param int $max_retries The maximum number of times to attempt deletion.
- * @return void
+ * @return string|WP_Error
  */
-function delete_package( string $package_id, int $max_retries = 5 ) : void {
+function delete_package( string $package_id, int $max_retries = 5 ) {
 	$client = get_es_client();
 
 	$real_package_id = str_replace( 'analyzers/', '', $package_id );
@@ -381,8 +388,9 @@ function delete_package( string $package_id, int $max_retries = 5 ) : void {
 	// Check if we've hit the retry limit.
 	if ( $max_retries === 0 ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( sprintf( 'Error deleting package %s on Elasticsearch Service', $real_package_id ), E_USER_WARNING );
-		return;
+		trigger_error( sprintf( 'Error deleting package %s on Elasticsearch Service, max retries reached', $real_package_id ), E_USER_WARNING );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return new WP_Error( 'delete_package_retries', sprintf( 'Error deleting package %s on Elasticsearch Service, max retries reached', $real_package_id ) );
 	}
 
 	try {
@@ -410,7 +418,7 @@ function delete_package( string $package_id, int $max_retries = 5 ) : void {
 				$max_retries - 1,
 			] );
 
-			return;
+			return DELETE_SCHEDULED;
 		}
 
 		// Package is not associated so we can safely delete it.
@@ -425,9 +433,15 @@ function delete_package( string $package_id, int $max_retries = 5 ) : void {
 		if ( $status === 'DELETE_FAILED' ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			trigger_error( $package['ErrorDetails']['ErrorMessage'] ?? sprintf( 'Error deleting package %s on Elasticsearch Service', $real_package_id ), E_USER_WARNING );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			return new WP_Error( 'delete_package_failed', $package['ErrorDetails']['ErrorMessage'] ?? sprintf( 'Error deleting package %s on Elasticsearch Service', $real_package_id ) );
 		}
 	} catch ( Exception $e ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( 'Error deleting package on Elasticsearch Service: ' . $e->getMessage(), E_USER_WARNING );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return new WP_Error( 'delete_package_error', 'Error deleting package on Elasticsearch Service: ' . $e->getMessage() );
 	}
+
+	return DELETED;
 }
