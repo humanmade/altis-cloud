@@ -47,6 +47,9 @@ The page cache can be customised via your `composer.json`. The example below sho
 							"utm_medium",
 							"utm_source",
 							"utm_content",
+							"utm_term",
+							"mc_cid",
+							"mc_eid",
 							"fbclid",
 							"_ga"
 						],
