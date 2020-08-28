@@ -11,6 +11,7 @@
 	],
 	"autoload": {
 		"files": [
+			"inc/elasticsearch_packages/namespace.php",
 			"inc/healthcheck/namespace.php",
 			"inc/healthcheck/cavalcade/namespace.php",
 			"inc/environment_indicator/namespace.php",

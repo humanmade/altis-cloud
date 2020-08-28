@@ -517,6 +517,11 @@ function load_plugins() {
 	if ( $config['healthcheck'] ) {
 		add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck' );
 	}
+
+	// Bootstrap integration with Elasticsearch Service API.
+	if ( ! empty( Altis\get_config()['modules']['search']['enabled'] ) ) {
+		Elasticsearch_Packages\bootstrap();
+	}
 }
 
 /**
