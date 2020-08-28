@@ -87,7 +87,9 @@ function get_es_client() : ElasticsearchServiceClient {
 }
 
 /**
- * Return the domain ID portion of the Elasticsearch Service host name.
+ * Get the domain ID portion of the Elasticsearch Service host name.
+ *
+ * @return string
  */
 function get_elasticsearch_domain() : string {
 	return preg_replace( '#^search-([a-z][a-z0-9\-]+)-[a-z0-9]+\..*$#', '$1', ELASTICSEARCH_HOST );
@@ -247,7 +249,7 @@ function get_packages_to_remove() : array {
  * @param string|null $existing_package_id An existing package ID to be removed.
  * @return void
  */
-function on_check_package_status( string $package_id, string $slug, bool $for_network = false, ?string $existing_package_id = null ) {
+function on_check_package_status( string $package_id, string $slug, bool $for_network = false, ?string $existing_package_id = null ) : void {
 	$client = get_es_client();
 
 	$real_package_id = str_replace( 'analyzers/', '', $package_id );
