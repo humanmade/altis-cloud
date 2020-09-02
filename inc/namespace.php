@@ -44,11 +44,14 @@ const WILDCARD_INVALIDATION_LIMIT = 10;
 function bootstrap() {
 	$config = get_config();
 
+	$is_alb_healthcheck = isset( $_SERVER['HTTP_USER_AGENT'] ) && strpos( $_SERVER['HTTP_USER_AGENT'], 'ELB-HealthChecker' ) === 0;
+
 	if (
 		$config['xray']
 		&& function_exists( 'xhprof_sample_enable' )
 		&& php_sapi_name() !== 'cli'
 		&& ! class_exists( 'HM\\Cavalcade\\Runner\\Runner' )
+		&& ! $is_alb_healthcheck
 	) {
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
