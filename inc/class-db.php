@@ -47,7 +47,7 @@ class DB extends LudicrousDB {
 	 * @param string $query Database query.
 	 * @return int|false Number of rows affected/selected or false on error.
 	 */
-	public function query( $query ) {
+	protected function _do_query( $query, $dbh_or_table = false ) {
 		$start = microtime( true );
 		$has_qm = class_exists( '\\QM_Backtrace' );
 
@@ -55,14 +55,14 @@ class DB extends LudicrousDB {
 			$this->hide_errors();
 		}
 
-		$result = parent::query( $query );
+		$result = parent::_do_query( $query, $dbh_or_table );
 
 		$end = microtime( true );
 		if ( function_exists( 'HM\\Platform\\XRay\\trace_wpdb_query' ) ) {
 			$host = $this->current_host ?: $this->last_connection['host'];
 			// Host gets the port number applied, which we don't want to add.
 			$host = strtok( $host, ':' );
-			XRay\trace_wpdb_query( apply_filters( 'query', $query ), $start, $end, $result === false ? $this->last_error : null, $host );
+			XRay\trace_wpdb_query( $query, $start, $end, $result === false ? $this->last_error : null, $host );
 		}
 		$this->time_spent += $end - $start;
 
