@@ -48,7 +48,7 @@ class DB extends LudicrousDB {
 	 * @return int|false Number of rows affected/selected or false on error.
 	 */
 	protected function _do_query( $query, $dbh_or_table = false ) {
-		$start = microtime( true );
+		$start  = microtime( true );
 		$has_qm = class_exists( '\\QM_Backtrace' );
 
 		if ( $has_qm && $this->show_errors ) {
