@@ -108,10 +108,9 @@ class DB extends LudicrousDB {
 	 */
 	protected function _do_query( $query, $dbh_or_table = false ) {
 		$start  = microtime( true );
-
 		$result = parent::_do_query( $query, $dbh_or_table );
+		$end    = microtime( true );
 
-		$end = microtime( true );
 		if ( function_exists( 'HM\\Platform\\XRay\\trace_wpdb_query' ) ) {
 			$host = $this->current_host ?: $this->last_connection['host'];
 			// Host gets the port number applied, which we don't want to add.
