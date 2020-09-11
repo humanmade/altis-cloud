@@ -48,7 +48,7 @@ class DB extends LudicrousDB {
 	 * @return int|false Number of rows affected/selected or false on error.
 	 */
 	public function query( $query ) {
-		$start  = microtime( true );
+		$start = microtime( true );
 		$has_qm = class_exists( '\\QM_Backtrace' );
 
 		if ( $has_qm && $this->show_errors ) {
@@ -107,9 +107,9 @@ class DB extends LudicrousDB {
 	 * @param bool $dbh_or_table
 	 */
 	protected function _do_query( $query, $dbh_or_table = false ) {
-		$start  = microtime( true );
+		$start = microtime( true );
 		$result = parent::_do_query( $query, $dbh_or_table );
-		$end    = microtime( true );
+		$end = microtime( true );
 
 		if ( function_exists( 'HM\\Platform\\XRay\\trace_wpdb_query' ) ) {
 			$host = $this->current_host ?: $this->last_connection['host'];
