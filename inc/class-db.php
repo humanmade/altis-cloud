@@ -58,12 +58,6 @@ class DB extends LudicrousDB {
 		$result = parent::query( $query );
 
 		$end = microtime( true );
-		if ( function_exists( 'HM\\Platform\\XRay\\trace_wpdb_query' ) ) {
-			$host = $this->current_host ?: $this->last_connection['host'];
-			// Host gets the port number applied, which we don't want to add.
-			$host = strtok( $host, ':' );
-			XRay\trace_wpdb_query( $query, $start, $end, $result === false ? $this->last_error : null, $host );
-		}
 		$this->time_spent += $end - $start;
 
 		if ( ! $has_qm || ! SAVEQUERIES ) {
@@ -96,6 +90,32 @@ class DB extends LudicrousDB {
 			$this->queries[ $i ]['result'] = new WP_Error( $code, $this->last_error );
 		} else {
 			$this->queries[ $i ]['result'] = $result;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Internal function to perform the mysql_query() call
+	 *
+	 * @since 1.0.0
+	 *
+	 * @access protected
+	 * @see wpdb::query()
+	 *
+	 * @param string $query The query to run.
+	 * @param bool $dbh_or_table
+	 */
+	protected function _do_query( $query, $dbh_or_table = false ) {
+		$start = microtime( true );
+		$result = parent::_do_query( $query, $dbh_or_table );
+		$end = microtime( true );
+
+		if ( function_exists( 'HM\\Platform\\XRay\\trace_wpdb_query' ) ) {
+			$host = $this->current_host ?: $this->last_connection['host'];
+			// Host gets the port number applied, which we don't want to add.
+			$host = strtok( $host, ':' );
+			XRay\trace_wpdb_query( $query, $start, $end, $result === false ? $this->last_error : null, $host );
 		}
 
 		return $result;
