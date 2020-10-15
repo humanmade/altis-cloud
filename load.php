@@ -53,3 +53,14 @@ add_action( 'altis.modules.init', function () {
 add_filter( 'altis.aws_sdk.params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
 add_filter( 's3_uploads_s3_client_params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
 add_filter( 'aws_ses_wp_mail_ses_client_params', __NAMESPACE__ . '\\add_aws_sdk_xray_callback' );
+
+// Ensure debug display is off in cloud environments.
+add_action( 'altis.loaded_autoloader', function () {
+	if ( ! in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
+		return;
+	}
+	if ( defined( 'WP_DEBUG_DISPLAY' ) ) {
+		return;
+	}
+	define( 'WP_DEBUG_DISPLAY', false );
+}, 0 );
