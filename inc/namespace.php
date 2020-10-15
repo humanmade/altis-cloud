@@ -937,3 +937,18 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 
 	return true;
 }
+
+/**
+ * Set WP Debug related constants required on cloud infrastructure.
+ *
+ * @return void
+ */
+function set_wp_debug_constants() : void {
+	if ( ! in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
+		return;
+	}
+	if ( defined( 'WP_DEBUG_DISPLAY' ) ) {
+		return;
+	}
+	define( 'WP_DEBUG_DISPLAY', false );
+}
