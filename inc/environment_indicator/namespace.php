@@ -61,7 +61,7 @@ function add_admin_bar_env_info( WP_Admin_Bar $wp_admin_bar ) {
 	// Add environment indicator to the Altis logo menu item in the admin bar.
 	$node = $wp_admin_bar->get_node( 'altis' );
 
-	// If the node does not exist, create an arbitary node for enviornment indicator.
+	// If the node does not exist, create an arbitrary node for enviornment indicator.
 	if ( ! is_object( $node ) ) {
 		$env_indicator_args = [
 			'id'    => 'altis-env-indicator',
