@@ -321,7 +321,9 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 
 		// Add the existing package ID to the list of packages to remove.
 		// These packages are removed after the index settings are updated.
-		add_package_to_remove( $existing_package_id );
+		if ( $existing_package_id ) {
+			add_package_to_remove( $existing_package_id );
+		}
 
 		// Unschedule this status check.
 		$next = wp_next_scheduled( 'altis.search.check_package_status', $check_status_hook_args );
