@@ -174,6 +174,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 						'queryId' => $query['queryId'],
 					] );
 				} catch ( Exception $e ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					trigger_error( sprintf( 'Error stopping CloudWatch Logs query: %s', $e->getMessage() ), E_USER_WARNING );
 				}
 				break;
