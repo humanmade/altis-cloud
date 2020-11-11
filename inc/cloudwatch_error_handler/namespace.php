@@ -30,7 +30,16 @@ function bootstrap() {
 		return false;
 	} );
 
-	register_shutdown_function( __NAMESPACE__ . '\\send_buffered_errors_on_shutdown' );
+	// Hook into Query Monitor error handler in case the above is overridden.
+	add_action( 'qm/collect/new_php_error', __NAMESPACE__ . '\\error_handler', 10, 5 );
+
+	// Register shutdown function.
+	// Nesting the function registration ensures it is the last shutdown
+	// function to run, required as we call fastcgi_finish_request()
+	// which ends the request before Query Monitor's output.
+	register_shutdown_function( function () {
+		register_shutdown_function( __NAMESPACE__ . '\\send_buffered_errors_on_shutdown' );
+	} );
 }
 
 /**
