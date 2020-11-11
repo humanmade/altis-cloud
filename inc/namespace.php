@@ -888,7 +888,9 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 		trigger_error(
 			sprintf(
 				'Cannot invalidate more than %d wildcards or %d items per request, contact Altis support',
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				WILDCARD_INVALIDATION_LIMIT,
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				PATHS_INVALIDATION_LIMIT
 			),
 			E_USER_WARNING
