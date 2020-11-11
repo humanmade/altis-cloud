@@ -18,7 +18,6 @@ function bootstrap() {
 }
 
 function output_page( array $checks ) {
-	global $wpdb, $wp_object_cache;
 	$passed = true;
 	foreach ( $checks as $check ) {
 		if ( is_wp_error( $check ) ) {
@@ -109,11 +108,11 @@ function run_mysql_healthcheck() {
 function run_object_cache_healthcheck() {
 	global $wp_object_cache, $wpdb;
 
-	if ( method_exists( $wp_object_cache, 'getStatus' ) && ! $wp_object_cache->getStats() ) {
+	if ( method_exists( $wp_object_cache, 'getStats' ) && ! $wp_object_cache->getStats() ) {
 		return new WP_Error( 'memcached-no-stats', 'Unable to get memcached stats.' );
 	}
 
-	if ( method_exists( $wp_object_cache, 'getStatus' ) && ! $wp_object_cache->stats() ) {
+	if ( method_exists( $wp_object_cache, 'stats' ) && ! $wp_object_cache->stats() ) {
 		return new WP_Error( 'redis-no-stats', 'Unable to get redis stats.' );
 	}
 
