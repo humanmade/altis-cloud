@@ -10,8 +10,8 @@ You have access to several types of logging from sites on Altis have following l
 
 The logs can be viewed via [Altis Dashboard](./dashboard.md) under a site's Logs tab.
 
-![](../assets/logs.png)
+![](./assets/logs.png)
 
 The date range can be specified for all logs types. Some log types will also support additional filtering such as cron logs.
 
-![](../assets/logs-with-filter.png)
+![](./assets/logs-with-filter.png)
