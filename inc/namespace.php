@@ -46,6 +46,8 @@ function bootstrap() {
 
 	$is_alb_healthcheck = isset( $_SERVER['HTTP_USER_AGENT'] ) && strpos( $_SERVER['HTTP_USER_AGENT'], 'ELB-HealthChecker' ) === 0;
 
+	require_once __DIR__ . '/fluent-bit/namespace.php';
+
 	if (
 		$config['xray']
 		&& function_exists( 'xhprof_sample_enable' )
