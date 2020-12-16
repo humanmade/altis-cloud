@@ -9,6 +9,7 @@ namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
 use Altis;
 use Altis\Cloud\CloudWatch_Logs;
+use Altis\Cloud\FluentBit;
 use Aws\CloudWatch\CloudWatchClient;
 use Exception;
 use WP_Stream\DB_Driver as DB_Driver_Interface;
@@ -55,21 +56,13 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		// Track the timestamp in an integer so we can do range queries for it.
 		$data['created_timestamp'] = strtotime( $data['created'] ) * 1000;
 
-		$result = CloudWatch_Logs\send_events_to_stream(
-			[
-				[
-					'timestamp' => time() * 1000,
-					// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-					'message' => json_encode( $data ),
-				],
-			],
-			Altis\get_environment_name() . '/audit-log',
-			'items'
-		);
+		$logger = FluentBit\get_logger('app.audit-log.items');
+		$logger->info([
+			'timestamp' => time() * 1000,
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+			'message' => json_encode( $data ),
+		]);
 
-		if ( ! $result ) {
-			return false;
-		}
 		// Add the values to the column values caches if they exist.
 		foreach ( $data as $column => $value ) {
 			$cache = wp_cache_get( $column, 'stream_column_values' );
