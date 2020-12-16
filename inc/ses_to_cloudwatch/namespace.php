@@ -8,6 +8,7 @@
 namespace Altis\Cloud\SES_To_CloudWatch;
 
 use Altis\Cloud\CloudWatch_Logs;
+use Altis\Cloud\FluentBit;
 use Exception;
 
 /**
@@ -25,17 +26,8 @@ function bootstrap() {
  * @param array $message The response message.
  */
 function on_sent_message( $result, $message ) {
-	CloudWatch_Logs\send_events_to_stream(
-		[
-			[
-				'timestamp' => time() * 1000,
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-				'message'   => json_encode( $message ),
-			],
-		],
-		HM_ENV . '/ses',
-		'Sent'
-	);
+	$logger = FluentBit\get_logger( 'app.ses.Sent' );
+	$logger->info( json_encode( $message ) );
 }
 
 /**
@@ -45,21 +37,12 @@ function on_sent_message( $result, $message ) {
  * @param array $message The error message.
  */
 function on_error_sending_message( Exception $error, $message ) {
-	CloudWatch_Logs\send_events_to_stream(
-		[
-			[
-				'timestamp' => time() * 1000,
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-				'message'   => json_encode( [
-					'error'     => [
-						'class'   => get_class( $error ),
-						'message' => $error->getMessage(),
-					],
-					'message' => $message,
-				] ),
-			],
+	$logger = FluentBit\get_logger( 'app.ses.Failed' );
+	$logger->error(json_encode( [
+		'error'     => [
+			'class'   => get_class( $error ),
+			'message' => $error->getMessage(),
 		],
-		HM_ENV . '/ses',
-		'Failed'
-	);
+		'message' => $message,
+	] ));
 }
