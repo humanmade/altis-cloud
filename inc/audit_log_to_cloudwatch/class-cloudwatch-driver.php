@@ -56,12 +56,8 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		// Track the timestamp in an integer so we can do range queries for it.
 		$data['created_timestamp'] = strtotime( $data['created'] ) * 1000;
 
-		$logger = FluentBit\get_logger('app.audit-log.items');
-		$logger->info([
-			'timestamp' => time() * 1000,
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-			'message' => json_encode( $data ),
-		]);
+		$logger = FluentBit\get_logger( 'app.audit-log.items' );
+		$logger->info( json_encode( $data ) );
 
 		// Add the values to the column values caches if they exist.
 		foreach ( $data as $column => $value ) {
