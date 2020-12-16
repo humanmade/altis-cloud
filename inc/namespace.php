@@ -44,6 +44,8 @@ const WILDCARD_INVALIDATION_LIMIT = 10;
 function bootstrap() {
 	$config = get_config();
 
+	require_once __DIR__ . '/fluent-bit/namespace.php';
+
 	if (
 		$config['xray']
 		&& function_exists( 'xhprof_sample_enable' )
