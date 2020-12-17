@@ -7,6 +7,10 @@ use Monolog\Handler\SocketHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
+function enabled() {
+	return defined( 'FLUENT_HOST' ) && defined( 'FLUENT_PORT' );
+}
+
 function get_logger( string $tag_name ) {
 	// TODO how do I need to name the file/class to be autoloaded?
 	require_once __DIR__ . '/class-msgpackformatter.php';
@@ -24,13 +28,12 @@ function get_logger( string $tag_name ) {
 	$logger->pushHandler( $stream );
 
 	// Use Fluent Bit if it's available
-	if ( defined( 'FLUENT_HOST' ) && defined( 'FLUENT_PORT' ) ) {
+	if ( enabled() ) {
 		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
 		$socket->setFormatter( new MsgPackFormatter() );
 		$logger->pushHandler( $socket );
 	} else {
 	}
-
 
 	$loggers[ $tag_name ] = $logger;
 	return $loggers[ $tag_name ];
