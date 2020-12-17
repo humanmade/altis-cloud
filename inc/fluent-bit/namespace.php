@@ -13,13 +13,10 @@ function get_logger( string $tag_name ) {
 
 	static $loggers = [];
 
-	error_log('getting');
 	if ( $loggers[ $tag_name ] ) {
-		error_log('defined');
 		return $loggers[ $tag_name ];
 	}
 
-	error_log('creating logger');
 	$logger = new Logger( $tag_name );
 
 	// Else we log locally
