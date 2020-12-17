@@ -2,7 +2,7 @@
 
 namespace Altis\Cloud\FluentBit;
 
-use Altis\Cloud\FluentBit\Formatter;
+use Altis\Cloud\FluentBit\MsgPackFormatter;
 use Monolog\Handler\SocketHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -26,7 +26,7 @@ function get_logger( string $tag_name ) {
 	// Use Fluent Bit if it's available
 	if ( defined( 'FLUENT_HOST' ) && defined( 'FLUENT_PORT' ) ) {
 		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
-		$socket->setFormatter( new Formatter() );
+		$socket->setFormatter( new MsgPackFormatter() );
 		$logger->pushHandler( $socket );
 	} else {
 	}
