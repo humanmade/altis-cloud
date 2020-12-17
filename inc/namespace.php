@@ -46,7 +46,11 @@ function bootstrap() {
 
 	$is_alb_healthcheck = isset( $_SERVER['HTTP_USER_AGENT'] ) && strpos( $_SERVER['HTTP_USER_AGENT'], 'ELB-HealthChecker' ) === 0;
 
+	error_log('loading?');
 	require_once __DIR__ . '/fluent-bit/namespace.php';
+	require_once __DIR__ . '/fluent-bit/error-handler.php';
+	\Altis\Cloud\FluentBit\Error_Handler\bootstrap();
+	error_log('bootstrapped');
 
 	if (
 		$config['xray']
