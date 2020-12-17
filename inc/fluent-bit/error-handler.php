@@ -56,10 +56,6 @@ function bootstrap() {
 function error_handler( int $errno, string $errstr, string $errfile = null, int $errline = null ) : bool {
 	global $altis_cloudwatch_error_handler_errors, $altis_cloudwatch_error_handler_error_count;
 	// Limit the amount of errors to hold in memory. Flush every 100.
-	// TODO is this necessary?
-	// if ( $altis_cloudwatch_error_handler_error_count > 100 ) {
-		// send_buffered_errors();
-	// }
 
 	$error = [
 		'type'    => get_error_type_for_error_number( $errno ),
