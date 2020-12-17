@@ -9,9 +9,9 @@ namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
 use Altis;
 use Altis\Cloud\CloudWatch_Logs;
-use Altis\Cloud\Fluent_Bit;
 use Aws\CloudWatch\CloudWatchClient;
 use Exception;
+use function Altis\Cloud\log_to_cloud;
 use WP_Stream\DB_Driver as DB_Driver_Interface;
 
 /**
@@ -56,8 +56,11 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		// Track the timestamp in an integer so we can do range queries for it.
 		$data['created_timestamp'] = strtotime( $data['created'] ) * 1000;
 
-		$logger = Fluent_Bit\get_logger( 'app.audit-log.items' );
-		$logger->info( json_encode( $data ) );
+		$result = log_to_cloud( 'audit-log', 'items', json_encode( $data ) );
+
+		if ( ! $result ) {
+			return false;
+		}
 
 		// Add the values to the column values caches if they exist.
 		foreach ( $data as $column => $value ) {
@@ -122,11 +125,11 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		$query = "fields @message $where | sort created_timestamp $order";
 
 		$params = [
-			'logGroupName'   => Altis\get_environment_name() . '/audit-log',
-			'limit'          => $limit,
-			'endTime'        => time() * 1000,
-			'startTime'      => 0,
-			'queryString'    => $query,
+			'logGroupName'	 => Altis\get_environment_name() . '/audit-log',
+			'limit'			 => $limit,
+			'endTime'		 => time() * 1000,
+			'startTime'		 => 0,
+			'queryString'	 => $query,
 		];
 
 		try {
@@ -210,10 +213,10 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			$query = "stats distinct( $column ) by $column";
 
 			$params = [
-				'logGroupName'   => Altis\get_environment_name() . '/audit-log',
-				'endTime'        => time() * 1000,
-				'startTime'      => 0,
-				'queryString'    => $query,
+				'logGroupName'	 => Altis\get_environment_name() . '/audit-log',
+				'endTime'		 => time() * 1000,
+				'startTime'		 => 0,
+				'queryString'	 => $query,
 			];
 
 			try {
