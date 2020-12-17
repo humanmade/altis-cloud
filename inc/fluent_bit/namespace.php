@@ -1,15 +1,15 @@
 <?php
 
-namespace Altis\Cloud\FluentBit;
+namespace Altis\Cloud\Fluent_Bit;
 
-use Altis\Cloud\FluentBit\MsgPackFormatter;
+use Altis\Cloud\Fluent_Bit\MsgPackFormatter;
 use Monolog\Handler\SocketHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 function get_logger( string $tag_name ) {
 	// TODO how do I need to name the file/class to be autoloaded?
-	require_once __DIR__ . '/class-formatter.php';
+	require_once __DIR__ . '/class-msgpackformatter.php';
 
 	static $loggers = [];
 

@@ -7,11 +7,9 @@
  * @package altis/cloud
  */
 
-namespace Altis\Cloud\FluentBit\Error_Handler;
+namespace Altis\Cloud\Fluent_Bit\Error_Handler;
 
-use Altis\Cloud\FluentBit;
-// use Altis;
-// use Altis\Cloud\CloudWatch_Logs;
+use Altis\Cloud\Fluent_Bit;
 
 /**
  * Set up shutdown function error handler to send to CloudWatch.
@@ -33,15 +31,6 @@ function bootstrap() {
 
 	// Hook into Query Monitor error handler in case the above is overridden.
 	add_action( 'qm/collect/new_php_error', __NAMESPACE__ . '\\error_handler', 10, 5 );
-
-	// Register shutdown function.
-	// Nesting the function registration ensures it is the last shutdown
-	// function to run, required as we call fastcgi_finish_request()
-	// which ends the request before Query Monitor's output.
-	// TODO do we need this?
-	// register_shutdown_function( function () {
-		// register_shutdown_function( __NAMESPACE__ . '\\send_buffered_errors_on_shutdown' );
-	// } );
 }
 
 /**
@@ -66,9 +55,10 @@ function error_handler( int $errno, string $errstr, string $errfile = null, int 
 	$error = apply_filters( 'altis_cloudwatch_error_handler_error', $error );
 	$json = json_encode( $error );
 
-	$logger = FluentBit\get_logger( 'app.php-structured.' . $error['type'] );
+	$logger = Fluent_Bit\get_logger( 'app.php-structured.' . $error['type'] );
 	$logger->error( $json );
 
+    // TODO is this necessary to keep?
 	$altis_cloudwatch_error_handler_errors[ $errno ][] = [
 		'timestamp' => time() * 1000,
 		'message'   => $json, // @codingStandardsIgnoreLine
