@@ -44,12 +44,6 @@ const WILDCARD_INVALIDATION_LIMIT = 10;
 function bootstrap() {
 	$config = get_config();
 
-	error_log('loading?');
-	require_once __DIR__ . '/fluent-bit/namespace.php';
-	require_once __DIR__ . '/fluent-bit/error-handler.php';
-	\Altis\Cloud\FluentBit\Error_Handler\bootstrap();
-	error_log('bootstrapped');
-
 	if (
 		$config['xray']
 		&& function_exists( 'xhprof_sample_enable' )
@@ -194,17 +188,16 @@ function load_platform( $wp_debug_enabled ) {
 	}
 
 	// Load logging features.
+	require_once __DIR__ . '/fluent-bit/namespace.php';
 	require_once __DIR__ . '/ses_to_cloudwatch/namespace.php';
 	require_once __DIR__ . '/performance_optimizations/namespace.php';
-	require_once __DIR__ . '/cloudwatch_logs/namespace.php';
 
 	SES_To_CloudWatch\bootstrap();
-	CloudWatch_Logs\bootstrap();
 	Performance_Optimizations\bootstrap();
 
 	if ( $config['php-errors-to-cloudwatch'] ) {
-		require_once __DIR__ . '/cloudwatch_error_handler/namespace.php';
-		CloudWatch_Error_Handler\bootstrap();
+        require_once __DIR__ . '/fluent-bit/error-handler.php';
+        \Altis\Cloud\FluentBit\Error_Handler\bootstrap();
 	}
 
 	if ( $config['audit-log-to-cloudwatch'] ) {
