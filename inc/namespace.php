@@ -8,6 +8,7 @@
 namespace Altis\Cloud;
 
 use Altis;
+use Altis\Cloud\Fluent_Bit;
 use Aws\CloudFront\CloudFrontClient;
 use Aws\Credentials;
 use Aws\Credentials\CredentialProvider;
@@ -44,11 +45,9 @@ const WILDCARD_INVALIDATION_LIMIT = 10;
 function bootstrap() {
 	$config = get_config();
 
-	error_log('loading?');
-	require_once __DIR__ . '/fluent-bit/namespace.php';
-	require_once __DIR__ . '/fluent-bit/error-handler.php';
-	\Altis\Cloud\FluentBit\Error_Handler\bootstrap();
-	error_log('bootstrapped');
+	require_once __DIR__ . '/fluent_bit/namespace.php';
+	require_once __DIR__ . '/fluent_bit/error_handler/namespace.php';
+	Fluent_Bit\Error_Handler\bootstrap();
 
 	if (
 		$config['xray']

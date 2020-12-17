@@ -8,7 +8,7 @@
 namespace Altis\Cloud\Cavalcade_Runner_To_CloudWatch;
 
 use Altis;
-use Altis\Cloud\FluentBit;
+use Altis\Cloud\Fluent_Bit;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Aws\CloudWatch\CloudWatchClient;
 use Exception;
@@ -103,7 +103,7 @@ function on_end_job( Worker $worker, Job $job, string $status ) {
 	$error_output_property->setAccessible( true );
 	$error_output = $error_output_property->getValue( $worker );
 
-	$logger = FluentBit\get_logger( 'app.cavalcade.' . $status );
+	$logger = Fluent_Bit\get_logger( 'app.cavalcade.' . $status );
 	$logger->info(json_encode( [
 		'hook'     => $job->hook,
 		'id'       => $job->id,
