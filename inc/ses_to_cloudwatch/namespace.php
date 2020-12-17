@@ -8,7 +8,7 @@
 namespace Altis\Cloud\SES_To_CloudWatch;
 
 use Altis\Cloud\CloudWatch_Logs;
-use Altis\Cloud\FluentBit;
+use Altis\Cloud\Fluent_Bit;
 use Exception;
 
 /**
@@ -26,7 +26,7 @@ function bootstrap() {
  * @param array $message The response message.
  */
 function on_sent_message( $result, $message ) {
-	$logger = FluentBit\get_logger( 'app.ses.Sent' );
+	$logger = Fluent_Bit\get_logger( 'app.ses.Sent' );
 	$logger->info( json_encode( $message ) );
 }
 
@@ -37,7 +37,7 @@ function on_sent_message( $result, $message ) {
  * @param array $message The error message.
  */
 function on_error_sending_message( Exception $error, $message ) {
-	$logger = FluentBit\get_logger( 'app.ses.Failed' );
+	$logger = Fluent_Bit\get_logger( 'app.ses.Failed' );
 	$logger->error(json_encode( [
 		'error'     => [
 			'class'   => get_class( $error ),
