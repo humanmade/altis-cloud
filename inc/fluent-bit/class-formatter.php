@@ -12,143 +12,49 @@ namespace Altis\Cloud\FluentBit;
  * file that was distributed with this source code.
  */
 
-use Monolog\Formatter\JsonFormatter;
-use Throwable;
+use Monolog\Formatter\FluentdFormatter;
 
 /**
- * Encodes whatever record data is passed to it as json
+ * Class MsgPackFormatter
  *
- * This can be useful to log to databases or remote APIs
+ * Serializes a log message to Fluent Bit socket protocol
  *
- * @author Jordi Boggiano <j.boggiano@seld.be>
+ * @author Nathaniel Schweinberg <nathaniel@humanmade.com>
  */
-class Formatter extends JsonFormatter
+class MsgPackFormatter extends FluentdFormatter
 {
     /**
-     * {@inheritdoc}
-     *
-     * @suppress PhanTypeComparisonToArray
+     * @var bool $levelTag should message level be a part of the fluentd tag
      */
+    protected $levelTag = false;
+
+    public function __construct(bool $levelTag = false)
+    {
+        if (!function_exists('msgpack_pack')) {
+            throw new \RuntimeException('PHP\'s msgpack extension is required to use Monolog\'s MsgPackFormatter');
+        }
+
+        $this->levelTag = $levelTag;
+    }
+
     public function format(array $record): string
     {
-        $normalized = $this->normalize($record);
-
-        if (isset($normalized['context']) && $normalized['context'] === []) {
-            if ($this->ignoreEmptyContextAndExtra) {
-                unset($normalized['context']);
-            } else {
-                $normalized['context'] = new \stdClass;
-            }
-        }
-        if (isset($normalized['extra']) && $normalized['extra'] === []) {
-            if ($this->ignoreEmptyContextAndExtra) {
-                unset($normalized['extra']);
-            } else {
-                $normalized['extra'] = new \stdClass;
-            }
-		}
-		error_log('formatting');
-		return msgpack_pack( [ $normalized['channel'], time(), $normalized ] );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function formatBatch(array $records): string
-    {
-        error_log('batching');
-        switch ($this->batchMode) {
-            case static::BATCH_MODE_NEWLINES:
-                return $this->formatBatchNewlines($records);
-
-            case static::BATCH_MODE_JSON:
-            default:
-                return $this->formatBatchJson($records);
-        }
-    }
-
-    public function includeStacktraces(bool $include = true)
-    {
-        $this->includeStacktraces = $include;
-    }
-
-    /**
-     * Return a JSON-encoded array of records.
-     */
-    protected function formatBatchJson(array $records): string
-    {
-        return $this->toJson($this->normalize($records), true);
-    }
-
-    /**
-     * Use new lines to separate records instead of a
-     * JSON-encoded array.
-     */
-    protected function formatBatchNewlines(array $records): string
-    {
-        $instance = $this;
-
-        $oldNewline = $this->appendNewline;
-        $this->appendNewline = false;
-        array_walk($records, function (&$value, $key) use ($instance) {
-            $value = $instance->format($value);
-        });
-        $this->appendNewline = $oldNewline;
-
-        return implode("\n", $records);
-    }
-
-    /**
-     * Normalizes given $data.
-     *
-     * @param mixed $data
-     *
-     * @return mixed
-     */
-    protected function normalize($data, int $depth = 0)
-    {
-        if ($depth > $this->maxNormalizeDepth) {
-            return 'Over '.$this->maxNormalizeDepth.' levels deep, aborting normalization';
+        $tag = $record['channel'];
+        if ($this->levelTag) {
+            $tag .= '.' . strtolower($record['level_name']);
         }
 
-        if (is_array($data)) {
-            $normalized = [];
+        $message = [
+            'message' => $record['message'],
+            'context' => $record['context'],
+            'extra' => $record['extra'],
+        ];
 
-            $count = 1;
-            foreach ($data as $key => $value) {
-                if ($count++ > $this->maxNormalizeItemCount) {
-                    $normalized['...'] = 'Over '.$this->maxNormalizeItemCount.' items ('.count($data).' total), aborting normalization';
-                    break;
-                }
-
-                $normalized[$key] = $this->normalize($value, $depth + 1);
-            }
-
-            return $normalized;
+        if (!$this->levelTag) {
+            $message['level'] = $record['level'];
+            $message['level_name'] = $record['level_name'];
         }
 
-        if ($data instanceof Throwable) {
-            return $this->normalizeException($data, $depth);
-        }
-
-        if (is_resource($data)) {
-            return parent::normalize($data);
-        }
-
-        return $data;
-    }
-
-    /**
-     * Normalizes given exception with or without its own stack trace based on
-     * `includeStacktraces` property.
-     */
-    protected function normalizeException(Throwable $e, int $depth = 0): array
-    {
-        $data = parent::normalizeException($e, $depth);
-        if (!$this->includeStacktraces) {
-            unset($data['trace']);
-        }
-
-        return $data;
+        return msgpack_pack([$tag, $record['datetime']->getTimestamp(), $message]);
     }
 }
