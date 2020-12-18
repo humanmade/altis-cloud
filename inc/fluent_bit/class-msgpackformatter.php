@@ -35,8 +35,7 @@ class MsgPackFormatter extends FluentdFormatter {
 	 * name or not.
 	 * @return self
 	 */
-	// phpcs:ignore WordPress.NamingConventions.ValidVariableName
-	public function __construct( bool $levelTag = false ) {
+	public function __construct( bool $levelTag = false ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 		if ( ! function_exists( 'msgpack_pack' ) ) {
 			throw new \RuntimeException( 'PHP\'s msgpack extension is required to use Monolog\'s MsgPackFormatter' );
 		}
