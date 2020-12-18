@@ -58,7 +58,7 @@ function error_handler( int $errno, string $errstr, string $errfile = null, int 
 	$logger = Fluent_Bit\get_logger( 'app.php-structured.' . $error['type'] );
 	$logger->error( $json );
 
-    // TODO is this necessary to keep?
+	// TODO is this necessary to keep?
 	$altis_cloudwatch_error_handler_errors[ $errno ][] = [
 		'timestamp' => time() * 1000,
 		'message'   => $json, // @codingStandardsIgnoreLine

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Altis Cloud Fluent Bit MsgPack formatter.
+ *
+ * @package altis/cloud
+ */
 
 namespace Altis\Cloud\Fluent_Bit;
 
@@ -25,6 +30,14 @@ class MsgPackFormatter extends FluentdFormatter {
 
 	// $levelTag is an inherited property
 	// phpcs:ignore WordPress.NamingConventions.ValidVariableName
+	//
+	/**
+	* Construct the MsgPackFormatter class.
+	*
+	* @param boolean $levelTag whether to append log level to Fluent Bit tag
+	* name or not.
+	* @return self
+	*/
 	public function __construct( bool $levelTag = false ) {
 		if ( ! function_exists( 'msgpack_pack' ) ) {
 			throw new \RuntimeException( 'PHP\'s msgpack extension is required to use Monolog\'s MsgPackFormatter' );
@@ -34,6 +47,13 @@ class MsgPackFormatter extends FluentdFormatter {
 		$this->levelTag = $levelTag;
 	}
 
+	/**
+	* Normalizes and formats the log record using the msgpack serialization
+	* format.
+	*
+	* @param array $record Monolog log record
+	* @return string The formatted log record
+	*/
 	public function format( array $record ): string {
 		$tag = $record['channel'];
 
