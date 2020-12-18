@@ -125,11 +125,11 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		$query = "fields @message $where | sort created_timestamp $order";
 
 		$params = [
-			'logGroupName'	 => Altis\get_environment_name() . '/audit-log',
-			'limit'			 => $limit,
-			'endTime'		 => time() * 1000,
-			'startTime'		 => 0,
-			'queryString'	 => $query,
+			'logGroupName'   => Altis\get_environment_name() . '/audit-log',
+			'limit'          => $limit,
+			'endTime'        => time() * 1000,
+			'startTime'      => 0,
+			'queryString'    => $query,
 		];
 
 		try {
@@ -212,10 +212,10 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			$query = "stats distinct( $column ) by $column";
 
 			$params = [
-				'logGroupName'	 => Altis\get_environment_name() . '/audit-log',
-				'endTime'		 => time() * 1000,
-				'startTime'		 => 0,
-				'queryString'	 => $query,
+				'logGroupName'   => Altis\get_environment_name() . '/audit-log',
+				'endTime'        => time() * 1000,
+				'startTime'      => 0,
+				'queryString'    => $query,
 			];
 
 			try {

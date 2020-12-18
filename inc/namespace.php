@@ -751,21 +751,21 @@ function on_request_stats( TransferStats $stats ) {
  * This will cause a remote request to the metadata service when the cache is empty.
  *
  * @return array $array(
- *	  accountId: string,
- *	  architecture: string,
- *	  availabilityZone: string,
- *	  billingProducts: string,
- *	  devpayProductCodes: string,
- *	  marketplaceProductCodes: string,
- *	  imageId: string,
- *	  instanceId: string,
- *	  instanceType: string,
- *	  kernelId: string,
- *	  pendingTime: string,
- *	  privateIp: string,
- *	  ramdiskId: string,
- *	  region: string,
- *	  version: string,
+ *    accountId: string,
+ *    architecture: string,
+ *    availabilityZone: string,
+ *    billingProducts: string,
+ *    devpayProductCodes: string,
+ *    marketplaceProductCodes: string,
+ *    imageId: string,
+ *    instanceId: string,
+ *    instanceType: string,
+ *    kernelId: string,
+ *    pendingTime: string,
+ *    privateIp: string,
+ *    ramdiskId: string,
+ *    region: string,
+ *    version: string,
  * )
  */
 function get_ec2_instance_metadata() : array {
@@ -862,13 +862,13 @@ function get_cloudfront_client() : CloudFrontClient {
  * @see https://www.altis-dxp.com/resources/docs/cloud/cdn-purge/
  *
  * @param array $paths_patterns A list of the paths that you want to invalidate.
- *								The path is relative to the CDN host, A leading / is optional.
- *								e.g  for http://altis-dxp.com/images/image2.jpg
- *								specify images/image2.jpg or /images/image2.jpg
+ *                              The path is relative to the CDN host, A leading / is optional.
+ *                              e.g  for http://altis-dxp.com/images/image2.jpg
+ *                              specify images/image2.jpg or /images/image2.jpg
  *
- *								You can also invalidate multiple files simultaneously by using the * wildcard.
- *								The *, which replaces 0 or more characters, must be the last character in the invalidation path.
- *								e.g /images/* - will invalidate all files in a directory.
+ *                              You can also invalidate multiple files simultaneously by using the * wildcard.
+ *                              The *, which replaces 0 or more characters, must be the last character in the invalidation path.
+ *                              e.g /images/* - will invalidate all files in a directory.
  *
  * @return bool Returns true if invalidation successfully created, false on failure.
  */
@@ -918,11 +918,11 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 
 	try {
 		$client->createInvalidation( [
-			'DistributionId'	=> $distribution_id,
+			'DistributionId'    => $distribution_id,
 			'InvalidationBatch' => [
-				'Paths'			  => [
-					'Items'    => $paths_patterns,
-					'Quantity' => count( $paths_patterns ),
+				'Paths'         => [
+					'Items'     => $paths_patterns,
+					'Quantity'  => count( $paths_patterns ),
 				],
 				'CallerReference' => sha1( time() . wp_json_encode( $paths_patterns ) ),
 			],
@@ -936,6 +936,18 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 	return true;
 }
 
+/**
+ * Log a message to our cloud services. This will use Fluent Bit if it is
+ * available, otherwise log directly to CloudWatch..
+ *
+ * @param string $log_group Name of the log group to send logs to. Environment
+ *                          name is added automatically.
+ * @param string $log_stream Name of the log stream.
+ * @param string $message Message to log
+ * @param string $level Level of the log. Corresponds to Psr\Log\LoggerInterface
+ * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md#3-psrlogloggerinterface
+ * @return boolean
+ */
 function log_to_cloud( string $log_group, string $log_stream, string $message, string $level = 'info' ) : bool {
 	if ( ! Fluent_Bit\available() ) {
 		$result = CloudWatch_Logs\send_events_to_stream(
@@ -952,8 +964,8 @@ function log_to_cloud( string $log_group, string $log_stream, string $message, s
 		return $result;
 	}
 
-	// basic error correction to ensure $level is an allowed value
-	if ( ! in_array( $level, [ 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' ] ) ) {
+	// Basic error correction to ensure $level is an allowed value.
+	if ( ! in_array( $level, [ 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' ], true ) ) {
 		$level = 'info';
 	}
 

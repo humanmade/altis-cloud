@@ -1,4 +1,9 @@
 <?php
+/**
+ * Altis Cloud Fluent Bit logger.
+ *
+ * @package altis/cloud
+ */
 
 namespace Altis\Cloud\Fluent_Bit;
 
@@ -6,10 +11,21 @@ use Altis\Cloud\Fluent_Bit\MsgPackFormatter;
 use Monolog\Handler\SocketHandler;
 use Monolog\Logger;
 
+/**
+ * Check if required constants have been defined
+ *
+ * @return boolean
+ */
 function available() {
 	return defined( 'FLUENT_HOST' ) && defined( 'FLUENT_PORT' );
 }
 
+/**
+ * Retrieve logger for specied $tag_name
+ *
+ * @param string $tag_name Name of the tag to route log messages to
+ * @return Monolog\Logger
+ */
 function get_logger( string $tag_name ) {
 	// TODO how do I need to name the file/class to be autoloaded?
 	require_once __DIR__ . '/class-msgpackformatter.php';
@@ -25,7 +41,7 @@ function get_logger( string $tag_name ) {
 
 	$logger = new Logger( $tag_name );
 
-	// Use Fluent Bit if it's available
+	// Use Fluent Bit if it's available.
 	if ( available() ) {
 		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
 		$socket->setFormatter( new MsgPackFormatter() );
