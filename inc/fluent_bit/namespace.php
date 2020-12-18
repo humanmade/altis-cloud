@@ -4,10 +4,9 @@ namespace Altis\Cloud\Fluent_Bit;
 
 use Altis\Cloud\Fluent_Bit\MsgPackFormatter;
 use Monolog\Handler\SocketHandler;
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
-function enabled() {
+function available() {
 	return defined( 'FLUENT_HOST' ) && defined( 'FLUENT_PORT' );
 }
 
@@ -23,16 +22,13 @@ function get_logger( string $tag_name ) {
 
 	$logger = new Logger( $tag_name );
 
-	// Else we log locally
-	$stream = new StreamHandler( '/tmp/logpipe', Logger::DEBUG );
-	$logger->pushHandler( $stream );
-
 	// Use Fluent Bit if it's available
-	if ( enabled() ) {
+	if ( available() ) {
 		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
 		$socket->setFormatter( new MsgPackFormatter() );
 		$logger->pushHandler( $socket );
 	} else {
+		trigger_error( 'Fluent Bit is not available. Logs will not be routed anywhere.', E_USER_WARNING );
 	}
 
 	$loggers[ $tag_name ] = $logger;
