@@ -937,7 +937,7 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 }
 
 function log_to_cloud( string $log_group, string $log_stream, string $message, string $level = 'info' ) : bool {
-	if ( ! Fluent_Bit\enabled() ) {
+	if ( ! Fluent_Bit\available() ) {
 		$result = CloudWatch_Logs\send_events_to_stream(
 			[
 				[
