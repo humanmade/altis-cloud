@@ -14,6 +14,9 @@ function get_logger( string $tag_name ) {
 	// TODO how do I need to name the file/class to be autoloaded?
 	require_once __DIR__ . '/class-msgpackformatter.php';
 
+	// Let's store each logger in an array so that we don't keep instantiating
+	// loggers. We create a new logger for each Monolog channel. The channel
+	// name will be used as the Fluent Bit tag.
 	static $loggers = [];
 
 	if ( $loggers[ $tag_name ] ) {
