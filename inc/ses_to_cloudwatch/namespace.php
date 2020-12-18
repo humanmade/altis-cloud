@@ -7,7 +7,6 @@
 
 namespace Altis\Cloud\SES_To_CloudWatch;
 
-use Altis\Cloud\CloudWatch_Logs;
 use Exception;
 use function Altis\Cloud\log_to_cloud;
 
