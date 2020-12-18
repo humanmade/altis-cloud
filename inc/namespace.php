@@ -978,6 +978,11 @@ function log_to_cloud( string $log_group, string $log_stream, string $message, s
 		return $result;
 	}
 
+	// basic error correction to ensure $level is an allowed value
+	if ( ! in_array( $level, [ 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' ] ) ) {
+		$level = 'info';
+	}
+
 	$fluent_tag = sprintf( 'app.%s.%s', $log_group, $log_stream );
 	$logger = Fluent_Bit\get_logger( $fluent_tag );
 	$logger->$level( $message );
