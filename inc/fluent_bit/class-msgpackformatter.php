@@ -28,16 +28,14 @@ use Monolog\Formatter\FluentdFormatter;
  */
 class MsgPackFormatter extends FluentdFormatter {
 
-	// $levelTag is an inherited property
-	// phpcs:ignore WordPress.NamingConventions.ValidVariableName
-	//
 	/**
-	* Construct the MsgPackFormatter class.
-	*
-	* @param boolean $levelTag whether to append log level to Fluent Bit tag
-	* name or not.
-	* @return self
-	*/
+	 * Construct the MsgPackFormatter class.
+	 *
+	 * @param boolean $levelTag whether to append log level to Fluent Bit tag
+	 * name or not.
+	 * @return self
+	 */
+	// phpcs:ignore WordPress.NamingConventions.ValidVariableName
 	public function __construct( bool $levelTag = false ) {
 		if ( ! function_exists( 'msgpack_pack' ) ) {
 			throw new \RuntimeException( 'PHP\'s msgpack extension is required to use Monolog\'s MsgPackFormatter' );
@@ -48,12 +46,12 @@ class MsgPackFormatter extends FluentdFormatter {
 	}
 
 	/**
-	* Normalizes and formats the log record using the msgpack serialization
-	* format.
-	*
-	* @param array $record Monolog log record
-	* @return string The formatted log record
-	*/
+	 * Normalizes and formats the log record using the msgpack serialization
+	 * format.
+	 *
+	 * @param array $record Monolog log record
+	 * @return string The formatted log record
+	 */
 	public function format( array $record ): string {
 		$tag = $record['channel'];
 
