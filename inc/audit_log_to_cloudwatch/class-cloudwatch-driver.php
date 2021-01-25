@@ -8,10 +8,10 @@
 namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
 use Altis;
+use Altis\Cloud;
 use Altis\Cloud\CloudWatch_Logs;
 use Aws\CloudWatch\CloudWatchClient;
 use Exception;
-use function Altis\Cloud\log_to_cloud;
 use WP_Stream\DB_Driver as DB_Driver_Interface;
 
 /**
@@ -56,7 +56,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		// Track the timestamp in an integer so we can do range queries for it.
 		$data['created_timestamp'] = strtotime( $data['created'] ) * 1000;
 
-		$result = log_to_cloud( 'audit-log', 'items', json_encode( $data ) );
+		$result = Cloud\log_to_cloud( 'audit-log', 'items', json_encode( $data ) );
 
 		if ( ! $result ) {
 			return false;
