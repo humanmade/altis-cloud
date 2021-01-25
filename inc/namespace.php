@@ -48,6 +48,7 @@ function bootstrap() {
 
 	$is_alb_healthcheck = isset( $_SERVER['HTTP_USER_AGENT'] ) && strpos( $_SERVER['HTTP_USER_AGENT'], 'ELB-HealthChecker' ) === 0;
 
+	require_once __DIR__ . '/class-msgpackformatter.php';
 	require_once __DIR__ . '/fluent_bit/namespace.php';
 	require_once __DIR__ . '/fluent_bit/error_handler/namespace.php';
 	Fluent_Bit\Error_Handler\bootstrap();
