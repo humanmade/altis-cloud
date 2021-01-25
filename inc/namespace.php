@@ -946,9 +946,9 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
  * @param string $message Message to log
  * @param string $level Level of the log. Corresponds to Psr\Log\LoggerInterface
  * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md#3-psrlogloggerinterface
- * @return boolean
+ * @return null|boolean
  */
-function log_to_cloud( string $log_group, string $log_stream, string $message, string $level = 'info' ) : bool {
+function log_to_cloud( string $log_group, string $log_stream, string $message, string $level = 'info' ) : ?bool {
 	if ( ! Fluent_Bit\available() ) {
 		$result = CloudWatch_Logs\send_events_to_stream(
 			[
