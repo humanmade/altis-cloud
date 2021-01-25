@@ -16,7 +16,7 @@ use Monolog\Logger;
  *
  * @return boolean
  */
-function available() {
+function is_available() {
 	return defined( 'FLUENT_HOST' ) && defined( 'FLUENT_PORT' );
 }
 
@@ -42,7 +42,7 @@ function get_logger( string $tag_name ) {
 	$logger = new Logger( $tag_name );
 
 	// Use Fluent Bit if it's available.
-	if ( available() ) {
+	if ( is_available() ) {
 		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
 		$socket->setFormatter( new MsgPackFormatter() );
 		$logger->pushHandler( $socket );
