@@ -971,7 +971,7 @@ function log_to_cloud( string $log_group, string $log_stream, string $message, s
 
 	$fluent_tag = sprintf( 'app.%s.%s', $log_group, $log_stream );
 	$logger = Fluent_Bit\get_logger( $fluent_tag );
-	$logger->$level( $message );
+	$logger->log( $level, $message );
 
 	return true;
 }
