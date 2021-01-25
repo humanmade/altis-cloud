@@ -46,6 +46,7 @@ const WILDCARD_INVALIDATION_LIMIT = 10;
 function bootstrap() {
 	$config = get_config();
 
+	require_once __DIR__ . '/class-msgpackformatter.php';
 	require_once __DIR__ . '/fluent_bit/namespace.php';
 	require_once __DIR__ . '/fluent_bit/error_handler/namespace.php';
 	Fluent_Bit\Error_Handler\bootstrap();
