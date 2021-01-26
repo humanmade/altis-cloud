@@ -8,9 +8,10 @@
 namespace Altis\Cloud;
 
 use Altis;
-use Altis\Cloud\CloudWatch_Logs;
 use Altis\Cloud\Fluent_Bit;
+use Altis\Cloud\Fluent_Bit\MsgPackFormatter;
 use Aws\CloudFront\CloudFrontClient;
+use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Aws\Credentials;
 use Aws\Credentials\CredentialProvider;
 use Aws\Signature\SignatureV4;
@@ -19,6 +20,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\TransferStats;
 use HM\Platform\XRay;
+use Maxbanton\Cwh\Handler\CloudWatch as CloudWatchHandler;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\SocketHandler;
+// use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
 use Psr\Http\Message\RequestInterface;
 use S3_Uploads;
 
@@ -45,11 +51,6 @@ const WILDCARD_INVALIDATION_LIMIT = 10;
  */
 function bootstrap() {
 	$config = get_config();
-
-	require_once __DIR__ . '/class-msgpackformatter.php';
-	require_once __DIR__ . '/fluent_bit/namespace.php';
-	require_once __DIR__ . '/fluent_bit/error_handler/namespace.php';
-	Fluent_Bit\Error_Handler\bootstrap();
 
 	if (
 		$config['xray']
@@ -197,15 +198,13 @@ function load_platform( $wp_debug_enabled ) {
 	// Load logging features.
 	require_once __DIR__ . '/ses_to_cloudwatch/namespace.php';
 	require_once __DIR__ . '/performance_optimizations/namespace.php';
-	require_once __DIR__ . '/cloudwatch_logs/namespace.php';
 
 	SES_To_CloudWatch\bootstrap();
-	CloudWatch_Logs\bootstrap();
 	Performance_Optimizations\bootstrap();
 
 	if ( $config['php-errors-to-cloudwatch'] ) {
-		require_once __DIR__ . '/cloudwatch_error_handler/namespace.php';
-		CloudWatch_Error_Handler\bootstrap();
+		require_once __DIR__ . '/error_handler/namespace.php';
+		Error_Handler\bootstrap();
 	}
 
 	if ( $config['audit-log-to-cloudwatch'] ) {
@@ -854,6 +853,22 @@ function get_cloudfront_client() : CloudFrontClient {
 }
 
 /**
+ * Get a configured CloudWatch logs client.
+ *
+ * @return CloudWatchLogsClient
+ */
+function get_cloudwatch_logs_client() : CloudWatchLogsClient {
+	static $cloudwatch_logs_client;
+	if ( $cloudwatch_logs_client ) {
+		return $cloudwatch_logs_client;
+	}
+	$cloudwatch_logs_client = Altis\get_aws_sdk()->createCloudWatchLogs([
+		'version' => '2014-03-28',
+	]);
+	return $cloudwatch_logs_client;
+}
+
+/**
  * Create purge request to invalidate CDN cache.
  *
  * This is limited to 10 wildcard invalidations and 2000 static path
@@ -938,41 +953,62 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 }
 
 /**
- * Log a message to our cloud services. This will use Fluent Bit if it is
- * available, otherwise log directly to CloudWatch..
+ * Retrieve logger for specied $tag_name
  *
  * @param string $log_group Name of the log group to send logs to. Environment
- *                          name is added automatically.
+ *							name is added automatically.
  * @param string $log_stream Name of the log stream.
- * @param string $message Message to log
- * @param string $level Level of the log. Corresponds to Psr\Log\LoggerInterface
- * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md#3-psrlogloggerinterface
- * @return null|boolean
+ * @return Monolog\Logger
  */
-function log_to_cloud( string $log_group, string $log_stream, string $message, string $level = 'info' ) : ?bool {
-	if ( ! Fluent_Bit\is_available() ) {
-		$result = CloudWatch_Logs\send_events_to_stream(
-			[
-				[
-					'timestamp' => time() * 1000,
-					'message' => $message,
-				],
-			],
-			Altis\get_environment_name() . '/' . $log_group,
-			$log_stream
-		);
+function get_logger( string $log_group, string $log_stream ) {
+	// Let's store each logger in an array so that we don't keep instantiating
+	// loggers. We create a new logger for each Monolog channel. The channel
+	// name will be used as the Fluent Bit tag.
+	static $loggers = [];
+	$tag_name = sprintf( 'app.%s.%s', $log_group, $log_stream );
 
-		return $result;
+	if ( isset( $loggers[ $tag_name ] ) ) {
+		return $loggers[ $tag_name ];
 	}
 
-	// Basic error correction to ensure $level is an allowed value.
-	if ( ! in_array( $level, [ 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' ], true ) ) {
-		$level = 'info';
+	$logger = new Logger( $tag_name );
+
+	// Use Fluent Bit if it's available.
+	if ( Fluent_Bit\is_available() ) {
+		// Use Monolog's built-in TCP socket handler
+		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
+
+		// Fluent Bit requires log messages to be encoded using MessagePack,
+		// otherwise it cannot parse the log entries.
+		$socket->setFormatter( new MsgPackFormatter() );
+
+		$logger->pushHandler( $socket );
+	// } elseif ( ) {
+
+	} else {
+		$client = get_cloudwatch_logs_client();
+
+		// Fall back to logging directly to the CloudWatch log group/stream
+		// directly in batches of 1000
+		$handler = new CloudWatchHandler( $client, $log_group, $log_stream, null, 1000 );
+
+		// CloudWatchHandler's default LineFormatter has a bunch of extra meta.
+		// This _just_ logs the message.
+		$formatter = new LineFormatter('%message%');
+		$handler->setFormatter($formatter);
+
+		// Log to the system error log if Fluent Bit is not available
+		// $handler = new ErrorLogHandler();
+
+		// ErrorLogHandler's default formatter has a lot of extra meta in the
+		// log entry. This logs just the channel name and the message. We could
+		// reingest these logs later as the channel name is in the log entry.
+		// $formatter = new LineFormatter('%channel%: %message%');
+		// $handler->setFormatter($formatter);
+
+		$logger->pushHandler( $handler );
 	}
 
-	$fluent_tag = sprintf( 'app.%s.%s', $log_group, $log_stream );
-	$logger = Fluent_Bit\get_logger( $fluent_tag );
-	$logger->log( $level, $message );
-
-	return true;
+	$loggers[ $tag_name ] = $logger;
+	return $loggers[ $tag_name ];
 }
