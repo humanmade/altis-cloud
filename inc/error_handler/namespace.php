@@ -7,9 +7,9 @@
  * @package altis/cloud
  */
 
-namespace Altis\Cloud\Fluent_Bit\Error_Handler;
+namespace Altis\Cloud\Error_Handler;
 
-use Altis\Cloud\Fluent_Bit;
+use Altis\Cloud;
 
 /**
  * Set up shutdown function error handler to send to CloudWatch.
@@ -55,7 +55,7 @@ function error_handler( int $errno, string $errstr, string $errfile = null, int 
 	$error = apply_filters( 'altis_cloudwatch_error_handler_error', $error );
 	$json = json_encode( $error );
 
-	$logger = Fluent_Bit\get_logger( 'app.php-structured.' . $error['type'] );
+	$logger = Cloud\get_logger( 'app.php-structured.' . $error['type'] );
 	$logger->error( $json );
 
 	// TODO is this necessary to keep?
