@@ -103,7 +103,7 @@ function on_end_job( Worker $worker, Job $job, string $status ) {
 	$error_output_property->setAccessible( true );
 	$error_output = $error_output_property->getValue( $worker );
 
-	Cloud\log_to_cloud('cavalcade', $status, json_encode( [
+	Cloud\get_logger( 'cavalcade', $status )->info( json_encode( [
 		'hook'     => $job->hook,
 		'id'       => $job->id,
 		'site_url' => $job->get_site_url(),

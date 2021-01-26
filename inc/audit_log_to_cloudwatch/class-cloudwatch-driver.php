@@ -9,7 +9,6 @@ namespace Altis\Cloud\Audit_Log_To_CloudWatch;
 
 use Altis;
 use Altis\Cloud;
-use Altis\Cloud\CloudWatch_Logs;
 use Aws\CloudWatch\CloudWatchClient;
 use Exception;
 use WP_Stream\DB_Driver as DB_Driver_Interface;
@@ -56,11 +55,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		// Track the timestamp in an integer so we can do range queries for it.
 		$data['created_timestamp'] = strtotime( $data['created'] ) * 1000;
 
-		$result = Cloud\log_to_cloud( 'audit-log', 'items', json_encode( $data ) );
-
-		if ( ! $result ) {
-			return false;
-		}
+		Cloud\get_logger->( 'audit-log', 'items' )->info( json_encode( $data ) );
 
 		// Add the values to the column values caches if they exist.
 		foreach ( $data as $column => $value ) {
@@ -133,7 +128,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		];
 
 		try {
-			$query = CloudWatch_Logs\cloudwatch_logs_client()->startQuery( $params );
+			$query = Cloud\get_cloudwatch_logs_client()->startQuery( $params );
 		} catch ( Exception $e ) {
 			self::$error = $e->getMessage();
 			return [];
@@ -147,7 +142,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			// Queries take at a minimum 1 second, so we `sleep` before even
 			// making the first call.
 			sleep( 1 );
-			$results = CloudWatch_Logs\cloudwatch_logs_client()->getQueryResults([
+			$results = Cloud\get_cloudwatch_logs_client()->getQueryResults([
 				'queryId' => $query['queryId'],
 			] );
 
@@ -162,7 +157,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 
 				try {
 					// Stop the running query, as we won't be reading from it again.
-					CloudWatch_Logs\cloudwatch_logs_client()->stopQuery( [
+					Cloud\get_cloudwatch_logs_client()->stopQuery( [
 						'queryId' => $query['queryId'],
 					] );
 				} catch ( Exception $e ) {
@@ -219,7 +214,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 			];
 
 			try {
-				$query = CloudWatch_Logs\cloudwatch_logs_client()->startQuery( $params );
+				$query = Cloud\get_cloudwatch_logs_client()->startQuery( $params );
 			} catch ( Exception $e ) {
 				return [];
 			}
@@ -230,7 +225,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 				// Queries take at a minimum 1 second, so we `sleep` before even
 				// making the first call.
 				sleep( 1 );
-				$results = CloudWatch_Logs\cloudwatch_logs_client()->getQueryResults([
+				$results = Cloud\get_cloudwatch_logs_client()->getQueryResults([
 					'queryId' => $query['queryId'],
 				] );
 			}
