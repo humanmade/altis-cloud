@@ -10,12 +10,16 @@
 		}
 	],
 	"autoload": {
+		"classmap": [
+			"inc/fluent_bit/"
+		],
 		"files": [
 			"inc/elasticsearch_packages/namespace.php",
 			"inc/healthcheck/namespace.php",
 			"inc/healthcheck/cavalcade/namespace.php",
 			"inc/environment_indicator/namespace.php",
 			"inc/cloudfront_media_purge/namespace.php",
+			"inc/fluent_bit/namespace.php",
 			"inc/namespace.php",
 			"wp-config.php"
 		]
