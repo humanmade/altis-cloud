@@ -55,8 +55,7 @@ function error_handler( int $errno, string $errstr, string $errfile = null, int 
 	$error = apply_filters( 'altis_cloudwatch_error_handler_error', $error );
 	$json = json_encode( $error );
 
-	$logger = Cloud\get_logger( 'app.php-structured.' . $error['type'] );
-	$logger->error( $json );
+	Cloud\get_logger( 'php-structured', $error['type'] )->error( $json );
 
 	// TODO is this necessary to keep?
 	$altis_cloudwatch_error_handler_errors[ $errno ][] = [
