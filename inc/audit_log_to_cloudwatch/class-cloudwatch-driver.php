@@ -55,7 +55,7 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 		// Track the timestamp in an integer so we can do range queries for it.
 		$data['created_timestamp'] = strtotime( $data['created'] ) * 1000;
 
-		Cloud\get_logger->( 'audit-log', 'items' )->info( json_encode( $data ) );
+		Cloud\get_logger( 'audit-log', 'items' )->info( json_encode( $data ) );
 
 		// Add the values to the column values caches if they exist.
 		foreach ( $data as $column => $value ) {
