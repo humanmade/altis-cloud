@@ -1015,7 +1015,7 @@ function get_logger( string $log_group, string $log_stream ) : Logger {
 
 		// Fall back to logging directly to the CloudWatch log group/stream
 		// directly in batches of 1000
-		$handler = new CloudWatchHandler( $client, $log_group, $log_stream, null, 1000 );
+		$handler = new CloudWatchHandler( $client, Altis\get_environment_name() . '/' . $log_group, $log_stream, null, 1000 );
 
 		// CloudWatchHandler's default LineFormatter has a bunch of extra meta.
 		// This _just_ logs the message.
