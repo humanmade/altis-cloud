@@ -960,7 +960,7 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
  * @param string $log_stream Name of the log stream.
  * @return Monolog\Logger
  */
-function get_logger( string $log_group, string $log_stream ) {
+function get_logger( string $log_group, string $log_stream ) : Logger {
 	// Let's store each logger in an array so that we don't keep instantiating
 	// loggers. We create a new logger for each Monolog channel. The channel
 	// name will be used as the Fluent Bit tag.
