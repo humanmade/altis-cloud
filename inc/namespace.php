@@ -23,7 +23,6 @@ use HM\Platform\XRay;
 use Maxbanton\Cwh\Handler\CloudWatch as CloudWatchHandler;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\SocketHandler;
-// use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Psr\Http\Message\RequestInterface;
 use S3_Uploads;
@@ -751,21 +750,21 @@ function on_request_stats( TransferStats $stats ) {
  * This will cause a remote request to the metadata service when the cache is empty.
  *
  * @return array $array(
- *	  accountId: string,
- *	  architecture: string,
- *	  availabilityZone: string,
- *	  billingProducts: string,
- *	  devpayProductCodes: string,
- *	  marketplaceProductCodes: string,
- *	  imageId: string,
- *	  instanceId: string,
- *	  instanceType: string,
- *	  kernelId: string,
- *	  pendingTime: string,
- *	  privateIp: string,
- *	  ramdiskId: string,
- *	  region: string,
- *	  version: string,
+ *   accountId: string,
+ *   architecture: string,
+ *   availabilityZone: string,
+ *   billingProducts: string,
+ *   devpayProductCodes: string,
+ *   marketplaceProductCodes: string,
+ *   imageId: string,
+ *   instanceId: string,
+ *   instanceType: string,
+ *   kernelId: string,
+ *   pendingTime: string,
+ *   privateIp: string,
+ *   ramdiskId: string,
+ *   region: string,
+ *   version: string,
  * )
  */
 function get_ec2_instance_metadata() : array {
@@ -878,13 +877,13 @@ function get_cloudwatch_logs_client() : CloudWatchLogsClient {
  * @see https://www.altis-dxp.com/resources/docs/cloud/cdn-purge/
  *
  * @param array $paths_patterns A list of the paths that you want to invalidate.
- *								The path is relative to the CDN host, A leading / is optional.
- *								e.g  for http://altis-dxp.com/images/image2.jpg
- *								specify images/image2.jpg or /images/image2.jpg
+ *                              The path is relative to the CDN host, A leading / is optional.
+ *                              e.g  for http://altis-dxp.com/images/image2.jpg
+ *                              specify images/image2.jpg or /images/image2.jpg
  *
- *								You can also invalidate multiple files simultaneously by using the * wildcard.
- *								The *, which replaces 0 or more characters, must be the last character in the invalidation path.
- *								e.g /images/* - will invalidate all files in a directory.
+ *                              You can also invalidate multiple files simultaneously by using the * wildcard.
+ *                              The *, which replaces 0 or more characters, must be the last character in the invalidation path.
+ *                              e.g /images/* - will invalidate all files in a directory.
  *
  * @return bool Returns true if invalidation successfully created, false on failure.
  */
@@ -934,11 +933,11 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 
 	try {
 		$client->createInvalidation( [
-			'DistributionId'	=> $distribution_id,
+			'DistributionId'    => $distribution_id,
 			'InvalidationBatch' => [
-				'Paths'			=> [
-					'Items'		=> $paths_patterns,
-					'Quantity'	=> count( $paths_patterns ),
+				'Paths'         => [
+					'Items'     => $paths_patterns,
+					'Quantity'  => count( $paths_patterns ),
 				],
 				'CallerReference' => sha1( time() . wp_json_encode( $paths_patterns ) ),
 			],
@@ -956,7 +955,7 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
  * Retrieve logger for specied $tag_name
  *
  * @param string $log_group Name of the log group to send logs to. Environment
- *							name is added automatically.
+ *                          name is added automatically.
  * @param string $log_stream Name of the log stream.
  * @return Monolog\Logger
  */
@@ -975,7 +974,7 @@ function get_logger( string $log_group, string $log_stream ) : Logger {
 
 	// Use Fluent Bit if it's available.
 	if ( Fluent_Bit\is_available() ) {
-		// Use Monolog's built-in TCP socket handler
+		// Use Monolog's built-in TCP socket handler.
 		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
 
 		// Fluent Bit requires log messages to be encoded using MessagePack,
@@ -983,38 +982,27 @@ function get_logger( string $log_group, string $log_stream ) : Logger {
 		$socket->setFormatter( new MsgPackFormatter() );
 
 		$logger->pushHandler( $socket );
-	// } elseif ( ) {
-
 	} else {
 		$client = get_cloudwatch_logs_client();
 
 		// Fall back to logging directly to the CloudWatch log group/stream
-		// directly in batches of 1000
+		// directly in batches of 1000.
 		$handler = new CloudWatchHandler(
 			$client,
 			Altis\get_environment_name() . '/' . $log_group,
 			$log_stream,
-			null, // log retention when creating a new group (we disable this)
-			1000, // how many logs to send in a single batch
-			[],  // tags for log group (we disable group creation)
-			Logger::DEBUG, // log level
-			true, // bubble logs through multiple handlers
-			false // do _not_ create the group. If set to true, logs won't be set because it will fail when attempting to create teh group
+			null, // log retention when creating a new group (we disable this).
+			1000, // how many logs to send in a single batch.
+			[],  // tags for log group (we disable group creation).
+			Logger::DEBUG, // PSR log level.
+			true, // bubble logs through multiple handlers.
+			false // do _not_ create the group. If set to true, logs won't be set because it will fail when attempting to create teh group.
 		);
 
 		// CloudWatchHandler's default LineFormatter has a bunch of extra meta.
 		// This _just_ logs the message.
-		$formatter = new LineFormatter('%message%');
-		$handler->setFormatter($formatter);
-
-		// Log to the system error log if Fluent Bit is not available
-		// $handler = new ErrorLogHandler();
-
-		// ErrorLogHandler's default formatter has a lot of extra meta in the
-		// log entry. This logs just the channel name and the message. We could
-		// reingest these logs later as the channel name is in the log entry.
-		// $formatter = new LineFormatter('%channel%: %message%');
-		// $handler->setFormatter($formatter);
+		$formatter = new LineFormatter( '%message%' );
+		$handler->setFormatter( $formatter );
 
 		$logger->pushHandler( $handler );
 	}
