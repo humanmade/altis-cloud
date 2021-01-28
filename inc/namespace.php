@@ -1015,7 +1015,17 @@ function get_logger( string $log_group, string $log_stream ) : Logger {
 
 		// Fall back to logging directly to the CloudWatch log group/stream
 		// directly in batches of 1000
-		$handler = new CloudWatchHandler( $client, Altis\get_environment_name() . '/' . $log_group, $log_stream, null, 1000 );
+		$handler = new CloudWatchHandler(
+			$client,
+			Altis\get_environment_name() . '/' . $log_group,
+			$log_stream,
+			null, // log retention when creating a new group (we disable this)
+			1000, // how many logs to send in a single batch
+			[],  // tags for log group (we disable group creation)
+			Logger::DEBUG, // log level
+			true, // bubble logs through multiple handlers
+			false, // do _not_ create the group. If set to true, logs won't be set because it will fail when attempting to create teh group
+		);
 
 		// CloudWatchHandler's default LineFormatter has a bunch of extra meta.
 		// This _just_ logs the message.
