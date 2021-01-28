@@ -35,7 +35,7 @@ class MsgPackFormatter extends FluentdFormatter {
 	 * @param boolean $levelTag whether to append log level to Fluent Bit tag
 	 * name or not.
 	 * @return self
-	 * @throws RuntimeException
+	 * @throws RuntimeException Break when msgpack extension is not available
 	 */
 	public function __construct( bool $levelTag = false ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 		if ( ! function_exists( 'msgpack_pack' ) ) {
