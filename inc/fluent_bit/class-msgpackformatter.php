@@ -34,12 +34,12 @@ class MsgPackFormatter extends FluentdFormatter {
 	 *
 	 * @param boolean $levelTag whether to append log level to Fluent Bit tag
 	 * name or not.
-     * @return self
-     * @throws RuntimeException
+	 * @return self
+	 * @throws RuntimeException
 	 */
 	public function __construct( bool $levelTag = false ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 		if ( ! function_exists( 'msgpack_pack' ) ) {
-			throw new \RuntimeException( 'PHP\'s msgpack extension is required to use Monolog\'s MsgPackFormatter' );
+			throw new RuntimeException( 'PHP\'s msgpack extension is required to use Monolog\'s MsgPackFormatter' );
 		}
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName
