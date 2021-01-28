@@ -999,7 +999,7 @@ function get_logger( string $log_group, string $log_stream ) : Logger {
 			[],  // tags for log group (we disable group creation)
 			Logger::DEBUG, // log level
 			true, // bubble logs through multiple handlers
-			false, // do _not_ create the group. If set to true, logs won't be set because it will fail when attempting to create teh group
+			false // do _not_ create the group. If set to true, logs won't be set because it will fail when attempting to create teh group
 		);
 
 		// CloudWatchHandler's default LineFormatter has a bunch of extra meta.
