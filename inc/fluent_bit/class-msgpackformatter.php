@@ -18,6 +18,7 @@ namespace Altis\Cloud\Fluent_Bit;
  */
 
 use Monolog\Formatter\FluentdFormatter;
+use RuntimeException;
 
 /**
  * Class MsgPackFormatter
@@ -33,7 +34,8 @@ class MsgPackFormatter extends FluentdFormatter {
 	 *
 	 * @param boolean $levelTag whether to append log level to Fluent Bit tag
 	 * name or not.
-	 * @return self
+     * @return self
+     * @throws RuntimeException
 	 */
 	public function __construct( bool $levelTag = false ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 		if ( ! function_exists( 'msgpack_pack' ) ) {
