@@ -970,6 +970,7 @@ function get_logger( string $log_group, string $log_stream ) : Logger {
 		return $loggers[ $tag_name ];
 	}
 
+	$is_cloud = in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true );
 	$logger = new Logger( $tag_name );
 
 	// Use Fluent Bit if it's available.
@@ -982,7 +983,7 @@ function get_logger( string $log_group, string $log_stream ) : Logger {
 		$socket->setFormatter( new MsgPackFormatter() );
 
 		$logger->pushHandler( $socket );
-	} else {
+	} elseif ( $is_cloud ) {
 		$client = get_cloudwatch_logs_client();
 
 		// Fall back to logging directly to the CloudWatch log group/stream
@@ -996,7 +997,7 @@ function get_logger( string $log_group, string $log_stream ) : Logger {
 			[],  // tags for log group (we disable group creation).
 			Logger::DEBUG, // PSR log level.
 			true, // bubble logs through multiple handlers.
-			false // do _not_ create the group. If set to true, logs won't be set because it will fail when attempting to create teh group.
+			false // do _not_ create the group. If set to true, logs won't be set because it will fail when attempting to create the group.
 		);
 
 		// CloudWatchHandler's default LineFormatter has a bunch of extra meta.
