@@ -971,9 +971,11 @@ function is_cloud() : bool {
  *
  * @param string $log_group Name of the log group to send logs to. Environment
  *                          name is added automatically. For instance, specifying
- *                          'foobar' here in an environment names
- *                          some-client-prod-01 will log to the log group named
- *                          some-client-prod-01/foobar.
+ *                          'foobar' in an environment named some-client-prod-01
+ *                          will log to the log group named
+ *                          some-client-prod-01/foobar. The log group is
+ *                          expected to already exist in AWS; the log group
+ *                          will not be created if it does not already exist.
  * @param string $log_stream Name of the log stream. This value is used as
  *                           provided.
  * @return Psr\Log\LoggerInterface
@@ -981,7 +983,11 @@ function is_cloud() : bool {
 function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 	// $tag_name is designed to be used with Fluent Bit and doubles as a nice
 	// index for storing our loggers in. Tags must be prefixed with 'app.' to be
-	// correctly routed by our Fluent Bit container.
+	// correctly routed by our Fluent Bit container. Fluent Bit is configured
+    // to extract the log group and log stream from this string, with the log
+    // group in the second position and the log stream in the third,
+    // deliminated by a period. It will automatically prepend the environment
+    // name to the log group.
 	$tag_name = sprintf( 'app.%s.%s', $log_group, $log_stream );
 
 	// Let's store each logger in an array so that we don't keep instantiating
