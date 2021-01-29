@@ -25,6 +25,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\SocketHandler;
 use Monolog\Logger;
 use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
 use S3_Uploads;
 
 /**
@@ -980,11 +981,15 @@ function set_wp_debug_constants() : void {
  * Retrieve logger for specied $tag_name
  *
  * @param string $log_group Name of the log group to send logs to. Environment
- *                          name is added automatically.
- * @param string $log_stream Name of the log stream.
- * @return Monolog\Logger
+ *                          name is added automatically. For instance, specifying
+ *                          'foobar' here in an environment names
+ *                          some-client-prod-01 will log to the log group named
+ *                          some-client-prod-01/foobar.
+ * @param string $log_stream Name of the log stream. This value is used as
+ *                           provided.
+ * @return Psr\Log\LoggerInterface
  */
-function get_logger( string $log_group, string $log_stream ) : Logger {
+function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 	// Let's store each logger in an array so that we don't keep instantiating
 	// loggers. We create a new logger for each Monolog channel. The channel
 	// name will be used as the Fluent Bit tag.
@@ -1032,6 +1037,11 @@ function get_logger( string $log_group, string $log_stream ) : Logger {
 
 		$logger->pushHandler( $handler );
 	}
+
+    // If Fluent Bit isn't available, or this isn't a cloud environment, no
+    // handlers are added to the logger. The logging interface will be able to
+    // log messages, but no handlers will process them, effectively logging
+    // them to /dev/null.
 
 	$loggers[ $tag_name ] = $logger;
 	return $loggers[ $tag_name ];
