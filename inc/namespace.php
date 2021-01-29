@@ -759,21 +759,21 @@ function on_request_stats( TransferStats $stats ) {
  * This will cause a remote request to the metadata service when the cache is empty.
  *
  * @return array $array(
- *   accountId: string,
- *   architecture: string,
- *   availabilityZone: string,
- *   billingProducts: string,
- *   devpayProductCodes: string,
- *   marketplaceProductCodes: string,
- *   imageId: string,
- *   instanceId: string,
- *   instanceType: string,
- *   kernelId: string,
- *   pendingTime: string,
- *   privateIp: string,
- *   ramdiskId: string,
- *   region: string,
- *   version: string,
+ *    accountId: string,
+ *    architecture: string,
+ *    availabilityZone: string,
+ *    billingProducts: string,
+ *    devpayProductCodes: string,
+ *    marketplaceProductCodes: string,
+ *    imageId: string,
+ *    instanceId: string,
+ *    instanceType: string,
+ *    kernelId: string,
+ *    pendingTime: string,
+ *    privateIp: string,
+ *    ramdiskId: string,
+ *    region: string,
+ *    version: string,
  * )
  */
 function get_ec2_instance_metadata() : array {
