@@ -984,7 +984,7 @@ function set_wp_debug_constants() : void {
  * @return bool
  */
 function is_cloud() : bool {
-    return in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true );
+	return in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true );
 }
 
 /**
@@ -1004,15 +1004,15 @@ function is_cloud() : bool {
  * @return Psr\Log\LoggerInterface
  */
 function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
-    // $tag_name is designed to be used with Fluent Bit and doubles as a nice
-    // index for storing our loggers in. Tags must be prefixed with 'app.' to be
-    // correctly routed by our Fluent Bit container.
+	// $tag_name is designed to be used with Fluent Bit and doubles as a nice
+	// index for storing our loggers in. Tags must be prefixed with 'app.' to be
+	// correctly routed by our Fluent Bit container.
 	$tag_name = sprintf( 'app.%s.%s', $log_group, $log_stream );
 
 	// Let's store each logger in an array so that we don't keep instantiating
 	// loggers. We create a new logger for each Monolog channel. The channel
 	// name will be used as the Fluent Bit tag.
-    static $loggers = [];
+	static $loggers = [];
 	if ( isset( $loggers[ $tag_name ] ) ) {
 		return $loggers[ $tag_name ];
 	}
@@ -1054,10 +1054,10 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 		$logger->pushHandler( $handler );
 	}
 
-    // If Fluent Bit isn't available, or this isn't a cloud environment, no
-    // handlers are added to the logger. The logging interface will be able to
-    // log messages, but no handlers will process them, effectively logging
-    // them to /dev/null.
+	// If Fluent Bit isn't available, or this isn't a cloud environment, no
+	// handlers are added to the logger. The logging interface will be able to
+	// log messages, but no handlers will process them, effectively logging
+	// them to /dev/null.
 
 	$loggers[ $tag_name ] = $logger;
 	return $loggers[ $tag_name ];
