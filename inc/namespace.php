@@ -984,10 +984,10 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 	// $tag_name is designed to be used with Fluent Bit and doubles as a nice
 	// index for storing our loggers in. Tags must be prefixed with 'app.' to be
 	// correctly routed by our Fluent Bit container. Fluent Bit is configured
-    // to extract the log group and log stream from this string, with the log
-    // group in the second position and the log stream in the third,
-    // deliminated by a period. It will automatically prepend the environment
-    // name to the log group.
+	// to extract the log group and log stream from this string, with the log
+	// group in the second position and the log stream in the third,
+	// deliminated by a period. It will automatically prepend the environment
+	// name to the log group.
 	$tag_name = sprintf( 'app.%s.%s', $log_group, $log_stream );
 
 	// Let's store each logger in an array so that we don't keep instantiating
