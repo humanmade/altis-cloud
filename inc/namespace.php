@@ -953,7 +953,21 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 }
 
 /**
- * Retrieve logger for specied $tag_name
+ * Returns true when environment is running in the cloud. Returns false in all
+ * other conditions, such as local-server or local-chassis.
+ *
+ * @return bool
+ */
+function is_cloud() : bool {
+    return in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true );
+}
+
+/**
+ * Returns a PSR-3 compatible logger.  When a Fluent Bit service is defined in
+ * the environment, that will be used.  Alternatively, if in a Cloud
+ * environment, logging directly to CloudWatch will be performed. This is not
+ * recommended as it can cause server errors when CloudWatch is rate limiting
+ * requests or the service itself is down.
  *
  * @param string $log_group Name of the log group to send logs to. Environment
  *                          name is added automatically. For instance, specifying
@@ -965,17 +979,19 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
  * @return Psr\Log\LoggerInterface
  */
 function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
+    // $tag_name is designed to be used with Fluent Bit and doubles as a nice
+    // index for storing our loggers in. Tags must be prefixed with 'app.' to be
+    // correctly routed by our Fluent Bit container.
+	$tag_name = sprintf( 'app.%s.%s', $log_group, $log_stream );
+
 	// Let's store each logger in an array so that we don't keep instantiating
 	// loggers. We create a new logger for each Monolog channel. The channel
 	// name will be used as the Fluent Bit tag.
-	static $loggers = [];
-	$tag_name = sprintf( 'app.%s.%s', $log_group, $log_stream );
-
+    static $loggers = [];
 	if ( isset( $loggers[ $tag_name ] ) ) {
 		return $loggers[ $tag_name ];
 	}
 
-	$is_cloud = in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true );
 	$logger = new Logger( $tag_name );
 
 	// Use Fluent Bit if it's available.
@@ -988,7 +1004,7 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 		$socket->setFormatter( new MsgPackFormatter() );
 
 		$logger->pushHandler( $socket );
-	} elseif ( $is_cloud ) {
+	} elseif ( is_cloud() ) {
 		$client = get_cloudwatch_logs_client();
 
 		// Fall back to logging directly to the CloudWatch log group/stream
