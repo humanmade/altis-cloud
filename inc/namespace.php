@@ -680,7 +680,7 @@ function reflect_cloudfront_headers() {
 	foreach ( $headers as $header ) {
 		$header_key = 'HTTP_' . str_replace( '-', '_', strtoupper( $header ) );
 		if ( isset( $_SERVER[ $header_key ] ) ) {
-			header( sprintf( 'X-%s: %s', $header, $_SERVER[ $header_key ] ) );
+			header( sprintf( 'X-%s: %s', $header, wp_unslash( $_SERVER[ $header_key ] ) ) );
 		}
 	}
 }
