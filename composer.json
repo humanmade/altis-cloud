@@ -33,6 +33,15 @@
 		"humanmade/aws-ses-wp-mail": "~1.2.0"
 	},
 	"extra": {
-		"altis": {}
+		"altis": {
+			"install-overrides": [
+				"humanmade/aws-xray",
+				"humanmade/s3-uploads",
+				"humanmade/cavalcade",
+				"humanmade/wp-redis",
+				"humanmade/ludicrousdb",
+				"humanmade/aws-ses-wp-mail"
+			]
+		}
 	}
 }
