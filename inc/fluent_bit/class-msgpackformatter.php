@@ -26,7 +26,6 @@ use RuntimeException;
  * Serializes a log message to Fluent Bit socket protocol
  */
 class MsgPackFormatter extends FluentdFormatter {
-
 	/**
 	 * Construct the MsgPackFormatter class.
 	 *
