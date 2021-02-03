@@ -935,7 +935,7 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 
 	try {
 		$client->createInvalidation( [
-			'DistributionId'    => $distribution_id,
+			'DistributionId' => $distribution_id,
 			'InvalidationBatch' => [
 				'Paths' => [
 					'Items' => $paths_patterns,
