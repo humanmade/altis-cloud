@@ -947,9 +947,9 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 		$client->createInvalidation( [
 			'DistributionId'    => $distribution_id,
 			'InvalidationBatch' => [
-				'Paths'         => [
-					'Items'     => $paths_patterns,
-					'Quantity'  => count( $paths_patterns ),
+				'Paths' => [
+					'Items' => $paths_patterns,
+					'Quantity' => count( $paths_patterns ),
 				],
 				'CallerReference' => sha1( time() . wp_json_encode( $paths_patterns ) ),
 			],
