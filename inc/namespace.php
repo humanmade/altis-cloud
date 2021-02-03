@@ -1015,9 +1015,6 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 	// name to the log group.
 	$tag_name = sprintf( 'app.%s.%s', $log_group, $log_stream );
 
-	// Let's store each logger in an array so that we don't keep instantiating
-	// loggers. We create a new logger for each Monolog channel. The channel
-	// name will be used as the Fluent Bit tag.
 	static $loggers = [];
 	if ( isset( $loggers[ $tag_name ] ) ) {
 		return $loggers[ $tag_name ];
