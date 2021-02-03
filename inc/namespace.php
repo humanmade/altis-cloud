@@ -998,7 +998,6 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 	$logger = new Logger( $tag_name );
 
 	if ( Fluent_Bit\is_available() ) {
-		// Use Monolog's built-in TCP socket handler.
 		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
 
 		// Fluent Bit requires log messages to be encoded using MessagePack,
