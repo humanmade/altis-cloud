@@ -53,7 +53,7 @@ class MsgPackFormatter extends FluentdFormatter {
 	 * @param array $record Monolog log record
 	 * @return string The formatted log record
 	 */
-	public function format( array $record ): string {
+	public function format( array $record ) : string {
 		$tag = $record['channel'];
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName
