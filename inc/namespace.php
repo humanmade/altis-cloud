@@ -871,9 +871,9 @@ function get_cloudwatch_logs_client() : CloudWatchLogsClient {
 	if ( $cloudwatch_logs_client ) {
 		return $cloudwatch_logs_client;
 	}
-	$cloudwatch_logs_client = Altis\get_aws_sdk()->createCloudWatchLogs([
+	$cloudwatch_logs_client = Altis\get_aws_sdk()->createCloudWatchLogs( [
 		'version' => '2014-03-28',
-	]);
+	] );
 	return $cloudwatch_logs_client;
 }
 
