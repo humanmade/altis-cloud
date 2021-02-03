@@ -1000,7 +1000,6 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 
 	$logger = new Logger( $tag_name );
 
-	// Use Fluent Bit if it's available.
 	if ( Fluent_Bit\is_available() ) {
 		// Use Monolog's built-in TCP socket handler.
 		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
