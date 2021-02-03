@@ -39,6 +39,7 @@ class MsgPackFormatter extends FluentdFormatter {
 			throw new RuntimeException( 'PHP\'s msgpack extension is required to use Monolog\'s MsgPackFormatter' );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName
 		$this->levelTag = $level_tag;
 	}
 
