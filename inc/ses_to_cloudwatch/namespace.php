@@ -36,8 +36,8 @@ function on_sent_message( $result, $message ) {
  */
 function on_error_sending_message( Exception $error, $message ) {
 	Cloud\get_logger( 'ses', 'Failed' )->error( json_encode( [
-		'error'     => [
-			'class'   => get_class( $error ),
+		'error' => [
+			'class' => get_class( $error ),
 			'message' => $error->getMessage(),
 		],
 		'message' => $message,
