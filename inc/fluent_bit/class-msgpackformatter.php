@@ -24,8 +24,6 @@ use RuntimeException;
  * Class MsgPackFormatter
  *
  * Serializes a log message to Fluent Bit socket protocol
- *
- * @author Nathaniel Schweinberg <nathaniel@humanmade.com>
  */
 class MsgPackFormatter extends FluentdFormatter {
 
