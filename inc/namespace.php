@@ -181,9 +181,6 @@ function load_platform( $wp_debug_enabled ) {
 		add_action( 'pre_option_blog_public', '__return_zero' );
 	}
 
-	// Reflect CloudFront headers pre-batcache.
-	reflect_cloudfront_headers();
-
 	// Load Batcache.
 	add_filter( 'enable_loading_advanced_cache_dropin', __NAMESPACE__ . '\\load_advanced_cache', 10, 1 );
 
@@ -650,32 +647,6 @@ function disable_install_capability( array $caps, string $cap ) : array {
 	// This is how you disable a capability via map meta cap.
 	$caps[] = 'do_not_allow';
 	return $caps;
-}
-
-/**
- * CloudFront can pass headers to the origin that provide information
- * useful for modifying responses or performing redirects and other
- * logic.
- *
- * This function reflects those headers back in responses for
- * client side usage.
- */
-function reflect_cloudfront_headers() {
-	$headers = [
-		'CloudFront-Is-Desktop-Viewer',
-		'CloudFront-Is-Mobile-Viewer',
-		'CloudFront-Is-SmartTV-Viewer',
-		'CloudFront-Is-Tablet-Viewer',
-		'CloudFront-Viewer-Country',
-	];
-
-	foreach ( $headers as $header ) {
-		$header_key = 'HTTP_' . str_replace( '-', '_', strtoupper( $header ) );
-		if ( isset( $_SERVER[ $header_key ] ) ) {
-			// phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized -- Using safe subset of headers.
-			header( sprintf( 'X-%s: %s', $header, wp_unslash( $_SERVER[ $header_key ] ) ) );
-		}
-	}
 }
 
 /**
