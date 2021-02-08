@@ -8,6 +8,7 @@
 namespace Altis\Cloud\Cavalcade_Runner_To_CloudWatch;
 
 use Altis;
+use Altis\Cloud;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Aws\CloudWatch\CloudWatchClient;
 use Exception;
@@ -102,25 +103,17 @@ function on_end_job( Worker $worker, Job $job, string $status ) {
 	$error_output_property->setAccessible( true );
 	$error_output = $error_output_property->getValue( $worker );
 
-	send_event_to_stream(
-		[
-			'timestamp' => time() * 1000,
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-			'message'   => json_encode( [
-				'hook'     => $job->hook,
-				'id'       => $job->id,
-				'site_url' => $job->get_site_url(),
-				'site_id'  => $job->site,
-				'args'     => unserialize( $job->args ),
-				'status'   => $status,
-				'stdout'   => $output,
-				'stderr'   => $error_output,
-				'duration' => $duration,
-			] ),
-		],
-		HM_ENV . '/cavalcade',
-		$status
-	);
+	Cloud\get_logger( 'cavalcade', $status )->info( json_encode( [
+		'hook'     => $job->hook,
+		'id'       => $job->id,
+		'site_url' => $job->get_site_url(),
+		'site_id'  => $job->site,
+		'args'     => unserialize( $job->args ),
+		'status'   => $status,
+		'stdout'   => $output,
+		'stderr'   => $error_output,
+		'duration' => $duration,
+	] ));
 }
 
 /**
