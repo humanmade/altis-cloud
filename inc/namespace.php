@@ -8,7 +8,10 @@
 namespace Altis\Cloud;
 
 use Altis;
+use Altis\Cloud\Fluent_Bit;
+use Altis\Cloud\Fluent_Bit\MsgPackFormatter;
 use Aws\CloudFront\CloudFrontClient;
+use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Aws\Credentials;
 use Aws\Credentials\CredentialProvider;
 use Aws\Signature\SignatureV4;
@@ -17,7 +20,12 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\TransferStats;
 use HM\Platform\XRay;
+use Maxbanton\Cwh\Handler\CloudWatch as CloudWatchHandler;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\SocketHandler;
+use Monolog\Logger;
 use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
 use S3_Uploads;
 
 /**
@@ -193,15 +201,13 @@ function load_platform( $wp_debug_enabled ) {
 	// Load logging features.
 	require_once __DIR__ . '/ses_to_cloudwatch/namespace.php';
 	require_once __DIR__ . '/performance_optimizations/namespace.php';
-	require_once __DIR__ . '/cloudwatch_logs/namespace.php';
 
 	SES_To_CloudWatch\bootstrap();
-	CloudWatch_Logs\bootstrap();
 	Performance_Optimizations\bootstrap();
 
 	if ( $config['php-errors-to-cloudwatch'] ) {
-		require_once __DIR__ . '/cloudwatch_error_handler/namespace.php';
-		CloudWatch_Error_Handler\bootstrap();
+		require_once __DIR__ . '/error_handler/namespace.php';
+		Error_Handler\bootstrap();
 	}
 
 	if ( $config['audit-log-to-cloudwatch'] ) {
@@ -674,7 +680,8 @@ function reflect_cloudfront_headers() {
 	foreach ( $headers as $header ) {
 		$header_key = 'HTTP_' . str_replace( '-', '_', strtoupper( $header ) );
 		if ( isset( $_SERVER[ $header_key ] ) ) {
-			header( sprintf( 'X-%s: %s', $header, $_SERVER[ $header_key ] ) );
+			// phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized -- Using safe subset of headers.
+			header( sprintf( 'X-%s: %s', $header, wp_unslash( $_SERVER[ $header_key ] ) ) );
 		}
 	}
 }
@@ -855,6 +862,22 @@ function get_cloudfront_client() : CloudFrontClient {
 }
 
 /**
+ * Get a configured CloudWatch logs client.
+ *
+ * @return CloudWatchLogsClient
+ */
+function get_cloudwatch_logs_client() : CloudWatchLogsClient {
+	static $cloudwatch_logs_client;
+	if ( $cloudwatch_logs_client ) {
+		return $cloudwatch_logs_client;
+	}
+	$cloudwatch_logs_client = Altis\get_aws_sdk()->createCloudWatchLogs( [
+		'version' => '2014-03-28',
+	] );
+	return $cloudwatch_logs_client;
+}
+
+/**
  * Create purge request to invalidate CDN cache.
  *
  * This is limited to 10 wildcard invalidations and 2000 static path
@@ -922,10 +945,10 @@ function purge_cdn_paths( array $paths_patterns ) : bool {
 
 	try {
 		$client->createInvalidation( [
-			'DistributionId'    => $distribution_id,
+			'DistributionId' => $distribution_id,
 			'InvalidationBatch' => [
-				'Paths'           => [
-					'Items'    => $paths_patterns,
+				'Paths' => [
+					'Items' => $paths_patterns,
 					'Quantity' => count( $paths_patterns ),
 				],
 				'CallerReference' => sha1( time() . wp_json_encode( $paths_patterns ) ),
@@ -953,4 +976,91 @@ function set_wp_debug_constants() : void {
 		return;
 	}
 	define( 'WP_DEBUG_DISPLAY', false );
+}
+
+/**
+ * Returns true when environment is running in the cloud. Returns false in all
+ * other conditions, such as local-server or local-chassis.
+ *
+ * @return bool
+ */
+function is_cloud() : bool {
+	return in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true );
+}
+
+/**
+ * Returns a PSR-3 compatible logger.  When a Fluent Bit service is defined in
+ * the environment, that will be used.  Alternatively, if in a Cloud
+ * environment, logging directly to CloudWatch will be performed. This is not
+ * recommended as it can cause server errors when CloudWatch is rate limiting
+ * requests or the service itself is down.
+ *
+ * @param string $log_group Name of the log group to send logs to. Environment
+ *                          name is added automatically. For instance, specifying
+ *                          'foobar' in an environment named some-client-prod-01
+ *                          will log to the log group named
+ *                          some-client-prod-01/foobar. The log group is
+ *                          expected to already exist in AWS; the log group
+ *                          will not be created if it does not already exist.
+ * @param string $log_stream Name of the log stream. This value is used as
+ *                           provided.
+ * @return Psr\Log\LoggerInterface
+ */
+function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
+	// $tag_name is designed to be used with Fluent Bit and doubles as a nice
+	// index for storing our loggers in. Tags must be prefixed with 'app.' to be
+	// correctly routed by our Fluent Bit container. Fluent Bit is configured
+	// to extract the log group and log stream from this string, with the log
+	// group in the second position and the log stream in the third,
+	// deliminated by a period. It will automatically prepend the environment
+	// name to the log group.
+	$tag_name = sprintf( 'app.%s.%s', $log_group, $log_stream );
+
+	static $loggers = [];
+	if ( isset( $loggers[ $tag_name ] ) ) {
+		return $loggers[ $tag_name ];
+	}
+
+	$logger = new Logger( $tag_name );
+
+	if ( Fluent_Bit\is_available() ) {
+		$socket = new SocketHandler( FLUENT_HOST . ':' . FLUENT_PORT, Logger::DEBUG );
+
+		// Fluent Bit requires log messages to be encoded using MessagePack,
+		// otherwise it cannot parse the log entries.
+		$socket->setFormatter( new MsgPackFormatter() );
+
+		$logger->pushHandler( $socket );
+	} elseif ( is_cloud() ) {
+		$client = get_cloudwatch_logs_client();
+
+		// Fall back to logging directly to the CloudWatch log group/stream
+		// directly in batches of 1000.
+		$handler = new CloudWatchHandler(
+			$client,
+			Altis\get_environment_name() . '/' . $log_group,
+			$log_stream,
+			null, // log retention when creating a new group (we disable this).
+			1000, // how many logs to send in a single batch.
+			[],  // tags for log group (we disable group creation).
+			Logger::DEBUG, // PSR log level.
+			true, // bubble logs through multiple handlers.
+			false // do _not_ create the group. If set to true, logs won't be set because it will fail when attempting to create the group.
+		);
+
+		// CloudWatchHandler's default LineFormatter has a bunch of extra meta.
+		// This _just_ logs the message.
+		$formatter = new LineFormatter( '%message%' );
+		$handler->setFormatter( $formatter );
+
+		$logger->pushHandler( $handler );
+	}
+
+	// If Fluent Bit isn't available, or this isn't a cloud environment, no
+	// handlers are added to the logger. The logging interface will be able to
+	// log messages, but no handlers will process them, effectively logging
+	// them to /dev/null.
+
+	$loggers[ $tag_name ] = $logger;
+	return $loggers[ $tag_name ];
 }

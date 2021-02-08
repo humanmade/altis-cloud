@@ -10,7 +10,7 @@ namespace Altis\Cloud; // phpcs:ignore
 use Altis;
 
 add_action( 'altis.modules.init', function () {
-	$is_cloud = in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true );
+	$is_cloud = is_cloud();
 	$default_settings = [
 		'enabled' => true,
 		'cavalcade' => true,

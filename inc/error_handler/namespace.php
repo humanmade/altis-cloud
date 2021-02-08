@@ -7,10 +7,9 @@
  * @package altis/cloud
  */
 
-namespace Altis\Cloud\CloudWatch_Error_Handler;
+namespace Altis\Cloud\Error_Handler;
 
-use Altis;
-use Altis\Cloud\CloudWatch_Logs;
+use Altis\Cloud;
 
 /**
  * Set up shutdown function error handler to send to CloudWatch.
@@ -32,14 +31,6 @@ function bootstrap() {
 
 	// Hook into Query Monitor error handler in case the above is overridden.
 	add_action( 'qm/collect/new_php_error', __NAMESPACE__ . '\\error_handler', 10, 5 );
-
-	// Register shutdown function.
-	// Nesting the function registration ensures it is the last shutdown
-	// function to run, required as we call fastcgi_finish_request()
-	// which ends the request before Query Monitor's output.
-	register_shutdown_function( function () {
-		register_shutdown_function( __NAMESPACE__ . '\\send_buffered_errors_on_shutdown' );
-	} );
 }
 
 /**
@@ -54,9 +45,7 @@ function bootstrap() {
 function error_handler( int $errno, string $errstr, string $errfile = null, int $errline = null ) : bool {
 	global $altis_cloudwatch_error_handler_errors, $altis_cloudwatch_error_handler_error_count;
 	// Limit the amount of errors to hold in memory. Flush every 100.
-	if ( $altis_cloudwatch_error_handler_error_count > 100 ) {
-		send_buffered_errors();
-	}
+
 	$error = [
 		'type'    => get_error_type_for_error_number( $errno ),
 		'message' => $errstr,
@@ -64,50 +53,17 @@ function error_handler( int $errno, string $errstr, string $errfile = null, int 
 		'line'    => $errline,
 	];
 	$error = apply_filters( 'altis_cloudwatch_error_handler_error', $error );
+	$json = json_encode( $error );
+
+	Cloud\get_logger( 'php-structured', $error['type'] )->error( $json );
+
+	// TODO is this necessary to keep?
 	$altis_cloudwatch_error_handler_errors[ $errno ][] = [
 		'timestamp' => time() * 1000,
-		'message'   => json_encode( $error ), // @codingStandardsIgnoreLine
+		'message'   => $json, // @codingStandardsIgnoreLine
 	];
 	$altis_cloudwatch_error_handler_error_count++;
 	return false;
-}
-
-/**
- * When script execution ends, send any buffered errors to CloudWatch.
- */
-function send_buffered_errors_on_shutdown() {
-	if ( empty( $GLOBALS['altis_cloudwatch_error_handler_errors'] ) ) {
-		return;
-	}
-
-	if ( function_exists( 'fastcgi_finish_request' ) ) {
-		fastcgi_finish_request();
-	}
-	send_buffered_errors();
-}
-
-/**
- * Send all buffered errors to CloudWAtch.
- */
-function send_buffered_errors() {
-
-	// Check if we were shut down by an error.
-	$last_error = error_get_last();
-	if ( $last_error && in_array( $last_error['type'], [ E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING ], true ) ) {
-		error_handler( $last_error['type'], $last_error['message'], $last_error['file'], $last_error['line'] );
-	}
-
-	$errors = $GLOBALS['altis_cloudwatch_error_handler_errors'];
-	$GLOBALS['altis_cloudwatch_error_handler_errors'] = [];
-	$GLOBALS['altis_cloudwatch_error_handler_error_count'] = 0;
-	if ( ! $errors ) {
-		return;
-	}
-
-	foreach ( $errors as $errno => $errno_errors ) {
-		$type = get_error_type_for_error_number( $errno );
-		CloudWatch_Logs\send_events_to_stream( $errno_errors, Altis\get_environment_name() . '/php-structured', $type );
-	}
 }
 
 /**
