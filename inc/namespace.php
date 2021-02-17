@@ -568,9 +568,9 @@ function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
 
 	$s3_uploads = S3_Uploads::get_instance();
 
-	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
 	$primary_host = wp_parse_url( get_main_site_url(), PHP_URL_HOST );
 	$s3_host = wp_parse_url( $s3_uploads->get_s3_url(), PHP_URL_HOST );
+	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
 
 	if ( ! $primary_host ) {
 		trigger_error( sprintf( 'Error parsing main site URL: %s', esc_url_raw( get_main_site_url() ) ), E_USER_WARNING );
