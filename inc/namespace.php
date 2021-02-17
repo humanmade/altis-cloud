@@ -559,44 +559,51 @@ function set_tachyon_hostname( string $tachyon_url ) : string {
 function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
 	$s3_uploads = S3_Uploads::get_instance();
 
-	$primary_host = wp_parse_url( get_main_site_url(), PHP_URL_HOST );
-	$s3_host = wp_parse_url( $s3_uploads->get_s3_url(), PHP_URL_HOST );
-	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
+	$s3_upload_dirs = wp_cache_get( 's3_upload_dirs' );
 
-	if ( ! $primary_host ) {
-		trigger_error( sprintf( 'Error parsing main site URL: %s', esc_url_raw( get_main_site_url() ) ), E_USER_WARNING );
-		return $dirs;
+	if ( ! $s3_upload_dirs ) {
+		$primary_host = wp_parse_url( get_main_site_url(), PHP_URL_HOST );
+		$s3_host = wp_parse_url( $s3_uploads->get_s3_url(), PHP_URL_HOST );
+		$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
+
+		if ( ! $primary_host ) {
+			trigger_error( sprintf( 'Error parsing main site URL: %s', esc_url_raw( get_main_site_url() ) ), E_USER_WARNING );
+			return $dirs;
+		}
+
+		if ( ! $s3_host ) {
+			trigger_error( sprintf( 'Error parsing S3 bucket URL: %s', esc_url_raw( $s3_uploads->get_s3_url() ) ), E_USER_WARNING );
+			return $dirs;
+		}
+
+		if ( ! $current_host ) {
+			trigger_error( sprintf( 'Error parsing site URL: %s', esc_url_raw( site_url() ) ), E_USER_WARNING );
+			return $dirs;
+		}
+
+		// To support 3rd party CDNs leave the host names as is if the direct
+		// amazonaws.com URL is in use.
+		if ( strpos( $s3_host, '.amazonaws.com' ) !== false ) {
+			return $dirs;
+		}
+
+		// Ensure uploads host at least matches primary site host.
+		if ( $s3_host !== $primary_host ) {
+			$dirs['url'] = str_replace( "://{$s3_host}", "://{$primary_host}", $dirs['url'] );
+			$dirs['baseurl'] = str_replace( "://{$s3_host}", "://{$primary_host}", $dirs['baseurl'] );
+		}
+
+		// Only do the replacement if the host name is not a subdomain of the S3 host.
+		if ( substr( $current_host, -1 * strlen( $primary_host ) ) !== $primary_host ) {
+			$dirs['url'] = str_replace( "://{$primary_host}", "://{$current_host}", $dirs['url'] );
+			$dirs['baseurl'] = str_replace( "://{$primary_host}", "://{$current_host}", $dirs['baseurl'] );
+		}
+
+		$s3_upload_dirs = $dirs;
+		wp_cache_set( 's3_upload_dirs', $s3_upload_dirs );
 	}
 
-	if ( ! $s3_host ) {
-		trigger_error( sprintf( 'Error parsing S3 bucket URL: %s', esc_url_raw( $s3_uploads->get_s3_url() ) ), E_USER_WARNING );
-		return $dirs;
-	}
-
-	if ( ! $current_host ) {
-		trigger_error( sprintf( 'Error parsing site URL: %s', esc_url_raw( site_url() ) ), E_USER_WARNING );
-		return $dirs;
-	}
-
-	// To support 3rd party CDNs leave the host names as is if the direct
-	// amazonaws.com URL is in use.
-	if ( strpos( $s3_host, '.amazonaws.com' ) !== false ) {
-		return $dirs;
-	}
-
-	// Ensure uploads host at least matches primary site host.
-	if ( $s3_host !== $primary_host ) {
-		$dirs['url'] = str_replace( "://{$s3_host}", "://{$primary_host}", $dirs['url'] );
-		$dirs['baseurl'] = str_replace( "://{$s3_host}", "://{$primary_host}", $dirs['baseurl'] );
-	}
-
-	// Only do the replacement if the host name is not a subdomain of the S3 host.
-	if ( substr( $current_host, -1 * strlen( $primary_host ) ) !== $primary_host ) {
-		$dirs['url'] = str_replace( "://{$primary_host}", "://{$current_host}", $dirs['url'] );
-		$dirs['baseurl'] = str_replace( "://{$primary_host}", "://{$current_host}", $dirs['baseurl'] );
-	}
-
-	return $dirs;
+	return $s3_upload_dirs;
 }
 
 /**
