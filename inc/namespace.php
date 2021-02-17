@@ -553,21 +553,24 @@ function set_tachyon_hostname( string $tachyon_url ) : string {
 /**
  * Ensure the S3 Uploads Bucket URL matches the current site hostname.
  *
+ * Because this filter involves switching blogs, the results are cached in a
+ * static variable for performance.
+ *
  * @param array $dirs Uploads directories array.
  * @return array
  */
 function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
-	$s3_uploads = S3_Uploads::get_instance();
-
-	$cached_upload_dirs = wp_cache_get( 's3_upload_dirs' );
+	static $cached_upload_dirs = null;
 
 	if ( $cached_upload_dirs ) {
 		return $cached_upload_dirs;
 	}
 
+	$s3_uploads = S3_Uploads::get_instance();
+
+	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
 	$primary_host = wp_parse_url( get_main_site_url(), PHP_URL_HOST );
 	$s3_host = wp_parse_url( $s3_uploads->get_s3_url(), PHP_URL_HOST );
-	$current_host = wp_parse_url( site_url(), PHP_URL_HOST );
 
 	if ( ! $primary_host ) {
 		trigger_error( sprintf( 'Error parsing main site URL: %s', esc_url_raw( get_main_site_url() ) ), E_USER_WARNING );
@@ -602,7 +605,9 @@ function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
 		$dirs['baseurl'] = str_replace( "://{$primary_host}", "://{$current_host}", $dirs['baseurl'] );
 	}
 
-	wp_cache_set( 's3_upload_dirs', $dirs );
+	// Store dirs as non-persistant cache entry.
+	$cached_upload_dirs = $dirs;
+
 	return $dirs;
 }
 
