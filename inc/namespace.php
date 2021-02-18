@@ -477,7 +477,7 @@ function load_db() {
  * @return string
  */
 function get_main_site_url( string $path = '' ) : string {
-	static $main_site_url = '';
+	static $main_site_url;
 
 	if ( ! $main_site_url ) {
 		$main_site_url = get_site_url( get_main_site_id( get_main_network_id() ) );
@@ -574,7 +574,7 @@ function set_tachyon_hostname( string $tachyon_url ) : string {
  * @return array
  */
 function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
-	static $cached_upload_dirs = null;
+	static $cached_upload_dirs;
 
 	if ( $cached_upload_dirs ) {
 		return $cached_upload_dirs;
