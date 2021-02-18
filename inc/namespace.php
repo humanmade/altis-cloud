@@ -474,7 +474,13 @@ function load_db() {
  * @return string
  */
 function get_main_site_url( string $path = '' ) : string {
-	return get_site_url( get_main_site_id( get_main_network_id() ), $path );
+	static $main_site_url = '';
+
+	if ( ! $main_site_url ) {
+		$main_site_url = get_site_url( get_main_site_id( get_main_network_id() ) );
+	}
+
+	return path_join( $main_site_url, $path );
 }
 
 /**
