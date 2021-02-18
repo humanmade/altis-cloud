@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Altis Cloud Fluent Bit MsgPack formatter.
  *
@@ -21,9 +20,9 @@ class LoggerExceptionHandler extends HandlerWrapper {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handle(array $record) : bool {
+	public function handle( array $record ) : bool {
 		try {
-			return $this->handler->handle($record);
+			return $this->handler->handle( $record );
 		} catch ( Throwable $e ) {
 			$this->logException( $e );
 		}
@@ -34,7 +33,7 @@ class LoggerExceptionHandler extends HandlerWrapper {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleBatch(array $records) : void {
+	public function handleBatch( array $records ) : void {
 		try {
 			$this->handler->handleBatch( $records );
 		} catch ( Throwable $e ) {
@@ -42,7 +41,13 @@ class LoggerExceptionHandler extends HandlerWrapper {
 		}
 	}
 
-	protected function logException( Throwable $e ) {
+	/**
+	 * Receives a Throwable and logs a fatal error-like message for visibility
+	 *
+	 * @param Throwable $e Thrown exception.
+	 * @return void
+	 */
+	protected function logException( Throwable $e ) : void {
 		error_log( sprintf( "Fluent Bit Exception[%s]: %s in %s:%s\nStack Trace:\n%s", get_class( $e ), $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString() ) );
 	}
 }
