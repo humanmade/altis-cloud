@@ -994,7 +994,11 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 		// otherwise it cannot parse the log entries.
 		$socket->setFormatter( new MsgPackFormatter() );
 
-		$logger->pushHandler( $socket );
+		// Catches any exceptions thrown by Monolog itself and logs them via
+		// error_log
+		$wrapper = new LoggerExceptionHandler( $socket );
+
+		$logger->pushHandler( $wrapper );
 	} elseif ( is_cloud() ) {
 		$client = get_cloudwatch_logs_client();
 
