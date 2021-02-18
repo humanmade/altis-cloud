@@ -1021,7 +1021,11 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 		$formatter = new LineFormatter( '%message%' );
 		$handler->setFormatter( $formatter );
 
-		$logger->pushHandler( $handler );
+		// Catches any exceptions thrown by Monolog itself and logs them via
+		// error_log
+		$wrapper = new LoggerExceptionHandler( $handler );
+
+		$logger->pushHandler( $wrapper );
 	}
 
 	// If Fluent Bit isn't available, or this isn't a cloud environment, no
