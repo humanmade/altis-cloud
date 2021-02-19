@@ -18,7 +18,7 @@ class LoggerExceptionHandler extends HandlerWrapper {
 	/**
 	 * Check handler for exceptions.
 	 *
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function handle( array $record ) : bool {
 		try {
