@@ -18,7 +18,8 @@ class LoggerExceptionHandler extends HandlerWrapper {
 	/**
 	 * Check handler for exceptions.
 	 *
-	 * {@inheritDoc}
+	 * @param array $record The structured error log record.
+	 * @return bool
 	 */
 	public function handle( array $record ) : bool {
 		try {
@@ -33,7 +34,8 @@ class LoggerExceptionHandler extends HandlerWrapper {
 	/**
 	 * Catch batch exceptions.
 	 *
-	 * {@inheritdoc}
+	 * @param array $records The batch of structured error log records.
+	 * @return void
 	 */
 	public function handleBatch( array $records ) : void {
 		try {
