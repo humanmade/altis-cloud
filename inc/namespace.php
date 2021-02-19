@@ -480,7 +480,7 @@ function get_main_site_url( string $path = '' ) : string {
 		$main_site_url = get_site_url( get_main_site_id( get_main_network_id() ) );
 	}
 
-	return path_join( $main_site_url, $path );
+	return path_join( $main_site_url, ltrim( $path, '/' ) );
 }
 
 /**
