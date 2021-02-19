@@ -1019,8 +1019,7 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 		// otherwise it cannot parse the log entries.
 		$socket->setFormatter( new MsgPackFormatter() );
 
-		// Catches any exceptions thrown by Monolog itself and logs them via
-		// error_log
+		// Catches any exceptions thrown by Monolog itself and logs them via error_log().
 		$wrapper = new LoggerExceptionHandler( $socket );
 
 		$logger->pushHandler( $wrapper );
@@ -1046,8 +1045,7 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 		$formatter = new LineFormatter( '%message%' );
 		$handler->setFormatter( $formatter );
 
-		// Catches any exceptions thrown by Monolog itself and logs them via
-		// error_log
+		// Catches any exceptions thrown by Monolog itself and logs them via error_log.
 		$wrapper = new LoggerExceptionHandler( $handler );
 
 		$logger->pushHandler( $wrapper );

@@ -1,23 +1,23 @@
 <?php
 /**
- * Altis Cloud Fluent Bit MsgPack formatter.
+ * Altis Cloud Monolog Exception Handler.
  *
  * @package altis/cloud
  */
 
 namespace Altis\Cloud;
 
-/*
- * Catches exceptions thrown by Monolog and reports them using error_log.
- *
- */
-
 use Monolog\Handler\HandlerWrapper;
 use Throwable;
 
+/**
+ * Catches exceptions thrown by Monolog and reports them using error_log.
+ */
 class LoggerExceptionHandler extends HandlerWrapper {
 
 	/**
+	 * Check handler for exceptions.
+	 *
 	 * {@inheritdoc}
 	 */
 	public function handle( array $record ) : bool {
@@ -31,6 +31,8 @@ class LoggerExceptionHandler extends HandlerWrapper {
 	}
 
 	/**
+	 * Catch batch exceptions.
+	 *
 	 * {@inheritdoc}
 	 */
 	public function handleBatch( array $records ) : void {
