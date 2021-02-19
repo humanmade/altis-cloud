@@ -994,7 +994,10 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 		// otherwise it cannot parse the log entries.
 		$socket->setFormatter( new MsgPackFormatter() );
 
-		$logger->pushHandler( $socket );
+		// Catches any exceptions thrown by Monolog itself and logs them via error_log().
+		$wrapper = new LoggerExceptionHandler( $socket );
+
+		$logger->pushHandler( $wrapper );
 	} elseif ( is_cloud() ) {
 		$client = get_cloudwatch_logs_client();
 
@@ -1017,7 +1020,10 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 		$formatter = new LineFormatter( '%message%' );
 		$handler->setFormatter( $formatter );
 
-		$logger->pushHandler( $handler );
+		// Catches any exceptions thrown by Monolog itself and logs them via error_log.
+		$wrapper = new LoggerExceptionHandler( $handler );
+
+		$logger->pushHandler( $wrapper );
 	}
 
 	// If Fluent Bit isn't available, or this isn't a cloud environment, no
