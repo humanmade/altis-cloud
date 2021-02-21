@@ -58,4 +58,4 @@ before_script:
 # Run tests for
 script:
   - cd $HOME/test-root && composer serve
-  - cd $HOME/test-root && composer dev-tools phpunit -- vendor/$ALTIS_PACKAGE
+  - cd $HOME/test-root && composer dev-tools phpunit -- vendor/$ALTIS_PACKAGE/tests
