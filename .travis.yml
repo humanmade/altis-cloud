@@ -51,9 +51,9 @@ branches:
 
 # Install application and start the local server
 before_script:
-  - composer create-project altis/skeleton:$TRAVIS_BRANCH --stability=dev $HOME/test-root
+  - composer create-project altis/skeleton:dev-$TRAVIS_BRANCH --stability=dev $HOME/test-root
   - export ALTIS_PACKAGE=`jq -r .name composer.json`
-  - cd $HOME/test-root && composer require "$ALTIS_PACKAGE:dev-$TRAVIS_PULL_REQUEST_BRANCH as $TRAVIS_BRANCH"
+  - cd $HOME/test-root && composer require "$ALTIS_PACKAGE:dev-$TRAVIS_PULL_REQUEST_BRANCH as dev-$TRAVIS_BRANCH"
 
 # Run tests for
 script:
