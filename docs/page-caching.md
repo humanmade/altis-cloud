@@ -3,7 +3,7 @@
 The majority of the pages viewed on Altis will be cached to improve performance and delivery time to the user. It is necessary to take into account the page cache when developing - considerations are listed at the bottom of this page. All pages are cached by default, and the following rules excluded specific cases:
 
 - All `POST` requests are not cached
-- Any requests with cookies matching the patterns `wordpress_*`, `wp-*`, `wp_*`, `comment_*` and `hm_*` are not cached.
+- Any requests with cookies matching the patterns `wordpress_*`, `wp-*`, `wp_*`, `comment_*`, `hm_*` and  `altis_*` are not cached.
 - Any requests with the `Authentication` HTTP header will not be cached.
 - Any response with the `Cache-Control: no-cache` HTTP header will not be cached.
 - Any response with no content are not cached.
