@@ -771,7 +771,7 @@ function get_ec2_instance_metadata() : array {
 	$cache_key = 'altis.ec2_instance_metadata';
 	// Use apcu_* as we only want to store the cache on the current server,
 	// not across all servers (wp_cache_*).
-	$cached_data = apcu_fetch( $cache_key, $has_cache );
+	$cached_data = function_exists( 'apcu_fetch' ) ? apcu_fetch( $cache_key, $has_cache ) : null;
 	if ( $has_cache ) {
 		return $cached_data;
 	}
@@ -786,14 +786,18 @@ function get_ec2_instance_metadata() : array {
 	} catch ( Exception $e ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Unable to get instance metadata. Error: %s', $e->getMessage() ), E_USER_NOTICE );
-		apcu_store( $cache_key, [] );
+		if ( function_exists( 'apcu_store' ) ) {
+			apcu_store( $cache_key, [] );
+		}
 		return [];
 	}
 
 	if ( $request->getStatusCode() !== 200 ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Unable to get instance metadata. Returned response code: %s', $request->getStatusCode() ), E_USER_NOTICE );
-		apcu_store( $cache_key, [] );
+		if ( function_exists( 'apcu_store' ) ) {
+			apcu_store( $cache_key, [] );
+		}
 		return [];
 	}
 
@@ -803,7 +807,9 @@ function get_ec2_instance_metadata() : array {
 		$metadata = [];
 	}
 
-	apcu_store( $cache_key, $metadata );
+	if ( function_exists( 'apcu_store' ) ) {
+		apcu_store( $cache_key, $metadata );
+	}
 
 	return $metadata;
 }
