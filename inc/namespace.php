@@ -574,10 +574,11 @@ function set_tachyon_hostname( string $tachyon_url ) : string {
  * @return array
  */
 function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
-	static $cached_upload_dirs;
+	static $cached_upload_dirs = [];
 
-	if ( $cached_upload_dirs ) {
-		return $cached_upload_dirs;
+	$blog_id = get_current_blog_id();
+	if ( isset( $cached_upload_dirs[ $blog_id ] ) ) {
+		return $cached_upload_dirs[ $blog_id ];
 	}
 
 	$s3_uploads = S3_Uploads\Plugin::get_instance();
@@ -620,7 +621,7 @@ function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
 	}
 
 	// Store dirs as non-persistant cache entry.
-	$cached_upload_dirs = $dirs;
+	$cached_upload_dirs[ $blog_id ] = $dirs;
 
 	return $dirs;
 }
