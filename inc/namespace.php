@@ -118,6 +118,11 @@ function bootstrap() {
 	// Sign ElasticSearch HTTP requests and log errors.
 	add_action( 'http_api_debug', __NAMESPACE__ . '\\log_elasticsearch_request_errors', 10, 5 );
 	add_filter( 'http_request_args', __NAMESPACE__ . '\\on_http_request_args', 11, 2 );
+
+	// Disallow file mods.
+	if ( is_cloud() ) {
+		define( 'DISALLOW_FILE_MODS', true );
+	}
 }
 
 /**
