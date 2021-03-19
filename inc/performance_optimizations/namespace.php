@@ -27,7 +27,13 @@ function increase_set_time_limit_on_async_upload() {
 	if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 		return;
 	}
-	if ( strpos( $_SERVER['REQUEST_URI'], '/wp-admin/async-upload.php' ) === false ) {
+	$is_accepted_method = in_array( $_SERVER['REQUEST_METHOD'], [ 'PATCH', 'POST', 'PUT' ], true );
+	$is_async_upload = strpos( $_SERVER['REQUEST_URI'], '/wp-admin/async-upload.php' ) !== false;
+	$is_rest_api_upload = strpos( $_SERVER['REQUEST_URI'], '/wp/v2/media' ) !== false;
+	if ( ! $is_accepted_method ) {
+		return;
+	}
+	if ( ! $is_async_upload && ! $is_rest_api_upload ) {
 		return;
 	}
 	$time = ini_get( 'max_execution_time' );
