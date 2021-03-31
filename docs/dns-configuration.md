@@ -14,7 +14,7 @@ All Altis properties must be hosted on a subdomain, such as `www.` unless using 
 
 It's common to implement a redirect from the domain apex to the subdomain, such as redirecting `example.com` to `www.example.com`. There are two options to support this in Altis Cloud:
 
-1. Use Altis manages nameservers (see below)
+1. Use Altis managed nameservers (see below)
 1. Use your domain registrar or self-hosted service to redirect the domain apex to the subdomain. Many domain registrars support this service, and typically call it "web forwarding" or "web redirect".
 
 ## Managed Nameservers
