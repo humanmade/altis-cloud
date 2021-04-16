@@ -239,7 +239,12 @@ function get_elasticsearch_url() : ?string {
 	if ( ! defined( 'ELASTICSEARCH_HOST' ) ) {
 		return null;
 	}
-	$host = sprintf( '%s://%s:%d', ELASTICSEARCH_PORT === 443 ? 'https' : 'http', ELASTICSEARCH_HOST, ELASTICSEARCH_PORT );
+	$host = sprintf(
+		'%s://%s%s',
+		ELASTICSEARCH_PORT === 443 ? 'https' : 'http',
+		ELASTICSEARCH_HOST,
+		! in_array( ELASTICSEARCH_PORT, [ 80, 443 ], true ) ? ( ':' . ELASTICSEARCH_PORT ) : ''
+	);
 	return $host;
 }
 
