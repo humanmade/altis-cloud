@@ -60,7 +60,7 @@ function output_page( array $checks ) {
 	if ( ! empty( $_SERVER['HTTP_ACCEPT'] ) && $_SERVER['HTTP_ACCEPT'] === 'application/json' ) {
 		$format = 'json';
 	}
-	if ( $_GET['_accept'] ?? '' === 'json' ) {
+	if ( isset( $_GET['_accept'] ) && $_GET['_accept'] === 'json' ) {
 		$format = 'json';
 	}
 
@@ -157,12 +157,17 @@ function run_mysql_healthcheck() {
 function run_object_cache_healthcheck() {
 	global $wp_object_cache, $wpdb;
 
-	if ( method_exists( $wp_object_cache, 'getStats' ) && ! $wp_object_cache->getStats() ) {
+	if ( method_exists( $wp_object_cache, 'getStats' ) && ! empty( $wp_object_cache->getStats() ) ) {
 		return new WP_Error( 'memcached-no-stats', 'Unable to get memcached stats.' );
 	}
 
-	if ( method_exists( $wp_object_cache, 'stats' ) && ! $wp_object_cache->stats() ) {
-		return new WP_Error( 'redis-no-stats', 'Unable to get redis stats.' );
+	if ( method_exists( $wp_object_cache, 'stats' ) ) {
+		ob_start();
+		$result = (string) $wp_object_cache->stats();
+		$result .= ob_get_clean();
+		if ( empty( $result ) ) {
+			return new WP_Error( 'redis-no-stats', 'Unable to get redis stats.' );
+		}
 	}
 
 	$set = wp_cache_set( 'test', 1 );
