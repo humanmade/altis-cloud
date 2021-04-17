@@ -529,7 +529,7 @@ function load_plugins() {
 	}
 
 	if ( $config['healthcheck'] ) {
-		add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck' );
+		add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck', 100 );
 	}
 }
 
