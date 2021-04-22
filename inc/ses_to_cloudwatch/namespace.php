@@ -25,6 +25,11 @@ function bootstrap() {
  * @param array $message The response message.
  */
 function on_sent_message( $result, $message ) {
+	// Truncate the size of message array item to max 5KB.
+	array_walk_recursive( $message, function ( $value, $key ) {
+		return truncate_string( $value );
+	} );
+
 	Cloud\get_logger( 'ses', 'Sent' )->info( json_encode( $message ) );
 }
 
@@ -35,6 +40,11 @@ function on_sent_message( $result, $message ) {
  * @param array $message The error message.
  */
 function on_error_sending_message( Exception $error, $message ) {
+	// Truncate the size of message array item to max 5KB.
+	array_walk_recursive( $message, function ( $value, $key ) {
+		return truncate_string( $value );
+	} );
+
 	Cloud\get_logger( 'ses', 'Failed' )->error( json_encode( [
 		'error' => [
 			'class' => get_class( $error ),
@@ -42,4 +52,22 @@ function on_error_sending_message( Exception $error, $message ) {
 		],
 		'message' => $message,
 	] ) );
+}
+
+/**
+ * Truncate string to given maximum size.
+ *
+ * @param string $string String to truncate.
+ * @param int $max_size Maximum size in bytes, default 5KB.
+ * @param string $replacement String replacement.
+ *
+ * @return string
+ */
+function truncate_string( string $string, int $max_size = 5 * 1024, string $replacement = '…' ) : string {
+	if ( strlen( $string ) < $max_size ) {
+		return $string;
+	}
+
+	// Truncate string in the middle.
+	return substr_replace( $string, $replacement, $max_size / 2, strlen( $string ) - $max_size + strlen( $replacement ) );
 }
