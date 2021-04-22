@@ -57,8 +57,8 @@ function on_error_sending_message( Exception $error, $message ) {
 /**
  * Truncate string to given maximum size.
  *
- * @param string $string      String message to truncate.
- * @param int    $max_size    Maximum size in bytes, default 5KB.
+ * @param string $string String to truncate.
+ * @param int $max_size Maximum size in bytes, default 5KB.
  * @param string $replacement String replacement.
  *
  * @return string
