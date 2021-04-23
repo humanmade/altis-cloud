@@ -10,15 +10,12 @@
 	background-color: #4667de;
 	display: inline-block;
 	height: 1.2em;
+	line-height: 1.2;
 	margin-top: 6px;
 	padding: 2px 4px;
 	border-radius: 4px;
 	flex: 0;
 	word-break: normal;
-}
-
-#wpadminbar .altis-env-indicator {
-	line-height: 1.2;
 }
 
 #wpadminbar .altis-env-indicator abbr {
