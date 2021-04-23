@@ -80,7 +80,7 @@ function get_unique_headers() : array {
 		$header_key = 'HTTP_' . str_replace( '-', '_', strtoupper( $header ) );
 		if ( isset( $_SERVER[ $header_key ] ) ) {
 			// Add header to batcache vary keys.
-			$unique_keys[ $header ] = wp_unslash( $_SERVER[ $header_key ] ); // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized Already sanitized.
+			$unique_keys[ $header ] = wp_unslash( $_SERVER[ $header_key ] ); // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 	}
 
