@@ -326,10 +326,7 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 		}
 
 		// Unschedule this status check.
-		$next = wp_next_scheduled( 'altis.search.check_package_status', $check_status_hook_args );
-		if ( $next ) {
-			wp_unschedule_event( $next, 'altis.search.check_package_status', $check_status_hook_args );
-		}
+		wp_clear_scheduled_hook( 'altis.search.check_package_status', $check_status_hook_args );
 
 		// Schedule the index settings update.
 		if ( ! wp_next_scheduled( 'altis.search.update_index_settings', $update_index_hook_args ) ) {
@@ -337,10 +334,7 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 		}
 	} catch ( Exception $e ) {
 		// Unschedule this hook.
-		$next = wp_next_scheduled( 'altis.search.check_package_status', $check_status_hook_args );
-		if ( $next ) {
-			wp_unschedule_event( $next, 'altis.search.check_package_status', $check_status_hook_args );
-		}
+		wp_clear_scheduled_hook( 'altis.search.check_package_status', $check_status_hook_args );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( $e->getMessage(), E_USER_WARNING );
