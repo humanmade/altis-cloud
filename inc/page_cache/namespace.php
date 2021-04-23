@@ -100,7 +100,7 @@ function get_unique_cookies() : array {
 	foreach ( $unique_cookies as $cookie ) {
 		if ( ! empty( $_COOKIE[ $cookie ] ) ) {
 			// Add header to batcache vary keys.
-			$unique_keys[ $cookie ] = $_COOKIE[ $cookie ];
+			$unique_keys[ $cookie ] = wp_unslash( $_COOKIE[ $cookie ] ); // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 	}
 
