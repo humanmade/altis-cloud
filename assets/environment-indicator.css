@@ -23,6 +23,6 @@
 }
 
 #wpadminbar #wp-admin-bar-altis .dashicons-before::before {
-	font-size: 1.2em;
+	font-size: 16px; /* stylelint-disable-line declaration-property-unit-blacklist */
 	vertical-align: middle;
 }
