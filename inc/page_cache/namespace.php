@@ -80,7 +80,8 @@ function get_unique_headers() : array {
 		$header_key = 'HTTP_' . str_replace( '-', '_', strtoupper( $header ) );
 		if ( isset( $_SERVER[ $header_key ] ) ) {
 			// Add header to batcache vary keys.
-			$unique_keys[ $header ] = wp_unslash( $_SERVER[ $header_key ] ); // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
+			// phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
+			$unique_keys[ $header ] = $_SERVER[ $header_key ];
 		}
 	}
 
@@ -100,7 +101,8 @@ function get_unique_cookies() : array {
 	foreach ( $unique_cookies as $cookie ) {
 		if ( ! empty( $_COOKIE[ $cookie ] ) ) {
 			// Add header to batcache vary keys.
-			$unique_keys[ $cookie ] = wp_unslash( $_COOKIE[ $cookie ] ); // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
+			// phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
+			$unique_keys[ $cookie ] = $_COOKIE[ $cookie ];
 		}
 	}
 
