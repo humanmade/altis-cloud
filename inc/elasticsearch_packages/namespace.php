@@ -247,6 +247,7 @@ function get_packages_to_remove() : array {
  * @param string $slug The package slug.
  * @param boolean $for_network Whether this is a network level package.
  * @param string|null $existing_package_id An existing package ID to be removed.
+ * @throws Exception Elasticsearch package not found message.
  * @return void
  */
 function on_check_package_status( string $package_id, string $slug, bool $for_network = false, ?string $existing_package_id = null ) : void {

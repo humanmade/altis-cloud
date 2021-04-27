@@ -104,7 +104,7 @@ class DB extends LudicrousDB {
 	 * @see wpdb::query()
 	 *
 	 * @param string $query The query to run.
-	 * @param bool $dbh_or_table
+	 * @param bool $dbh_or_table Database host or table.
 	 */
 	protected function _do_query( $query, $dbh_or_table = false ) {
 		$start = microtime( true );

@@ -7,9 +7,10 @@
 }
 
 #wpadminbar .altis-env-indicator {
-	background-color: #4667DE;
+	background-color: #4667de;
 	display: inline-block;
 	height: 1.2em;
+	line-height: 1.2;
 	margin-top: 6px;
 	padding: 2px 4px;
 	border-radius: 4px;
@@ -17,15 +18,11 @@
 	word-break: normal;
 }
 
-#wpadminbar .altis-env-indicator {
-	line-height: 1.2;
-}
-
 #wpadminbar .altis-env-indicator abbr {
 	line-height: inherit;
 }
 
 #wpadminbar #wp-admin-bar-altis .dashicons-before::before {
-	font-size: 16px;
+	font-size: 16px; /* stylelint-disable-line declaration-property-unit-blacklist */
 	vertical-align: middle;
 }
