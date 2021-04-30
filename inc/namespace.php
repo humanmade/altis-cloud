@@ -27,6 +27,7 @@ use Monolog\Logger;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use S3_Uploads;
+use WP_CLI;
 
 /**
  * CloudFront static paths invalidation limit.
@@ -508,6 +509,11 @@ function load_plugins() {
 			define( 'DISABLE_WP_CRON', true );
 		}
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/cavalcade/plugin.php';
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			WP_CLI::add_hook( 'after_invoke:altis migrate', function () {
+				WP_CLI::runcommand( 'cavalcade upgrade' );
+			} );
+		}
 	}
 
 	// Define TACHYON_URL, as in the Cloud environment is "always on"
