@@ -79,7 +79,7 @@ function output_page( array $checks ) {
 		<head>
 			<title>Status: <?php echo $passed ? 'OK' : 'Failure!' ?></title>
 		</head>
-		<img src="https://humanmade.github.io/hm-pattern-library/assets/images/logos/logo-small-red.svg" style="height: 30px; vertical-align: middle" />
+		<img src="https://make.hmn.md/altis/Altis-logo.svg" style="height: 30px; vertical-align: middle" />
 		<table>
 			<?php foreach ( $checks as $check => $status ) : ?>
 				<tr>
