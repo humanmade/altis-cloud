@@ -441,7 +441,9 @@ function load_advanced_cache( $should_load ) {
  */
 function load_db() {
 	require_once ABSPATH . WPINC . '/wp-db.php';
+	require_once Altis\ROOT_DIR . '/vendor/humanmade/ludicrousdb/ludicrousdb/includes/functions.php';
 	require_once Altis\ROOT_DIR . '/vendor/humanmade/ludicrousdb/ludicrousdb/includes/class-ludicrousdb.php';
+	ldb_default_constants();
 	require_once __DIR__ . '/class-db.php';
 	if ( ! defined( 'DB_CHARSET' ) ) {
 		define( 'DB_CHARSET', 'utf8mb4' );
