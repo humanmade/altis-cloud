@@ -27,6 +27,7 @@ use Monolog\Logger;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use S3_Uploads;
+use WP_Admin_Bar;
 use WP_CLI;
 
 /**
@@ -64,6 +65,7 @@ function bootstrap() {
 	) {
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
+		add_action( 'admin_bar_menu', __NAMESPACE__ . '\\register_trace_menu_item', 100 );
 		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
 		if ( in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
 			add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
@@ -1083,4 +1085,33 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 
 	$loggers[ $tag_name ] = $logger;
 	return $loggers[ $tag_name ];
+}
+
+/**
+ * Register the "Debug Request" menu item.
+ *
+ * @param WP_Admin_Bar $wp_admin_bar Admin bar instance.
+ */
+function register_trace_menu_item( WP_Admin_Bar $wp_admin_bar ) {
+	if ( ! defined( 'HM_ENV_REGION' ) ) {
+		return;
+	}
+
+	$trace_id = XRay\get_root_trace_id();
+	$url = sprintf(
+		'https://dashboard.altis-dxp.com/#/%s/%s/xray/trace/%s',
+		HM_ENV_REGION,
+		Altis\get_environment_name(),
+		$trace_id
+	);
+
+	$title = __( 'Debug Request', 'altis' );
+	$logo_menu_args = [
+		'id' => 'altis-view-trace',
+		'parent' => 'altis',
+		'title' => $title . ' <span class="dashicons-before dashicons-external"></span>',
+		'href' => $url,
+	];
+
+	$wp_admin_bar->add_menu( $logo_menu_args );
 }
