@@ -1,4 +1,4 @@
-# Third Party CDN Usage
+# Third Party CDNs
 
 In some situations it may be required to use your own Content Delivery Network (CDN) to serve the Altis powered website or service. Below are some examples that may necessitate this:
 
