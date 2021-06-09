@@ -9,22 +9,17 @@ We provide the following Origin locations:
 **North America**
 
 - North Virginia
-- Ohio
-- North California
-- Oregon
-- Montreal
 
 **Europe**
 
 - Ireland
 - London
 - Frankfurt
-- Paris
 
 **Asia Pacific**
 
 - Singapore
 - Tokyo
 - Sydney
-- Seoul
-- Mumbai
+
+We are always iterating on our global availability, and other regions may become available. Contact us to discuss other options.
