@@ -10,6 +10,6 @@ apcu, calendar, Core, ctype, curl, date, dom, exif, fileinfo, filter, ftp, gd, g
 
 # Limitations
 
-- Upload size: 1GB (nginx is set to 50M, 1G for php files)
+- Maximum upload size: 1GB (1GB for media upload endpoints, and 50MB for all other requests)
 - php execution timeout: 60s
 - Cron task execution timeout: 1 hour
