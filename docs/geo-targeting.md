@@ -1,6 +1,6 @@
 # Geo Targeting / GeoIP
 
-Altis supports geolocation targeting when specifically enabled. Once enabled, developers can make use of the `Cloudfront-Viewer-Country` HTTP Header to serve content on a per-country basis.
+Altis supports geolocation targeting when specifically enabled. Once enabled, developers can make use of [the `Cloudfront-Viewer-Country` HTTP Header](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-cloudfront-headers.html#cloudfront-headers-viewer-location) (ISO 3166-1 alpha-2 format) to serve content on a per-country basis.
 
 To enable Geo Targeting contact the Altis team.
 
