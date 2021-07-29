@@ -56,4 +56,4 @@ To configure the sending region set the `email-region` configuration option to a
 
 ## Email Logging
 
-See [Accessing Logs](./logs.md) for details on access send and failure logs for email.
+See [Accessing Logs](./dashboard/logs.md) for details on access send and failure logs for email.
