@@ -29,7 +29,7 @@
 		"php": ">=7.1",
 		"humanmade/wp-redis-predis-client": "0.1.0",
 		"humanmade/aws-xray": "~1.2.13",
-		"humanmade/s3-uploads": "~2.3.0",
+		"humanmade/s3-uploads": "~3.0.3",
 		"humanmade/cavalcade": "^2.0.2",
 		"humanmade/wp-redis": "0.7.1",
 		"humanmade/wordpress-pecl-memcached-object-cache": "2.1.0",
