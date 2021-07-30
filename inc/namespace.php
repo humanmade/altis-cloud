@@ -518,9 +518,7 @@ function load_plugins() {
 	}
 
 	if ( $config['s3-uploads'] ) {
-		if ( in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
-			add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname', 20 );
-		}
+		add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname', 20 );
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
 	}
 
