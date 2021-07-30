@@ -518,9 +518,7 @@ function load_plugins() {
 	}
 
 	if ( $config['s3-uploads'] ) {
-		if ( in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
-			add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname', 20 );
-		}
+		add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname', 20 );
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
 	}
 
@@ -581,6 +579,18 @@ function set_tachyon_hostname( string $tachyon_url ) : string {
  * @return array
  */
 function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
+	// Has S3 Uploads been initialized yet?
+	$wrappers = stream_get_wrappers();
+	if ( defined( 'S3_UPLOADS_BUCKET' ) && ! in_array( 's3', $wrappers, true ) ) {
+		_doing_it_wrong( 'wp_upload_dir', 'wp_upload_dir() was called before S3 Uploads has been initialized. This must not be called until after plugins_loaded priority 0.', 'Altis v7' );
+		return $dirs;
+	}
+
+	// Are we actually using S3 Uploads?
+	if ( strpos( $dirs['path'], 's3://' ) !== 0 ) {
+		return $dirs;
+	}
+
 	static $cached_upload_dirs = [];
 
 	$blog_id = get_current_blog_id();
