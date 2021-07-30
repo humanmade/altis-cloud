@@ -588,6 +588,11 @@ function set_s3_uploads_bucket_url_hostname( array $dirs ) : array {
 		return $dirs;
 	}
 
+	// Are we actually using S3 Uploads?
+	if ( strpos( $dirs['path'], 's3://' ) !== 0 ) {
+		return $dirs;
+	}
+
 	static $cached_upload_dirs = [];
 
 	$blog_id = get_current_blog_id();
