@@ -22,13 +22,20 @@ The sandbox container also has some security controls relaxed. For example, whil
 
 The CLI tool provides a full connection to the sandbox server, with a full Bash shell available.
 
+Within the container, you can download and run standard Linux software; for example, if you need to install helper tools for parsing data during a migration.
+
+
+### wp-cli
+
 For interacting with your Altis site, [wp-cli](https://make.wordpress.org/cli/handbook/) is installed and configured for you. This allows management of content, users, settings, and more directly from the shell.
 
 ![](../assets/cli-wp.png)
 
 Additionally, [custom commands](https://make.wordpress.org/cli/handbook/guides/commands-cookbook/) can be created and added to your custom codebase, then run at your convenience. This can be used for custom maintenance or configuration commands, as well as providing for custom migration scripts.
 
-Within the container, you can download and run standard Linux software; for example, if you need to install helper tools for parsing data during a migration.
+wp-cli can also be used to query your database, via the `wp db query` command. Running this command with no parameters will launch an interactive MySQL client session. This connection is to your live database writer instance, and **any destructive queries performed will apply to your real database**.
+
+![](../assets/cli-db-query.png)
 
 
 ## Limitations
