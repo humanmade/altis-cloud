@@ -18,6 +18,7 @@ add_action( 'altis.modules.init', function () {
 		'aws-ses-wp-mail' => $is_cloud,
 		'batcache' => $is_cloud,
 		'redis' => true,
+		'sessions' => false,
 		'memcached' => Altis\get_environment_architecture() === 'ec2',
 		'ludicrousdb' => true,
 		'healthcheck' => true,
