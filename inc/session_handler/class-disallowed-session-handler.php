@@ -18,7 +18,7 @@ namespace Altis\Cloud\Session_Handler;
  */
 class Disallowed_Session_Handler implements \SessionHandlerInterface {
 	function open( $save_path, $session_name ) {
-		error_log( 'Sessions are not enabled in Altis config.' );
+		trigger_error( 'PHP Sessions requires Redis integration, which is currently not activated.', E_USER_WARNING );
 		return false;
 	}
 	function close() {}
