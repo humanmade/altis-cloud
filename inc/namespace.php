@@ -170,8 +170,6 @@ function load_platform( $wp_debug_enabled ) {
 	}
 
 	// Session support.
-	require_once __DIR__ . '/session_handler/namespace.php';
-
 	if ( $config['redis'] && $config['sessions'] ) {
 		load_session_handler();
 	} else {
