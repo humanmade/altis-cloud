@@ -16,4 +16,4 @@ Altis includes support for PHP sessions using Redis as the storage backend. In o
 }
 ```
 
-Worth noting is that the cookie name is `altis_session`, rather than the default `PHPSESSID`.
+**Note:** The cookie name is `altis_session`, rather than the default `PHPSESSID` in order to bypass CloudFront page caching.
