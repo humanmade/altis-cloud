@@ -453,7 +453,6 @@ function load_session_handler() {
 
 	session_set_save_handler( $handler, true );
 	session_name( 'altis_session' );
-	session_start();
 }
 
 /**
