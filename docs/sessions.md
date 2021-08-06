@@ -1,6 +1,6 @@
 # Sessions
 
-Altis has support for PHP sessions using Redis as the storage backend, however it is not enabled by default. In order to activate PHP sessions support you need to have Redis activated as well, eg:
+Altis includes support for PHP sessions using Redis as the storage backend. In order to activate PHP sessions support you need to have Redis activated as well, eg:
 
 ```json
 {
@@ -8,11 +8,12 @@ Altis has support for PHP sessions using Redis as the storage backend, however i
 		"altis": {
 			"modules": {
 				"cloud": {
-					"redis": true,
-					"sessions": true
+					"redis": true
 				}
 			}
 		}
 	}
 }
 ```
+
+Worth noting is that the cookie name is `altis_session`, rather than the default `PHPSESSID`.

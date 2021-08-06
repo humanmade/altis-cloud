@@ -170,7 +170,7 @@ function load_platform( $wp_debug_enabled ) {
 	}
 
 	// Session support.
-	if ( $config['redis'] && $config['sessions'] ) {
+	if ( $config['redis'] ) {
 		load_session_handler();
 	} else {
 		disable_sessions();
