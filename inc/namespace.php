@@ -10,7 +10,7 @@ namespace Altis\Cloud;
 use Altis;
 use Altis\Cloud\Fluent_Bit;
 use Altis\Cloud\Fluent_Bit\MsgPackFormatter;
-use Altis\Cloud\Session_Handler\DisallowedSessionHandler;
+use Altis\Cloud\Session_Handler\Disallowed_Session_Handler;
 use Aws\CloudFront\CloudFrontClient;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Aws\Credentials;
@@ -169,7 +169,7 @@ function load_platform( $wp_debug_enabled ) {
 		load_object_cache_redis();
 	}
 
-	// Session support
+	// Session support.
 	require_once __DIR__ . '/session_handler/namespace.php';
 
 	if ( $config['redis'] && $config['sessions'] ) {
@@ -450,7 +450,7 @@ function load_session_handler() {
 		return;
 	}
 
-	$client = new Predis\Client( $wp_object_cache->build_client_parameters( $redis_server ), [ 'prefix' => 'sessions:' ]);
+	$client = new Predis\Client( $wp_object_cache->build_client_parameters( $redis_server ), [ 'prefix' => 'sessions:' ] );
 	$handler = new Predis\Session\Handler( $client );
 
 	session_set_save_handler( $handler, true );
@@ -464,7 +464,7 @@ function load_session_handler() {
  * @return void
  */
 function disable_sessions() {
-	$handler = new DisallowedSessionHandler();
+	$handler = new Disallowed_Session_Handler();
 	session_set_save_handler( $handler, false );
 }
 
