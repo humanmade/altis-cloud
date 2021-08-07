@@ -23,10 +23,6 @@ This also means the `wp_is_mobile` function will not work as intended, and shoul
 
 Due to caching rules, the HTTP Referer header is not available in PHP. Any requirement for the referrer should be passed as a `GET` or `POST` parameter on the referring page.
 
-## No PHP Sessions
-
-[PHP Sessions](http://php.net/manual/en/features.sessions.php) are not supported on Altis. Where session data is needed developers should either store state on the client via cookies, or against the user's object in the WordPress database. All web requests on Altis are stateless.
-
 ## Web Requests to PHP Files
 
 Direct access to PHP files is not allowed on Altis, outside of `/wp-admin/*`. For example, a request for `https://example.com/wp-content/plugins/my-plugin.php` will fail. All requests for PHP should be routed via WordPress' rewrite rules or similar.

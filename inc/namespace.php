@@ -10,6 +10,7 @@ namespace Altis\Cloud;
 use Altis;
 use Altis\Cloud\Fluent_Bit;
 use Altis\Cloud\Fluent_Bit\MsgPackFormatter;
+use Altis\Cloud\Session_Handler\Disallowed_Session_Handler;
 use Aws\CloudFront\CloudFrontClient;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Aws\Credentials;
@@ -24,6 +25,7 @@ use Maxbanton\Cwh\Handler\CloudWatch as CloudWatchHandler;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\SocketHandler;
 use Monolog\Logger;
+use Predis;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use S3_Uploads;
@@ -165,6 +167,13 @@ function load_platform( $wp_debug_enabled ) {
 		load_object_cache_memcached();
 	} elseif ( $config['redis'] ) {
 		load_object_cache_redis();
+	}
+
+	// Session support.
+	if ( $config['redis'] ) {
+		load_session_handler();
+	} else {
+		disable_sessions();
 	}
 
 	if ( $config['ludicrousdb'] ) {
@@ -425,6 +434,35 @@ function load_object_cache_redis() {
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
+}
+
+/**
+ * Load Redis session handler.
+ *
+ * @return void
+ */
+function load_session_handler() {
+	global $wp_object_cache, $redis_server;
+
+	if ( headers_sent() ) {
+		return;
+	}
+
+	$client = new Predis\Client( $wp_object_cache->build_client_parameters( $redis_server ), [ 'prefix' => 'sessions:' ] );
+	$handler = new Predis\Session\Handler( $client );
+
+	session_set_save_handler( $handler, true );
+	session_name( 'altis_session' );
+}
+
+/**
+ * Disables PHP sessions by registering a dummy handler.
+ *
+ * @return void
+ */
+function disable_sessions() {
+	$handler = new Disallowed_Session_Handler();
+	session_set_save_handler( $handler, false );
 }
 
 /**

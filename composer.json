@@ -20,6 +20,7 @@
 			"inc/environment_indicator/namespace.php",
 			"inc/cloudfront_media_purge/namespace.php",
 			"inc/fluent_bit/namespace.php",
+			"inc/session_handler/class-disallowed-session-handler.php",
 			"inc/class-loggerexceptionhandler.php",
 			"inc/namespace.php",
 			"wp-config.php"
