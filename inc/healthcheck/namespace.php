@@ -124,7 +124,7 @@ function output_page( array $checks ) {
 			<?php foreach ( $checks as $check => $status ) : ?>
 				<tr>
 					<td>
-						<?php echo htmlspecialchars( $check ) ?>
+						<?php echo htmlspecialchars( $check ) // phpcs:ignore HM.Security.EscapeOutput.OutputNotEscaped ?>
 					</td>
 					<td>
 						<?php echo is_error( $status ) ? sprintf( '%s (code: %s)', esc_html( $status->get_error_message() ), esc_html( $status->get_error_code() ) ) : 'OK' ?>
