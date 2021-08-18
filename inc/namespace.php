@@ -82,6 +82,11 @@ function bootstrap() {
 	// Load the platform as soon as WP is loaded.
 	add_action( 'enable_wp_debug_mode_checks', __NAMESPACE__ . '\\load_platform' );
 
+	// Load health checks.
+	if ( $config['healthcheck'] ) {
+		Healthcheck\bootstrap();
+	}
+
 	if ( class_exists( 'HM\\Cavalcade\\Runner\\Runner' ) && $config['cavalcade'] ) {
 		boostrap_cavalcade_runner();
 	}
@@ -529,10 +534,6 @@ function load_plugins() {
 		add_filter( 'aws_ses_wp_mail_ses_client_params', __NAMESPACE__ . '\\configure_aws_ses_client' );
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-ses-wp-mail/aws-ses-wp-mail.php';
 	}
-
-	if ( $config['healthcheck'] ) {
-		add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck', 100 );
-	}
 }
 
 /**
@@ -640,19 +641,6 @@ function configure_aws_ses_client( array $params ) : array {
 	}
 
 	return $params;
-}
-
-/**
- * Load and run healthcheck.
- *
- * Runs the Cloud healthcheck at /healthcheck/
- */
-function load_healthcheck() {
-	if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
-		return;
-	}
-	Healthcheck\bootstrap();
-	Healthcheck\Cavalcade\bootstrap();
 }
 
 /**
