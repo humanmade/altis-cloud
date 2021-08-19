@@ -26,18 +26,51 @@ function bootstrap() {
 		return;
 	}
 
-	if ( strpos( $_SERVER['REQUEST_URI'], '/__healthcheck' ) !== false ) {
-		output_page( run_checks() );
-		return;
-	}
+	// Defer app level healthchecks until after plugins have laoded.
+	add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_healthcheck', 100 );
 
+	// Run instance healthcheck immediately.
 	if ( strpos( $_SERVER['REQUEST_URI'], '/__instance_healthcheck' ) !== false ) {
 		output_page( run_instance_checks() );
 	}
 }
 
 /**
+ * Loads the application healthcheck.
+ *
+ * @return void
+ */
+function load_healthcheck() {
+	if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
+		return;
+	}
+
+	Cavalcade\bootstrap();
+
+	if ( strpos( $_SERVER['REQUEST_URI'], '/__healthcheck' ) !== false ) {
+		output_page( run_checks() );
+		return;
+	}
+}
+
+/**
+ * Check if a value is an error.
+ *
+ * @param mixed $value The variable to check.
+ * @return boolean
+ */
+function is_error( $value ) : bool {
+	if ( function_exists( 'is_wp_error' ) ) {
+		return is_wp_error( $value );
+	}
+	return $value !== true;
+}
+
+/**
  * Generate healthcheck HTML page.
+ *
+ * NOTE: Do not use any WP specific functions in this function, the
+ * instance healthcheck loads _before_ WP is bootstrap.
  *
  * @param array $checks The checks to output.
  * @return void
@@ -45,7 +78,7 @@ function bootstrap() {
 function output_page( array $checks ) {
 	$passed = true;
 	foreach ( $checks as $check ) {
-		if ( is_wp_error( $check ) ) {
+		if ( is_error( $check ) ) {
 			$passed = false;
 			break;
 		}
@@ -53,8 +86,15 @@ function output_page( array $checks ) {
 
 	if ( ! $passed ) {
 		http_response_code( 500 );
+	} else {
+		http_response_code( 200 );
 	}
-	nocache_headers();
+
+	if ( ! headers_sent() ) {
+		header_remove( 'Last-Modified' );
+		header( 'Expires: Wed, 11 Jan 1984 05:00:00 GMT', true );
+		header( 'Cache-Control: no-cache, must-revalidate, max-age=0', true );
+	}
 
 	$format = 'html';
 	if ( ! empty( $_SERVER['HTTP_ACCEPT'] ) && $_SERVER['HTTP_ACCEPT'] === 'application/json' ) {
@@ -84,10 +124,10 @@ function output_page( array $checks ) {
 			<?php foreach ( $checks as $check => $status ) : ?>
 				<tr>
 					<td>
-						<?php echo esc_html( $check ) ?>
+						<?php echo htmlspecialchars( $check ) // phpcs:ignore HM.Security.EscapeOutput.OutputNotEscaped ?>
 					</td>
 					<td>
-						<?php echo is_wp_error( $status ) ? sprintf( '%s (code: %s)', esc_html( $status->get_error_message() ), esc_html( $status->get_error_code() ) ) : 'OK' ?>
+						<?php echo is_error( $status ) ? sprintf( '%s (code: %s)', esc_html( $status->get_error_message() ), esc_html( $status->get_error_code() ) ) : 'OK' ?>
 					</td>
 				</tr>
 			<?php endforeach ?>

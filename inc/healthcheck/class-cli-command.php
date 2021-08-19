@@ -43,12 +43,12 @@ class CLI_Command extends WP_CLI_Command {
 		$data = [];
 		$passed = true;
 		foreach ( $checks as $check => $result ) {
-			if ( is_wp_error( $result ) ) {
+			if ( is_error( $result ) ) {
 				$passed = false;
 			}
 			$data[] = [
 				'check' => $check,
-				'status' => is_wp_error( $result ) ? cli\Colors::colorize( '%R' . $result->get_error_message() . '%n' ) : cli\Colors::colorize( '%GPassed%n' ),
+				'status' => is_error( $result ) ? cli\Colors::colorize( '%R' . $result->get_error_message() . '%n' ) : cli\Colors::colorize( '%GPassed%n' ),
 			];
 		}
 		WP_CLI\utils\format_items( $args_assoc['format'], $data, [ 'check', 'status' ] );
@@ -74,11 +74,13 @@ class CLI_Command extends WP_CLI_Command {
 	 *
 	 * @param array $args Positional arguments array.
 	 * @param array $args_assoc Named arguments array.
+	 *
+	 * @when before_wp_load
 	 */
 	function instance( array $args, array $args_assoc ) {
-		$args_assoc = wp_parse_args( $args_assoc, [
+		$args_assoc = array_merge( $args_assoc, [
 			'format' => 'table',
-		]);
+		] );
 
 		$checks = run_instance_checks();
 
@@ -86,12 +88,12 @@ class CLI_Command extends WP_CLI_Command {
 		$passed = true;
 
 		foreach ( $checks as $check => $result ) {
-			if ( is_wp_error( $result ) ) {
+			if ( is_error( $result ) ) {
 				$passed = false;
 			}
 			$data[] = [
 				'check' => $check,
-				'status' => is_wp_error( $result ) ? cli\Colors::colorize( '%R' . $result->get_error_message() . '%n' ) : cli\Colors::colorize( '%GPassed%n' ),
+				'status' => is_error( $result ) ? cli\Colors::colorize( '%R' . (string) $result . '%n' ) : cli\Colors::colorize( '%GPassed%n' ),
 			];
 		}
 		WP_CLI\utils\format_items( $args_assoc['format'], $data, [ 'check', 'status' ] );
