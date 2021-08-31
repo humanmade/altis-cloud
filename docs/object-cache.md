@@ -58,27 +58,27 @@ function fetch_posts() : ?array {
 }
 ```
 
-**set_transient( string $name, mixed $value, int $expiration )**
+**`set_transient( string $name, mixed $value, int $expiration )`**
 
 Stores a transient value. The `$value` can be anything and might be serialized if anything other than a scalar value is given. `$expiration` is the maximum amount of time in seconds the value should be stored for.
 
-**get_transient( string $name )**
+**`get_transient( string $name )`**
 
 Retrieves a transient value.
 
-**set_site_transient( string $name, mixed $value, int $expiration )**
+**`set_site_transient( string $name, mixed $value, int $expiration )`**
 
 Network level version of `set_transient()`.
 
-**get_site_transient( string $name )**
+**`get_site_transient( string $name )`**
 
 Network level version of `get_transient()`.
 
-**delete_transient( string $name )**
+**`delete_transient( string $name )`**
 
 Deletes a transient by name.
 
-**delete_site_transient( string $name )**
+**`delete_site_transient( string $name )`**
 
 Network level version of `delete_transient()`.
 
@@ -88,15 +88,15 @@ In your application code the object cache exposes a set of functions for you to 
 
 These functions are a lower level interface than transients, and have the benefit of accepting cache groups and timestamps for expiry. Using cache groups can
 
-**wp_cache_set( string $key, mixed $data, string $group = '', ?int $expiry )**
+**`wp_cache_set( string $key, mixed $data, string $group = '', ?int $expiry )`**
 
 Cache any arbitrary value, with an optional group and expiry time. `$expiry` can be a timestamp for a future date.
 
-**wp_cache_replace( string $key, mixed $data, string $group = '', ?int $expiry )**
+**`wp_cache_replace( string $key, mixed $data, string $group = '', ?int $expiry )`**
 
 This is the same as `wp_cache_set()` with the exception that it will not add the value to the cache if it does not already exist.
 
-**wp_cache_get( string $key, string $group = '', bool $force = false, &$found = null )**
+**`wp_cache_get( string $key, string $group = '', bool $force = false, &$found = null )`**
 
 Retrieve a value from the cache. The `$force` option if true will force update the in-memory cache for the current PHP process.
 
@@ -109,15 +109,15 @@ if ( $found ) {
 }
 ```
 
-**wp_cache_delete( string $key, string $group = '' )**
+**`wp_cache_delete( string $key, string $group = '' )`**
 
 Deletes an item from the obejct cache.
 
-**wp_cache_flush( int $delay = 0 )**
+**`wp_cache_flush( int $delay = 0 )`**
 
 Flushes the entire object cache with an optional delay in seconds to wait.
 
-**wp_cache_add_non_persistent_groups( array $groups )**
+**`wp_cache_add_non_persistent_groups( array $groups )`**
 
 Passing a list of group names will change the object caching behaviour for those groups to avoid storing values in the persistent cache.
 
