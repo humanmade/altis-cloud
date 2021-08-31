@@ -53,7 +53,7 @@ add_filter( 'cron_schedules', function ( array $schedules ) : array {
 
 ### Functions
 
-**wp_schedule_event( int $timestamp, string $recurrence, string $hook, array $args = [], bool $wp_error = false )**
+**`wp_schedule_event( int $timestamp, string $recurrence, string $hook, array $args = [], bool $wp_error = false )`**
 
 Schedules a recurring event starting at `$timestamp`. `$recurrence` is a named interval as described above. `$hook` is the action hook to trigger and `$args` is an optional array of data to pass to the action hook.
 
@@ -70,18 +70,18 @@ add_action( 'do_process', 'on_do_process' );
 wp_schedule_event( time(), 'daily', 'do_process', [ 'check_users' => true ] );
 ```
 
-**wp_schedule_single_event( int $timestamp, string $hook, array $args = [], bool $wp_error = false )**
+**`wp_schedule_single_event( int $timestamp, string $hook, array $args = [], bool $wp_error = false )`**
 
 This is the same as `wp_schedule_event()` but will trigger the event only once.
 
-**wp_next_scheduled( string $hook, array $args = [] )**
+**`wp_next_scheduled( string $hook, array $args = [] )`**
 
 This function should be used to check if an event for the given hook and set of arguments has already been scheduled. If one has it will return the timestamp for the next occurrence.
 
-**wp_unschedule_event( int $timestamp, string $hook, array $args = [], bool $wp_error = false )**
+**`wp_unschedule_event( int $timestamp, string $hook, array $args = [], bool $wp_error = false )`**
 
 Unschedules any event matching the timestamp, hook and arguments.
 
-**wp_clear_scheduled_hook( string $hook, array $args = [], bool $wp_error = false )**
+**`wp_clear_scheduled_hook( string $hook, array $args = [], bool $wp_error = false )`**
 
 Clears all scheduled events for the given hook and set of arguments regardless of when they will run.
