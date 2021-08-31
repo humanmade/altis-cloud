@@ -10,6 +10,11 @@ The majority of the pages viewed on Altis will be cached to improve performance 
 - Any request to `xmlrpc.php`, `wp-cron.php` or `wp-app.php` are not cached.
 - Any request to `wp-includes/js*` are not cached.
 
+There are 2 levels of page caching:
+
+- CloudFront CDN
+- PHP caching using Redis via [Batcache](https://github.com/humanmade/batcache)
+
 ## Cache Key Calculation
 
 Each cache key for pages follows the pattern:
@@ -31,7 +36,7 @@ By default any cached page returning a 200 response will have a TTL of 300 secon
 
 Any response that can be added to the page cache should not include references to any user-data in the request. This is because subsequent requests from other users will receive the same cached page. This means no use of headers such as `User-Agent`, `Cookie`, `Referer`; client IP addresses, geo-ip targeting / restrictions should be used within PHP. These can be used if the response will not be added to the page cache (such as logged in users.)
 
-## Cache Rule Customizations
+## CDN Cache Rule Customizations
 
 The page cache can be customised via your `composer.json`. The example below shows the default configuration:
 
@@ -121,3 +126,24 @@ Describes the status of the edge page cache from the CDN:
 
 - `Hit from Cloudfront` the page was served from the Cloudfront edge cache.
 - `Miss from Cloudfront` the page was not served from the cache, but has been added to the page cache for subsequent visits.
+
+
+### Configuration
+
+PHP page caching can be toggled using the Altis config. By default Batcache is active for cloud environments but not on local environments.
+
+This can be toggled by changing the following setting to `true` or `false`:
+
+```json
+{
+	"extra": {
+		"altis": {
+			"modules": {
+				"cloud": {
+					"batcache": false
+				}
+			}
+		}
+	}
+}
+```
