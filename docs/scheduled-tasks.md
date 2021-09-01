@@ -1,6 +1,6 @@
 # Scheduled Tasks
 
-WordPress provides an API for running scheduled tasks that is typically only triggered when a site has active visitors to it. Additionally this built in cron job system does not scale well on a multi-server architecture such as that provided by Altis.
+WordPress provides an API for running scheduled tasks that are typically only triggered by uncached user visits to any page of the site, which can be quite unreliable. Additionally this built in cron job system does not scale well on a multi-server architecture such as that provided by Altis.
 
 Altis provides a service called Cavalcade to solve this problem by using a system process to trigger tasks. This has the added benefits of separating background task processing from the web server processes and supporting long running tasks, up to 1 hour. See the [infrastructure limitations guide](./limitations.md) for further details.
 
@@ -30,7 +30,7 @@ Scheduled events work by triggering an action hook, effectively running `do_acti
 
 Events can be a one-off or recurring.
 
-**Note**: Scheduling the an event within 10 minutes of an existing event on the same hook and with the same arguments will fail.
+**Note**: Scheduling an event within 10 minutes of an existing event on the same hook and with the same arguments will fail.
 
 ### Intervals
 
