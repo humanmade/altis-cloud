@@ -2,8 +2,7 @@
 
 - CPU Architecture: 64 bit
 - PHP Version: 7.4
-- MySQl Version: 5.6
-- 5.7
+- MySQl Version: 5.6, 5.7
 
 ## PHP Modules
 
@@ -70,7 +69,6 @@
 
 # Limitations
 
-- Maximum upload size: 1GB (1GB for media upload endpoints
-- and 50MB for all other requests)
+- Maximum upload size: 1GB (1GB for media upload endpoints, and 50MB for all other requests)
 - php execution timeout: 60s
 - Cron task execution timeout: 1 hour
