@@ -15,3 +15,21 @@ The logs can be viewed via [Altis Dashboard](./README.md) under a site's Logs ta
 The date range can be specified for all logs types. Some log types will also support additional filtering such as cron logs.
 
 ![](../assets/logs-with-filter.png)
+
+## Log Delivery
+
+Log delivery to CloudWatch can be switched off, however this is not recommended as logs will not be available in the Altis Dashboard.
+
+```json
+{
+    "extra": {
+        "altis": {
+            "modules": {
+                "cloud": {
+                    "php-errors-to-cloudwatch": false
+                }
+            }
+        }
+    }
+}
+```

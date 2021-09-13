@@ -1,10 +1,26 @@
 # Email Delivery
 
-Altis Cloud can handle vast amounts of email sending, with very good deliverability. Email sending is automatically integrated via a custom `wp_mail` override, therefore developers and plugins don't need to make any extra provisions for sending email on Cloud. This integration is controlled via `aws-ses`.
+Altis Cloud can handle vast amounts of email sending, with very good deliverability. Email sending is automatically integrated via a custom `wp_mail` override, therefore developers and plugins don't need to make any extra provisions for sending email on Cloud. This integration is controlled via AWS Simple Email Service (SES).
+
+The AWS SES integration can be switched off if you intend to use an alternative email delivery service using the following configuration:
+
+```json
+{
+    "extra": {
+        "altis": {
+            "modules": {
+                "cloud": {
+                    "aws-ses-wp-mail": false
+                }
+            }
+        }
+    }
+}
+```
 
 ## Domain Verification
 
-All email delivery on Cloud using `aws-ses` must be sent from email addresses that have their domain verified. Contact support to start the process of verifying your domain for email sending.
+All email delivery on Cloud using AWS SES must be sent from email addresses that have their domain verified. Contact support to start the process of verifying your domain for email sending.
 
 Once you have requested a domain for verification, you will be provided DNS entries to add to your DNS Server, or Human Made will configure it if we already control DNS for your domain.
 
