@@ -6,6 +6,24 @@ XRay traces provide performance profiling, database queries, remote requests and
 
 <video controls src="https://www.altis-dxp.com/uploads/2020/07/altis-cloud-dashboard-xray.mp4"></video>
 
+## Configuration
+
+XRay is on by default but can be turned off using the following configuration:
+
+```json
+{
+    "extra": {
+        "altis": {
+            "modules": {
+                "cloud": {
+                    "xray": true
+                }
+            }
+        }
+    }
+}
+```
+
 ## Searching XRay Requests
 
 ![Example XRay Summary](../assets/xray-summary.png)
