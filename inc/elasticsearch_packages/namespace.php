@@ -27,12 +27,25 @@ function bootstrap() : void {
 		return;
 	}
 
+	$should_use_inline_index_settings = Altis\get_config()['search']['inline-index-settings'] ?? false;
+	$use_inline_index_settings = (
+		$should_use_inline_index_settings &&
+		( defined( 'ELASTICSEARCH_VERSION' ) && version_compare( ELASTICSEARCH_VERSION, '7.4', '>=' ) )
+	);
+
+	// Modify the package upload location.
+	add_filter( 'altis.search.packages_dir', __NAMESPACE__ . '\\packages_dir', 9 );
+
+	// Ignore the AWS ES Package API integration if settings are to be stored inline.
+	if ( $use_inline_index_settings ) {
+		return;
+	}
+
 	// Add a short time out cron hook.
 	// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 	add_filter( 'cron_schedules', __NAMESPACE__ . '\\cron_schedules' );
 
 	// Hook into search module.
-	add_filter( 'altis.search.packages_dir', __NAMESPACE__ . '\\packages_dir', 9 );
 	add_filter( 'altis.search.create_package_id', __NAMESPACE__ . '\\create_package_id', 10, 4 );
 	add_filter( 'altis.search.get_package_id', __NAMESPACE__ . '\\get_package_id', 10, 2 );
 	add_action( 'altis.search.check_package_status', __NAMESPACE__ . '\\on_check_package_status', 10, 3 );
