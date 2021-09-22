@@ -28,6 +28,11 @@ console.log( 'Starting build...' )
 ```
 
 
+## Private dependencies
+
+If you are using Composer dependencies from private repositories, [additional configuration may be required](./private-dependencies.md).
+
+
 ## Build Script Environment Specification
 
 The build script is run in an integration environment, not in the context of the application servers. The following packages are available to your script:
