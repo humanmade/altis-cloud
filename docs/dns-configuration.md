@@ -25,7 +25,7 @@ Altis can manage the DNS records for you, by being the authoratative nameserver 
 
 - The domain apex can be used to either host your Altis properties or provide apex redirects such as `example.com` to `www.example.com`
 - Altis Cloud can manage and verify SSL certificates on your behalf
-- Altis Cloud can validate email sedning domains, and manage DKIM and SPF records on your behalf
+- Altis Cloud can validate email sending domains, and manage DKIM and SPF records on your behalf
 
 **Disadvantages**
 
