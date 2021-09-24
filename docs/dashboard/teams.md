@@ -1,4 +1,4 @@
-# Adding team members to an Altis Instance
+# Team Management
 
 Managing who can access Altis Environments is done via the Altis Dashboard. 
 
