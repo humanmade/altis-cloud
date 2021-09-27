@@ -40,11 +40,27 @@ function bootstrap() : void {
 	add_action( 'altis.search.deleted_package', __NAMESPACE__ . '\\on_deleted_package', 10, 4 );
 	add_action( 'altis.search.updated_all_index_settings', __NAMESPACE__ . '\\on_update_index_settings' );
 
+	// Don't wait for the AWS ES Package API integration if settings are to be stored inline.
+	if ( is_using_inline_settings() ) {
+		return;
+	}
+
 	// Remove default packages updated hook so we don't try to update indexes until
 	// packages have been associated with the domain.
 	add_action( 'plugins_loaded', function () {
 		remove_action( 'altis.search.updated_packages', 'Altis\\Enhanced_Search\\Packages\\on_updated_packages', 10, 2 );
 	}, 20 );
+}
+
+/**
+ * Returns true if index settings are inline.
+ */
+function is_using_inline_settings() : bool {
+	$should_use_inline_index_settings = Altis\get_config()['search']['inline-index-settings'] ?? false;
+	return (
+		$should_use_inline_index_settings &&
+		( defined( 'ELASTICSEARCH_VERSION' ) && version_compare( ELASTICSEARCH_VERSION, '7.4', '>=' ) )
+	);
 }
 
 /**
@@ -330,7 +346,7 @@ function on_check_package_status( string $package_id, string $slug, bool $for_ne
 		wp_clear_scheduled_hook( 'altis.search.check_package_status', $check_status_hook_args );
 
 		// Schedule the index settings update.
-		if ( ! wp_next_scheduled( 'altis.search.update_index_settings', $update_index_hook_args ) ) {
+		if ( ! is_using_inline_settings() && ! wp_next_scheduled( 'altis.search.update_index_settings', $update_index_hook_args ) ) {
 			wp_schedule_single_event( time() + MINUTE_IN_SECONDS, 'altis.search.update_index_settings', $update_index_hook_args );
 		}
 	} catch ( Exception $e ) {
