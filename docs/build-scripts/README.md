@@ -41,7 +41,7 @@ Your build script can run any commands you'd like, including installing or confi
 The following build tools are pre-installed inside the build container for your script:
 
 - PHP 7.4
-- Composer 1.10
+- Composer 2.0.8
 - Node 12.18
 - npm 6.14
 - Git 2.25
