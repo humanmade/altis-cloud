@@ -45,8 +45,10 @@ add_action( 'altis.modules.init', function () {
 			'unique-cookies' => [],
 		],
 	];
-
-	Altis\register_module( 'cloud', __DIR__, 'Cloud', $default_settings, __NAMESPACE__ . '\\bootstrap' );
+	$options = [
+		'defaults' => $default_settings,
+	];
+	Altis\register_module( 'cloud', __DIR__, 'Cloud', $options, __NAMESPACE__ . '\\bootstrap' );
 } );
 
 // Early hook for logging AWS SDK HTTP requests.
