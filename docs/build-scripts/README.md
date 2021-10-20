@@ -126,3 +126,12 @@ console.log( 'Starting build...' )
 ### Private dependencies
 
 If you are using Composer dependencies from private repositories, [additional configuration may be required](./private-dependencies.md).
+
+
+## Limits
+
+The maximum size of your built assets, including your codebase, is 640MB. This size limit is in place to ensure that containers can be run on your application servers without exhausting the maximum disk size of the underlying machines.
+
+If you exceed this limit, your builds may fail. Consider cleaning up unnecessary files as part of your build process (such as `node_modules` directories). If your project requires a larger size limit and cannot be reduced, the maximum size may be increased. Please contact your account manager, as this may come with additional cost.
+
+The total elapsed time for a build cannot exceed 30 minutes. This limit cannot be changed.
