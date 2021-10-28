@@ -2,7 +2,7 @@
 
 - CPU Architecture: 64 bit
 - PHP Version: 7.4
-- MySQl Version: 5.6, 5.7
+- MySQL Version: 5.6, 5.7
 
 ## PHP Modules
 
