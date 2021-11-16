@@ -28,6 +28,8 @@ The Altis team will provide you with DNS CNAME records to add for SSL verificati
 
 These records can be added before the regular web CNAME records are added, allowing Altis to verify your domain ahead of switch-over. These will not conflict with existing records, and will have no user impact.
 
+**Note:** Once the DNS records have been provided by Altis, please endeavour to add them within 72 hours, as they may time out after this time.
+
 
 ## Switch-over
 
