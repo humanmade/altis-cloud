@@ -39,7 +39,7 @@ class AdminCest {
 		// Schedule running of _configSupportTicketLinkWithCloud in next Acceptance Test.
 		$rollback = $I->bootstrapWith( [ __CLASS__, '_configSupportTicketLinkWithCloud' ] );
 
-		$I->wantToTest( 'Support ticket link is correct.' );
+		$I->wantToTest( 'Support ticket link with application is correct.' );
 		$I->loginAsAdmin();
 		$I->amOnAdminPage( '/' );
 
