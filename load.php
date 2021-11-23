@@ -22,7 +22,7 @@ add_action( 'altis.modules.init', function () {
 		'ludicrousdb' => true,
 		'healthcheck' => true,
 		'xray' => true,
-		'email-from-address' => 'no-reply@humanmade.com',
+		'email-from-address' => null,
 		'email-region' => false,
 		'audit-log-to-cloudwatch' => $is_cloud,
 		'php-errors-to-cloudwatch' => $is_cloud,

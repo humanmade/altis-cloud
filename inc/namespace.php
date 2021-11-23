@@ -74,12 +74,16 @@ function bootstrap() {
 		define( 'WP_CACHE', true );
 	}
 
-	add_filter( 'wp_mail_from', function ( string $email ) use ( $config ) : string {
+	add_filter( 'wp_mail_from', function () use ( $config ) : string {
+		$default_email = sprintf(
+			'noreply@%s',
+			wp_parse_url( network_home_url( '/' ), PHP_URL_HOST )
+		);
 		return filter_var(
-			$config['email-from-address'],
+			$config['email-from-address'] ?? $default_email,
 			FILTER_VALIDATE_EMAIL,
 			FILTER_NULL_ON_FAILURE
-		) ?? $email;
+		);
 	}, 1 );
 
 	// Load the platform as soon as WP is loaded.
