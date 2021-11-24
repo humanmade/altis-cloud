@@ -75,7 +75,10 @@ function bootstrap() {
 		define( 'WP_CACHE', true );
 	}
 
-	add_filter( 'wp_mail_from', function () use ( $config ) : string {
+	add_filter( 'wp_mail_from', function ( string $email ) use ( $config ) : string {
+		if ( defined( 'WP_INITIAL_INSTALL' ) && WP_INITIAL_INSTALL ) {
+			return $config['email-from-address'] ?? $email;
+		}
 		$domain = get_network()->domain;
 		if ( substr( $domain, 0, 4 ) === 'www.' ) {
 			$domain = substr( $domain, 4 );
