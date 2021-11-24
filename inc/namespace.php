@@ -82,10 +82,11 @@ function bootstrap() {
 	}
 
 	add_filter( 'wp_mail_from', function () use ( $config ) : string {
-		$default_email = sprintf(
-			'noreply@%s',
-			str_replace( 'www.', '', wp_parse_url( network_home_url( '/' ), PHP_URL_HOST ) )
-		);
+		$domain = get_network()->domain;
+		if ( substr( $domain, 0, 4 ) === 'www.' ) {
+			$domain = substr( $domain, 4 );
+		}
+		$default_email = sprintf( 'noreply@%s', $domain );
 		return filter_var(
 			$config['email-from-address'] ?? $default_email,
 			FILTER_VALIDATE_EMAIL,
