@@ -214,7 +214,7 @@ For developing cache customizations locally, you may wish to enable Batcache for
 				"local": {
 					"modules": {
 						"cloud": {
-							"batcache": false
+							"batcache": true
 						}
 					}
 				}
