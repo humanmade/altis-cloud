@@ -245,6 +245,15 @@ function run_object_cache_healthcheck() {
 		}
 	}
 
+	if ( strlen( serialize( $alloptions_cache ) ) > 1024 * 1024 ) { // 1MB
+		return new WP_Error( 'object-cache-alloptions-too-large', sprintf( 'alloptions cache key too large (%d bytes)', strlen( serialize( $alloptions_cache ) ) ) );
+	}
+
+	$notoptions = wp_cache_get( 'notoptions', 'options' );
+	if ( strlen( serialize( $notoptions ) ) > 1024 * 1024 ) { // 1MB
+		return new WP_Error( 'object-cache-notoptions-too-large', sprintf( 'notoptions cache key too large (%d bytes)', strlen( serialize( $notoptions ) ) ) );
+	}
+
 	return true;
 }
 
