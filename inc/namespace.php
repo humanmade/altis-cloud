@@ -379,13 +379,22 @@ function log_elasticsearch_request_errors( $response, string $context, string $c
 	$request_response_code = (int) wp_remote_retrieve_response_code( $response );
 	$is_valid_res = ( $request_response_code >= 200 && $request_response_code <= 299 );
 
+	if ( $is_valid_res ) {
+		return;
+	}
+
 	if ( is_wp_error( $response ) ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Error in ElasticSearch request: %s (%s)', $response->get_error_message(), $response->get_error_code() ), E_USER_WARNING );
+	} elseif ( ! $request_response_code ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		trigger_error( sprintf( 'Unknown error in ElasticSearch request: %s', wp_json_encode( $response ) ), E_USER_WARNING );
 	} elseif ( ! $is_valid_res ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( sprintf( 'Error in ElasticSearch request: %s (%s)', wp_remote_retrieve_body( $response ), $request_response_code ), E_USER_WARNING );
+		trigger_error( sprintf( 'Error in ElasticSearch request: %s (%d: %s)', wp_remote_retrieve_body( $response ), $request_response_code, wp_remote_retrieve_response_message( $response ) ), E_USER_WARNING );
 	}
+
+	do_action( 'altis.cloud.elastic.failed_request', $response, $context, $class, $parsed_args, $url );
 }
 
 /**
