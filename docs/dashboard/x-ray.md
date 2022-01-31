@@ -55,7 +55,7 @@ Each HTTP request generates an "X-Ray trace" and provides many useful pieces of 
 
 ![](../assets/xray-overview.png)
 
-The overview table provides quick information about the request, including requested URL, total duration, response code, and external API calls to the database and remote servers.
+The overview table provides quick information about the request, including requested URL, response time, response code, and external API calls to the database and remote servers.
 
 ### Flamegraphs
 
