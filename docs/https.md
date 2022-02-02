@@ -14,4 +14,4 @@ HTTPS on Cloud requires user-agents support SNI (Server Name Indication). The fo
 
 # HTTPS Redirects
 
-It's common to force all traffic to route via HTTPS. To turn on forced HTTPS Redirection, [submit a support request](docs.altis-dxp.com/guides/getting-help-with-altis/) requesting that HTTPS Redirection be enabled. This is set at the CDN layer.
+It's common to force all traffic to route via HTTPS. To turn on forced HTTPS Redirection, [submit a support request](https://docs.altis-dxp.com/guides/getting-help-with-altis/) requesting that HTTPS Redirection be enabled. This is set at the CDN layer.
