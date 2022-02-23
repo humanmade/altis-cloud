@@ -127,6 +127,12 @@ console.log( 'Starting build...' )
 
 If you are using Composer dependencies from private repositories, [additional configuration may be required](./private-dependencies.md).
 
+### Targetting environments
+
+To create conditional build instructions dependant on environment, you can use the available `$BRANCH` variable. 
+
+`$BRANCH` and `$BRANCH_SLUG`, the latter being a sanitized version of the former.
+
 
 ## Limits
 
