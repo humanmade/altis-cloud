@@ -12,7 +12,7 @@ Unlike many WordPress hosts, Altis Cloud environments use a multi-server configu
 * **Primary**: The primary server is the authoritative server storing all data.
 * **Replica:** The replica servers store copies of the data, continually synchronised from the primary.
 
-All database writes (`INSERT`, `UPDATE`, `DELETE`, etc) are sent directly to the primary server, while database reads (`SELECT`) are sent to the replicas. This allows offloading most of the database load from the primary.
+All database writes (`INSERT`, `UPDATE`, `DELETE`, etc) are sent directly to the primary server, while database reads (`SELECT`) are sent to the replicas. (The primary server is also used for reads as part of load balancing.) This allows offloading most of the database load from the primary.
 
 Many replicas can be created from primary server (using horizontal scaling), while the primary server typically must scaled through the use of more capable hardware instead (using vertical scaling). Horizontal scaling is performed automatically through autoscaling, while vertical scaling is performed by the Altis team based on your typical traffic patterns.
 
