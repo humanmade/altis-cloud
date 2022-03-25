@@ -27,7 +27,7 @@ As load on your site increases, the Altis Cloud infrastructure will automaticall
 
 In order for autoscaling to work well and for your site to remain performant, **writes should be avoided on frontend requests**. While replicas can easily be created, in typical configurations only a single primary server exists. Writes to the database cause more load upon the database server, and since the primary cannot easily be automatically scaled, large numbers of writes may cause your database to be overloaded.
 
-(As most frontend requests are also [cached at the CDN](./page-caching.md), writes may not be consistent.)
+(As most frontend requests are also [cached at the CDN](./page-caching.md), writing on page load may not have the desired effect anyway, as users may be served a cached version of the page.)
 
 Sites expecting large numbers of logged in users or many database writes (such as ecommerce sites) may need increased provisioning for the primary database server, changes to the autoscaling behaviour, or a multi-primary setup. Altis Cloud environments can accomodate this behaviour upon arrangement; please note that this may incur extra cost.
 
