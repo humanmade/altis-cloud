@@ -80,9 +80,9 @@ Database servers can also be allocated more resources (known as "vertical scalin
 
 ## Object caching servers
 
-Each environment contains at least one Redis server, used for persistent object caching. This server acts as a key-value cache store, offloading expensive queries from the database.
+Each environment contains at least one Redis server, used for persistent [object caching](./object-cache.md). This server acts as a key-value cache store, offloading expensive queries from the database.
 
-Object cache servers automatically scale based on load, just like the database servers. Altis automatically handles horizontally scaling these servers based on load, and the Altis team manages your instance type.
+On high-availability plans, an additional hot-standby replica runs in a separate availability zone, ensuring resilience against hardware failures.
 
 The Altis Cloud module handles configuration and integration of the object cache into WordPress core systems, ensuring optimal performance.
 

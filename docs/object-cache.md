@@ -12,20 +12,6 @@ Altis provides a low-level integration with WordPress's object caching system ou
 The object cache is generally used to "offload" work from the [database servers](./database.md), using constant-time lookups rather than complex relational queries.
 
 
-## Infrastructure
-
-Unlike many WordPress hosts, Altis Cloud environments use a multi-server configuration for the object cache, with fully dedicated servers for your object cache. Servers are categorised into two general groups:
-
-* **Primary**: The primary server is the authoritative server storing all data.
-* **Replica:** The replica servers store copies of the data, continually synchronised from the primary.
-
-Just like with your [database servers](./database.md), object cache writes are sent directly to the primary server, while reads are sent to the replicas. This allows offloading most of the load from the primary.
-
-Many replicas can be created from primary server (using horizontal scaling), while the primary server typically must scaled through the use of more capable hardware instead (using vertical scaling). Horizontal scaling is performed automatically through autoscaling, while vertical scaling is performed by the Altis team based on your typical traffic patterns.
-
-Non-Production environments are provisioned with only a Primary server, and with autoscaling disabled. Production environments without high-availability are provisioned with only a Primary server by default, but with autoscaling enabled, and Replicas created as necessary.
-
-
 ## Transients
 
 Transients are a feature of WordPress that behave similarly to the Options API. The intention is to use the store data that should expire, or should not always be expected to be available. You might use these to cache the results of a `GET` API requests for example.
@@ -125,9 +111,11 @@ Passing a list of group names will change the object caching behaviour for those
 Use this if you need to only cache values for the current PHP process.
 
 
-## Autoscaling and Performance
+## Scaling and Performance
 
-While Redis is a type of database like [the MySQL store](./database.md), it has vastly different performance and scaling characteristics. Altis Cloud automatically scales your Redis server(s) in the same way as the database, using a combination of CPU usage and other factors to determine when to scale.
+While Redis is a type of database like [the MySQL store](./database.md), it has vastly different performance and scaling characteristics. The Altis team manages the Redis server size based on traffic, CPU usage, subscription, and other metrics.
+
+On environment tiers with high-availability, a hot-standby replica is established in a different availability zone to protect against underlying hardware or data center failures.
 
 Use of Redis via the transient or object cache APIs (as detailed below) generally uses Redis as a key-value store, which serves to improve performance as lookups in Redis can be constant-time (O(1)).
 
