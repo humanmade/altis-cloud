@@ -28,7 +28,7 @@ Running a web application like Altis requires running multiple infrastructure co
 
 Every client and every environment is fully segregated from each other using logical controls at the network level, backed by AWS security controls.
 
-Altis Cloud is designed to be highly-available, with redundant servers split across multiple availability zones, which are physically-independent data centres. This ensures resiliency and redundancy of your data and application.
+Altis Cloud is designed to be highly-available, with redundant servers split across multiple availability zones, which are physically-independent data centres. Each set of availability zones are located in the [same physical region](./origin-locations.md). This ensures resiliency and redundancy of your data and application.
 
 (Note that full HA is not included with all environment tiers; consult your plan information. High availability is also only available on production environments.)
 
