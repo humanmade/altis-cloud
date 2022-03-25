@@ -5,24 +5,40 @@ Altis Cloud uses Nginx within your [web containers](./architecture.md). For adva
 **Note:** Custom configuration will only apply to traffic served by the web container, which does not include media or tachyon (see the [architecture diagram for more information](./architecture.md)). Specifically, any URLs beginning with `/uploads/` or `/tachyon/` are routed directly to [S3](./s3-storage.md) and [Tachyon](docs://media/dynamic-images.md) directly.
 
 
-## Providing Configuration
+## Server Configuration
 
-Nginx will look for an additional file in your project repository at `.config/nginx-additions.conf` and will load it into the `server {}` context of the main configuration. You can also use filename suffixes to split your configuration in complex cases.
+Custom configuration can be supplied in Nginx either within the `server {}` context, or the `http {}` context.
 
-Internally, the Altis Nginx configuration looks like:
+Nginx loads the following custom files from your project repository:
+
+* `.config/nginx-http-additions.conf`: Loaded into the `server` context
+* `.config/nginx-additions.conf`: Loaded into the `server` context
+
+An optional suffix can be specified before the extension to split your configuration in complex cases.
+
+Internally, the Altis nginx configuration looks like:
 
 ```
-server {
-    listen 80;
-    root /usr/src/app;
+http {
+    include /usr/src/app/.config/nginx-http-additions*.conf;
 
-    include /usr/src/app/.config/nginx-additions*.conf;
+    # Other nginx setup:
+    include /etc/nginx/mime.types;
+    # ...
 
-    location / {
+    server {
+        listen 80;
+        root /usr/src/app;
+
+        include /usr/src/app/.config/nginx-additions*.conf;
+
+        location / {
+            # ...
+        }
+
+        # Other location blocks:
         # ...
     }
-
-    # ...
 }
 ```
 
