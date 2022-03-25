@@ -36,9 +36,9 @@ Sites expecting large numbers of logged in users or many database writes (such a
 
 ### Versions
 
-Altis provides support for MySQL 5.6 or 5.7.
+The active version of MySQL supported by Altis is MySQL 5.7.
 
-Contact Altis support to change your MySQL version.
+Some older applications may also run MySQL 5.6. Contact Altis support to upgrade your MySQL version.
 
 (Note that environments run using Amazon Aurora, which is MySQL-compatible but [may differ from standard MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraMySQL.CompareMySQL57.html).)
 
