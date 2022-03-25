@@ -32,6 +32,17 @@ Sites expecting large numbers of logged in users or many database writes (such a
 
 ## Configuration
 
+### Versions
+
+Altis provides support for MySQL 5.6 or 5.7.
+
+Contact Altis support to change your MySQL version.
+
+(Note that environments run using Amazon Aurora, which is MySQL-compatible but [may differ from standard MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.html).)
+
+
+### Behaviour
+
 Database behaviour is generally not user configurable, and is handled automatically for you by the Cloud module.
 
 **Note:** Any changes to the database configuration are considered to void your warranty, except as directed by the Altis team. Adjusting any configuration may cause catastrophic errors in your environments.
