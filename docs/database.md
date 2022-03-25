@@ -18,6 +18,8 @@ Many replicas can be created from primary server (using horizontal scaling), whi
 
 Non-Production environments are provisioned with only a Primary server, and with autoscaling disabled. Production environments without high-availability are provisioned with only a Primary server by default, but with autoscaling enabled, and Replicas created as necessary.
 
+For customers who regularly run larger numbers of replicas, an additional [Proxy server](https://aws.amazon.com/rds/proxy/) is used to pool connections and more evenly distribute load across the server pool. The Altis team manages the provisioning of Proxy servers on your behalf.
+
 
 ## Autoscaling and Performance
 
