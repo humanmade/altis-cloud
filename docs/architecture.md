@@ -80,7 +80,7 @@ Database servers can also be allocated more resources (known as "vertical scalin
 
 ## Object caching servers
 
-Each environment contains at least one Redis server, used for persistent [object caching](./object-cache.md). This server acts as a key-value cache store, offloading expensive queries from the database.
+Each environment contains at least one Redis server, used for persistent [object caching](./object-cache.md). This server acts as a key-value cache store, offloading expensive queries from the database, using the [WordPress Object Cache interface](https://developer.wordpress.org/reference/classes/wp_object_cache/).
 
 On high-availability plans, an additional hot-standby replica runs in a separate availability zone, ensuring resilience against hardware failures.
 
