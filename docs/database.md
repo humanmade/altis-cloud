@@ -40,7 +40,7 @@ Altis provides support for MySQL 5.6 or 5.7.
 
 Contact Altis support to change your MySQL version.
 
-(Note that environments run using Amazon Aurora, which is MySQL-compatible but [may differ from standard MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.html).)
+(Note that environments run using Amazon Aurora, which is MySQL-compatible but [may differ from standard MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraMySQL.CompareMySQL57.html).)
 
 
 ### Behaviour
