@@ -2,21 +2,8 @@
 
 Altis uses healthchecks to determine whether servers are healthy or need replacing, and whether minimum requirements such as PHP being available are met before applications are deployed.
 
-These _healthchecks are required for the Cloud environments to operate_ however they can still be toggled on or off. You should never need to turn healthchecks off with the possible exception of local environments.
+**Note:** Any changes to the healthcheck configuration are considered to void your warranty, except as directed by the Altis team. Adjusting any configuration may cause catastrophic errors in your environments.
 
-```json
-{
-    "extra": {
-        "altis": {
-            "modules": {
-                "cloud": {
-                    "healthcheck": false
-                }
-            }
-        }
-    }
-}
-```
 
 ## API
 
@@ -53,6 +40,7 @@ A CLI command is also available for the application healthcheck:
 wp healthcheck run [--format=json]
 ```
 
+
 ## Extending Healthchecks
 
 Custom healthchecks can be added to the default list using filters. The healthchecks are a keyed array of checks with the value being the result. Any non `true` value counts as a failed healthcheck. Typically an error message should be provided as the alternative value to `true`, however `false` will also work.
@@ -71,4 +59,25 @@ add_filter( 'altis_healthchecks', function ( $checks ) {
     $checks['custom-db-table-exists'] = in_array( $wpdb->base_prefix . 'custom', $wpdb->tables, true );
     return $checks;
 } );
+```
+
+
+## Configuration
+
+Healthcheck behaviour is generally not user configurable, and is handled automatically for you by the Cloud module.
+
+To disable the healthchecks, set `modules.cloud.healthcheck` to false:
+
+```json
+{
+    "extra": {
+        "altis": {
+            "modules": {
+                "cloud": {
+                    "healthcheck": false
+                }
+            }
+        }
+    }
+}
 ```

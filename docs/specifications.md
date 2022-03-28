@@ -1,3 +1,6 @@
+---
+order: 100
+---
 # Specifications
 
 - CPU Architecture: 64 bit

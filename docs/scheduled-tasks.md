@@ -8,27 +8,12 @@ Cavalcade is also used on the Local Server and Local Chassis environments to rep
 
 The integration with WordPress is seamless, so existing WordPress themes, plugins and other 3rd party code that uses sheduled tasks will be compatible.
 
-The Cavalcade service can be switched off but it is not recommended to do so:
-
-```json
-{
-    "extra": {
-        "altis": {
-            "modules": {
-                "cloud": {
-                    "cavalcade": false
-                }
-            }
-        }
-    }
-}
-```
 
 ## Creating Scheduled Tasks
 
 Scheduled events work by triggering an action hook, effectively running `do_action( 'hook' )` at the scheduled time. The functions you need to run at the scheduled time should added to that hook using `add_action()`.
 
-Events can be a one-off or recurring.
+Events can be one-off or recurring.
 
 **Note**: Scheduling an event within 10 minutes of an existing event on the same hook and with the same arguments will fail.
 
@@ -50,6 +35,7 @@ add_filter( 'cron_schedules', function ( array $schedules ) : array {
     return $schedules;
 } );
 ```
+
 
 ### Functions
 
@@ -85,3 +71,26 @@ Unschedules any event matching the timestamp, hook and arguments.
 **`wp_clear_scheduled_hook( string $hook, array $args = [], bool $wp_error = false )`**
 
 Clears all scheduled events for the given hook and set of arguments regardless of when they will run.
+
+
+## Configuration
+
+Cavalcade is generally not user configurable, and is handled automatically for you by the Cloud module.
+
+**Note:** Any changes to the Cavalcade configuration are considered to void your warranty, except as directed by the Altis team. Adjusting any configuration may cause catastrophic errors in your environments.
+
+The Cavalcade service can be switched off:
+
+```json
+{
+    "extra": {
+        "altis": {
+            "modules": {
+                "cloud": {
+                    "cavalcade": false
+                }
+            }
+        }
+    }
+}
+```

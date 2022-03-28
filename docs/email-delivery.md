@@ -1,30 +1,21 @@
 # Email Delivery
 
-Altis Cloud can handle vast amounts of email sending, with very good deliverability. Email sending is automatically integrated via a custom `wp_mail` override, therefore developers and plugins don't need to make any extra provisions for sending email on Cloud. This integration is controlled via AWS Simple Email Service (SES).
+Altis environments are pre-configured to send email through the `wp_mail()` API.
 
-The AWS SES integration can be switched off if you intend to use an alternative email delivery service using the following configuration:
+Altis uses [Amazon SES](https://aws.amazon.com/ses/) to send email, ensuring high deliverability rates.
 
-```json
-{
-    "extra": {
-        "altis": {
-            "modules": {
-                "cloud": {
-                    "aws-ses-wp-mail": false
-                }
-            }
-        }
-    }
-}
-```
+**Before your environment can send any email, you must verify any domains you are sending email from.**
+
 
 ## Domain Verification
 
-All email delivery on Cloud using AWS SES must be sent from email addresses that have their domain verified. Contact support to start the process of verifying your domain for email sending.
+All email delivery must be sent from email addresses that have their domain verified. Altis automatically verifies your internal domains (`*.altis.cloud` for email sending), but custom domains including your production domain must be verified through DNS records.
 
-Once you have requested a domain for verification, you will be provided DNS entries to add to your DNS Server, or Human Made will configure it if we already control DNS for your domain.
+Email verification is typically handled when [adding domains and configuring DNS](./dns-configuration.md), but in some cases, may need to be verified afterwards.
 
-It's also required to configure the code base to send emails from the domain. This can be done by setting the `altis.modules.cloud.email-from-address` setting.
+Contact support to start the process of verifying your domain for email sending. Once you have requested a domain for verification, you will be provided DNS entries to add to your DNS Server.
+
+You also need to set your email sender address within your Altis configuration. This can be done by setting the `altis.modules.cloud.email-from-address` setting.
 
 ```json
 {
@@ -52,11 +43,28 @@ add_filter( 'wp_mail_from_name', function ( $name ) {
 } );
 ```
 
-Any email address can be used as long as they are all from a verified sending domain. Multiple sending domains can also be used, just get each one verified.
+Any email address can be used, provided it uses a verified sending domain. Multiple sending domains can be used once verified.
+
+
+## Email Logging
+
+Email logs are [available within the Altis Dashboard](./dashboard/logs.md) containing information about sent email and deliverability.
+
+
+## Acceptable Usage
+
+Altis can send transactional email (e.g. signup requests, ecommerce receipts, automated alerts) or marketing email (e.g. newsletters). Altis email systems can handle large volumes of email as necessary, and prior authorisation is not necessary for these uses.
+
+Sending unsoliticed email (spam) is not permitted and may lead to account termination.
+
+Email deliverability and bounce rates are your responsibility. The Altis team monitors your bounce rate and may require changes to your codebase if they determine you are exceeding reasonable use of the email services. Failure to rectify may lead to account termination.
+
 
 ## Email Sending Region
 
-In the event of migrating from one region to another or setting up AWS SES in a region other than the one your application is hosted in you may need to override the default region.
+Altis automatically uses the most appropriate region to send email from depending on your [origin location](./origin-locations.md).
+
+The Altis team may direct you to change email region if migrating from an existing setup, or based on availability of email services. Do not change this configuration unless directed to do so by Altis.
 
 To configure the sending region set the `email-region` configuration option to a valid AWS region code as shown in the following example. (By default this is set to `false`, which uses the default region.)
 
@@ -70,6 +78,23 @@ To configure the sending region set the `email-region` configuration option to a
 }
 ```
 
-## Email Logging
 
-See [Accessing Logs](./dashboard/logs.md) for details on access send and failure logs for email.
+## Disabling SES
+
+**Note:** Disabling the built-in email configuration is considered to void your warranty, except as directed by the Altis team.
+
+The AWS SES integration can be switched off if you intend to use an alternative email delivery service using the following configuration:
+
+```json
+{
+    "extra": {
+        "altis": {
+            "modules": {
+                "cloud": {
+                    "aws-ses-wp-mail": false
+                }
+            }
+        }
+    }
+}
+```
