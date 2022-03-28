@@ -11,7 +11,7 @@ Custom configuration can be supplied in Nginx either within the `server {}` cont
 
 Nginx loads the following custom files from your project repository:
 
-* `.config/nginx-http-additions.conf`: Loaded into the `server` context
+* `.config/nginx-http-additions.conf`: Loaded into the `http` context
 * `.config/nginx-additions.conf`: Loaded into the `server` context
 
 An optional suffix can be specified before the extension to split your configuration in complex cases.
