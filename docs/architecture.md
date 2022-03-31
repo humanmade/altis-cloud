@@ -32,7 +32,7 @@ Altis Cloud is designed to be highly-available, with redundant servers split acr
 
 (Note that full HA is not included with all environment tiers; consult your plan information. High availability is also only available on production environments.)
 
-![Architecture diagram](assets/architecture.svg)
+![Architecture diagram](./assets/architecture.svg)
 
 Automated systems monitor and scale your environments to meet load demands, with no manual intervention. All systems are monitored 24/7 by a dedicated team of on-call cloud engineers around the globe. Engineers are alerted to anomolies within the system, including high CPU usage, disk space issues, slow load times for users, database errors, PHP errors, and database performance, among other issues and metrics.
 
