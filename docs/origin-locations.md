@@ -8,18 +8,18 @@ We provide the following Origin locations:
 
 **North America**
 
-- North Virginia
+- North Virginia, US
 
 **Europe**
 
 - Ireland
-- London
-- Frankfurt
+- London, UK
+- Frankfurt, Germany
 
 **Asia Pacific**
 
 - Singapore
-- Tokyo
-- Sydney
+- Tokyo, Japan
+- Sydney, Australia
 
 We are always iterating on our global availability, and other regions may become available. Contact us to discuss other options.
