@@ -15,7 +15,7 @@ Scheduled events work by triggering an action hook, effectively running `do_acti
 
 Events can be one-off or recurring.
 
-**Note**: Scheduling an event within 10 minutes of an existing event on the same hook and with the same arguments will fail.
+**Note**: Scheduling a one-off event to occur within 10 minutes of an existing event with the same hook and the same arguments will fail in order to prevent the accidental scheduling of duplicate events. This does not affect the scheduling of recurring events.
 
 ### Intervals
 
