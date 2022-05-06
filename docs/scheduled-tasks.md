@@ -94,3 +94,28 @@ The Cavalcade service can be switched off:
     }
 }
 ```
+
+## Debugging
+
+There are several ways to debug and control the scheduled event queue on your site. Using a combination of these tools gives full insight into the scheduled events system.
+
+### Altis Dashboard
+
+From the Altis Dashboard, the **Logs -> Cron** screen shows a log of all recent events, their status, and any error output.
+
+The **Logs -> Cron Raw** screen shows a raw log of the same data from Cavalcade.
+
+### WP-CLI
+
+WP-CLI provides a `wp cron` command for viewing and managing scheduled events. See `wp help cron` for all the details.
+
+### WP Crontrol
+
+[The WP Crontrol plugin](https://wordpress.org/plugins/wp-crontrol/) enables you to view and control what's happening in the scheduled event system. From its admin screens you can:
+
+* View all cron events along with their arguments, recurrence, callback functions, and when they are next due.
+* Edit, delete, and immediately run any cron events.
+* Add new cron events.
+* Bulk delete cron events.
+* Add and remove custom cron schedules.
+* Export cron event lists as a CSV file.
