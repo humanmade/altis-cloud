@@ -59,9 +59,8 @@ order: 100
 - sysvsem
 - sysvshm
 - tokenizer
-- v8js
+- v8js (experimental)
 - wddx
-- xhprof
 - xml
 - xmlreader
 - xmlwriter
