@@ -59,6 +59,7 @@ order: 100
 - sysvsem
 - sysvshm
 - tokenizer
+- v8js (experimental)
 - wddx
 - xml
 - xmlreader
