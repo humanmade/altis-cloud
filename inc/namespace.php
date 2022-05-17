@@ -64,6 +64,9 @@ function bootstrap() {
 	) {
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/inc/namespace.php';
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/aws-xray/plugin.php';
+		add_action( 'admin_bar_menu', __NAMESPACE__ . '\\register_trace_menu_item', 100 );
+		add_filter( 'qm/output/menus', __NAMESPACE__ . '\\register_trace_qm_menu_item' );
+		add_filter( 'qm/output/panel_menus', __NAMESPACE__ . '\\register_trace_qm_panel_menu_item', 41 );
 		add_filter( 'aws_xray.redact_metadata', __NAMESPACE__ . '\\remove_xray_metadata' );
 		if ( in_array( Altis\get_environment_architecture(), [ 'ec2', 'ecs' ], true ) ) {
 			add_filter( 'aws_xray.trace_to_daemon', __NAMESPACE__ . '\\add_ec2_instance_data_to_xray' );
@@ -1089,4 +1092,79 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 
 	$loggers[ $tag_name ] = $logger;
 	return $loggers[ $tag_name ];
+}
+
+/**
+ * Get the current XRay trace URL on Vantage.
+ *
+ * @return string
+ */
+function get_xray_trace_url() : string {
+	if ( ! is_cloud() ) {
+		return '';
+	}
+
+	$trace_id = XRay\get_root_trace_id();
+	return sprintf(
+		'https://dashboard.altis-dxp.com/#/e/%s/xray/trace/%s',
+		Altis\get_environment_name(),
+		$trace_id
+	);
+}
+
+/**
+ * Register the "Debug Request" menu item.
+ *
+ * @param WP_Admin_Bar $wp_admin_bar Admin bar instance.
+ */
+function register_trace_menu_item( WP_Admin_Bar $wp_admin_bar ) {
+	$url = get_xray_trace_url();
+	if ( empty( $url ) ) {
+		return;
+	}
+
+	$title = __( 'Debug Request', 'altis' );
+	$logo_menu_args = [
+		'id' => 'altis-view-trace',
+		'parent' => 'altis',
+		'title' => $title . ' <span class="dashicons-before dashicons-external"></span>',
+		'href' => $url,
+	];
+
+	$wp_admin_bar->add_menu( $logo_menu_args );
+}
+
+/**
+ * Add the dashboard trace URL to the QM panel menu.
+ *
+ * @param array $menu The Query Monitor panel menu.
+ * @return array
+ */
+function register_trace_qm_menu_item( array $menu ) : array {
+	$url = get_xray_trace_url();
+	if ( empty( $url ) ) {
+		return $menu;
+	}
+
+	$menu['aws-xray-trace'] = [
+		'title' => __( 'Debug in Altis Dashboard', 'altis' ) . ' <span class="dashicons-before dashicons-external"></span>',
+		'id' => 'query-monitor-aws-xray-dashboard',
+		'href' => $url,
+	];
+
+	return $menu;
+}
+
+/**
+ * Add the dashboard trace URL to the QM panel menu.
+ *
+ * @param array $menu The Query Monitor panel menu.
+ * @return array
+ */
+function register_trace_qm_panel_menu_item( array $menu ) : array {
+	// Admin bar menu items are duplicated in the QM panel menu so we
+	// remove it here as external links aren't supported.
+	unset( $menu['aws-xray-trace'] );
+
+	return $menu;
 }
