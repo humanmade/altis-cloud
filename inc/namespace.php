@@ -1139,14 +1139,13 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
  * @return string
  */
 function get_xray_trace_url() : string {
-	if ( ! is_cloud() || ! defined( 'HM_ENV_REGION' ) ) {
+	if ( ! is_cloud() ) {
 		return '';
 	}
 
 	$trace_id = XRay\get_root_trace_id();
 	return sprintf(
-		'https://dashboard.altis-dxp.com/#/%s/%s/xray/trace/%s',
-		HM_ENV_REGION,
+		'https://dashboard.altis-dxp.com/#/e/%s/xray/trace/%s',
 		Altis\get_environment_name(),
 		$trace_id
 	);
