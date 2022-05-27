@@ -32,9 +32,10 @@ Altis uses the [Amazon CloudFront CDN](https://docs.aws.amazon.com/AmazonCloudFr
 
 * ECDSA certificates are supported (256-bit keys only)
 * RSA certificates are supported (1024-bit or 2048-bit keys only)
+* Provided certificates must include the full certificate chain (including imermediate and root certificates)
 
 
-### Certificate Signing Request
+### Altis-provided Certificate Signing Request
 
 To request a CSR, contact support with the following details:
 
@@ -48,9 +49,7 @@ To request a CSR, contact support with the following details:
 
 Please note that the SAN field must include the internal Altis domain for your environment (i.e. `[env].altis.cloud`).
 
-Once Altis has provided the CSR, the generated certificate should be provided in PEM format (.cer) in the same ticket.
-
-Please note that the entire certificate chain, including intermediate and root certificates, must be provided.
+Once Altis has provided the CSR, the generated certificate should be provided in PEM format (.cer) in the same ticket. Please allow up to a week for the verification and installation of custom certificates.
 
 The certificate must be compatible with the provided CSR; you can verify this by confirming the output of the following commands matches:
 
@@ -62,6 +61,10 @@ openssl x509 -noout -modulus -in <path to Certificate> | openssl md5
 
 ### Certificate and Key
 
-If providing a certificate, contact support with the certificate in PEM format (.cer) and private key.
+To provide a custom certificate without using an Altis-provided CSR, contact support with the following:
 
-Please note that the entire certificate chain, including intermediate and root certificates, must be provided.
+* Private key
+* Main certificate
+* Full certificate chain, including intermediate certificates and root certificate
+
+Please allow up to a week for the verification and installation of custom certificates.
