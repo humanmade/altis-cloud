@@ -23,6 +23,8 @@ To request a change to your TLS configuration, contact support with the requeste
 
 Customers on Mid or Enterprise environment tiers may provide custom certificates for their domains. Altis will manually install these certificates to your CDN distribution, however provisioning and renewal of the certificates remains the customer's responsibility.
 
+Altis recommends against using custom certificates unless required for compliance purposes, as this requires manual management of your certificate and cannot be automatically renewed.
+
 Certificates can be provided along with the private key directly, or Altis can issue a Certificate Signing Request (CSR).
 
 
@@ -37,7 +39,7 @@ Altis uses the [Amazon CloudFront CDN](https://docs.aws.amazon.com/AmazonCloudFr
 
 ### Altis-provided Certificate Signing Request
 
-To request a CSR, contact support with the following details:
+To request a CSR from Altis, contact support with the following details:
 
 * Subject Name details, including:
 	* Organization
