@@ -16,7 +16,7 @@ The [MIME types](https://en.wikipedia.org/wiki/Media_type) we compress are liste
 
 Images are compressed and cached separately, as we leverage [Dynamic Image Resizing](https://docs.altis-dxp.com/media/dynamic-images/), the Images are created on the fly, and then cached at the CDN layer for serving the image. Images will attempt to be served via `[WebP](https://developers.google.com/speed/webp/)` format if the browser supports WebP, images will be served in that format, falling back to the image default format.
 
-### I’ve heard of Brotli compression, and doesn’t it offer better compression?
+### What about Brotli compression?
 
 It can provide a meaningful boost to compression for non-image assets like javascript or CSS. Brotli compression is only partially supported, meaning it can only be used on-the-fly by at the CDN, and not for `text/html` MIME Types and [not all browsers support Brotli](https://docs.w3cub.com/browser_support_tables/brotli).
 
