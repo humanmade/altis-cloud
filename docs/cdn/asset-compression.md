@@ -1,15 +1,13 @@
 # Compression & Optimisation
 Altis automatically compresses and optimises data served by your site using industry-standard methods, across static assets and dynamic pages.
 
-### What and why compress assets?
-
 Compression reduces page load times by reducing overall bandwidth usage, which can also improve SEO performance and as Lighthouse scores. Altis automatically compresses assets on the server, which are uncompressed by the visitor's browser.
 
 Compression algorithms are selected automatically based on browser support and response types. In some cases, compressing responses may lead to slower response times (for example, dynamic uncachable responses with higher levels of compression), and Altis may dynamically change or disable compression for these responses.
 
 Compression is applied to static assets (such as JS and CSS files within your codebase), uploaded assets (such as images), and dynamic HTML responses.
 
-### How do we compress assets?
+## How do we compress assets?
 
 Assets are compressed using GZIP and is done via NGINX. When they’re sent as a response to a request that asset will also be cached at the CDN for faster delivery of that assets to subsequent requests.
 
@@ -21,22 +19,10 @@ Images are compressed, optimised, and cached separately, through support for [dy
 
 For browsers which support it, images will be automatically converted to [WebP](https://developers.google.com/speed/webp/) format.
 
-### What about Brotli compression?
+## What about Brotli compression?
 
 [Brotli](https://en.wikipedia.org/wiki/Brotli) is a modern compression algorithm developed by Google to replace gzip with higher compression ratios. [Support for Brotli is available in all modern browsers](https://caniuse.com/brotli), constituting ~96% of users.
 
 Brotli can provide a meaningful boost to compression for non-image assets like JavaScript or CSS. Altis has partial support for Brotli at the CDN layer. Support for dynamic (`text/html`) responses is not currently available.
 
 Brotli support on Altis is currently available on an opt-in basis. To enable Brotli on your application, contact [Altis Support](https://docs.altis-dxp.com/guides/getting-help-with-altis/).
-
-### Further reading:
-
-For more information about some of the services and concepts talked about above, see the following articles.
-
-[https://docs.altis-dxp.com/cloud/cdn/](https://docs.altis-dxp.com/cloud/cdn/)
-
-[https://docs.altis-dxp.com/cloud/static-file-caching/](https://docs.altis-dxp.com/cloud/static-file-caching/)
-
-[https://docs.altis-dxp.com/cloud/page-caching/](https://docs.altis-dxp.com/cloud/page-caching/)
-
-[https://docs.altis-dxp.com/media/dynamic-images/](https://docs.altis-dxp.com/media/dynamic-images/)
