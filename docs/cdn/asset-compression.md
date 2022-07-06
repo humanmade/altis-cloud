@@ -9,7 +9,7 @@ Compression is applied to static assets (such as JS and CSS files within your co
 
 ## How do we compress assets?
 
-Assets are compressed using GZIP and is done via NGINX. When they’re sent as a response to a request that asset will also be cached at the CDN for faster delivery of that assets to subsequent requests.
+Assets are compressed using GZIP for browsers which indicate support for it. This includes all modern browsers on desktop and mobile platforms. Like other responses, compressed assets are cached on the CDN for faster delivery to subsequent requests.
 
 We compress the following static assets (based on [MIME type](https://en.wikipedia.org/wiki/Media_type)):
 
