@@ -1,4 +1,4 @@
-# Asset Compression Strategy
+# Compression & Optimisation
 
 ### What and why compress assets?
 
