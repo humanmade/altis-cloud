@@ -7,7 +7,7 @@ Compression reduces page load times by reducing overall bandwidth usage, which c
 
 Compression algorithms are selected automatically based on browser support and response types. In some cases, compressing responses may lead to slower response times (for example, dynamic uncachable responses with higher levels of compression), and Altis may dynamically change or disable compression for these responses.
 
-Those static assets include .js and CSS files, images, and also the generated HTML files of your site.
+Compression is applied to static assets (such as JS and CSS files within your codebase), uploaded assets (such as images), and dynamic HTML responses.
 
 ### How do we compress assets?
 
