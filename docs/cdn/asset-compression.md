@@ -23,7 +23,9 @@ For browsers which support it, images will be automatically converted to [WebP](
 
 ### What about Brotli compression?
 
-It can provide a meaningful boost to compression for non-image assets like javascript or CSS. Brotli compression is only partially supported, meaning it can only be used on-the-fly by at the CDN, and not for `text/html` MIME Types and [not all browsers support Brotli](https://docs.w3cub.com/browser_support_tables/brotli).
+[Brotli](https://en.wikipedia.org/wiki/Brotli) is a modern compression algorithm developed by Google to replace gzip with higher compression ratios. [Support for Brotli is available in all modern browsers](https://caniuse.com/brotli), constituting ~96% of users.
+
+Brotli can provide a meaningful boost to compression for non-image assets like JavaScript or CSS. Altis has partial support for Brotli at the CDN layer. Support for dynamic (`text/html`) responses is not currently available.
 
 Brotli support on Altis is currently available on an opt-in basis. To enable Brotli on your application, contact [Altis Support](https://docs.altis-dxp.com/guides/getting-help-with-altis/).
 
