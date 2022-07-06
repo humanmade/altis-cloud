@@ -1,4 +1,5 @@
 # Compression & Optimisation
+Altis automatically compresses and optimises data served by your site using industry-standard methods, across static assets and dynamic pages.
 
 ### What and why compress assets?
 
