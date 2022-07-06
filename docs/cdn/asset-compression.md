@@ -11,9 +11,14 @@ Compression is applied to static assets (such as JS and CSS files within your co
 
 Assets are compressed using GZIP and is done via NGINX. When they’re sent as a response to a request that asset will also be cached at the CDN for faster delivery of that assets to subsequent requests.
 
-The [MIME types](https://en.wikipedia.org/wiki/Media_type) we compress are listed below.
+We compress the following static assets (based on [MIME type](https://en.wikipedia.org/wiki/Media_type)):
 
-`text/plain, text/css, text/html, application/json, application/javascript, application/x-javascript, text/xml, application/xml, application/xml+rss, text/javascript, application/x-font-ttf, font/opentype, application/vnd.ms-fontobject, image/svg+xml`
+* Plain text (`text/plain`)
+* CSS files (`text/css`)
+* HTML files (`text/html`)
+* JavaScript & JSON files (`application/json`, `application/javascript`, `application/x-javascript`, `text/javascript`)
+* XML files (including RSS & SVG) (`text/xml`, `application/xml`, `application/xml+rss`, `image/svg+xml`)
+* Font files (`application/x-font-ttf`, `font/opentype`, `application/vnd.ms-fontobject`)
 
 Images are compressed, optimised, and cached separately, through support for [dynamic images](https://docs.altis-dxp.com/media/dynamic-images/). Optimised and resized images are created on the fly, and then cached at the CDN layer for a year.
 
