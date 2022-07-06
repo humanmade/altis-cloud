@@ -20,7 +20,7 @@ Images are compressed and cached separately, as we leverage [Dynamic Image Resiz
 
 It can provide a meaningful boost to compression for non-image assets like javascript or CSS. Brotli compression is only partially supported, meaning it can only be used on-the-fly by at the CDN, and not for `text/html` MIME Types and [not all browsers support Brotli](https://docs.w3cub.com/browser_support_tables/brotli).
 
-To enable Brotli for on-the-fly compression at the CDN layer (with the exception of the MIME type of `text/html` which will have to be compressed with GZIP), make a request to [Altis Support](https://docs.altis-dxp.com/guides/getting-help-with-altis/).
+Brotli support on Altis is currently available on an opt-in basis. To enable Brotli on your application, contact [Altis Support](https://docs.altis-dxp.com/guides/getting-help-with-altis/).
 
 ### Further reading:
 
