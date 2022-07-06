@@ -17,7 +17,9 @@ The [MIME types](https://en.wikipedia.org/wiki/Media_type) we compress are liste
 
 `text/plain, text/css, text/html, application/json, application/javascript, application/x-javascript, text/xml, application/xml, application/xml+rss, text/javascript, application/x-font-ttf, font/opentype, application/vnd.ms-fontobject, image/svg+xml`
 
-Images are compressed and cached separately, as we leverage [Dynamic Image Resizing](https://docs.altis-dxp.com/media/dynamic-images/), the Images are created on the fly, and then cached at the CDN layer for serving the image. Images will attempt to be served via `[WebP](https://developers.google.com/speed/webp/)` format if the browser supports WebP, images will be served in that format, falling back to the image default format.
+Images are compressed, optimised, and cached separately, through support for [dynamic images](https://docs.altis-dxp.com/media/dynamic-images/). Optimised and resized images are created on the fly, and then cached at the CDN layer for a year.
+
+For browsers which support it, images will be automatically converted to [WebP](https://developers.google.com/speed/webp/) format.
 
 ### What about Brotli compression?
 
