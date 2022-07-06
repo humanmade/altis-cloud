@@ -3,7 +3,9 @@ Altis automatically compresses and optimises data served by your site using indu
 
 ### What and why compress assets?
 
-For faster load speeds of your page, static assets are compressed at the server, and then uncompressed by a vistor's browser. This is a contributing factor to SEO scores, but generally good practice to help reduce overall bandwidth usage. 
+Compression reduces page load times by reducing overall bandwidth usage, which can also improve SEO performance and as Lighthouse scores. Altis automatically compresses assets on the server, which are uncompressed by the visitor's browser.
+
+Compression algorithms are selected automatically based on browser support and response types. In some cases, compressing responses may lead to slower response times (for example, dynamic uncachable responses with higher levels of compression), and Altis may dynamically change or disable compression for these responses.
 
 Those static assets include .js and CSS files, images, and also the generated HTML files of your site.
 
