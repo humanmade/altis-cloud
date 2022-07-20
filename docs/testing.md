@@ -18,6 +18,8 @@ Before performing any load testing, contact Altis support at least one week in a
 * Testing dates
 * Test origin, including supplier and IP addresses where possible
 * Contact information
+* Expected size of test (total requests)
+* Expected peak load of test (requests per minute)
 
 Note that load testing should not be performed against non-production environments, as these environments have different scaling characteristics compared to production environments. In particular, stricter limits and maximums are imposed, as well as different algorithms for how autoscaling applies.
 
