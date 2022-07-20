@@ -23,6 +23,8 @@ Before performing any load testing, contact Altis support at least one week in a
 
 Note that load testing should not be performed against non-production environments, as these environments have different scaling characteristics compared to production environments. In particular, stricter limits and maximums are imposed, as well as different algorithms for how autoscaling applies.
 
+DDoS simulations and network stress tests may not be performed unless explicitly approved by Altis.
+
 
 ## Penetration Testing
 
