@@ -3,7 +3,7 @@
 Managing who can access Altis Environments is done via the Altis Dashboard. 
 
 Once you've logged into the Dashboard, you may already have access to one or more Altis Instances. 
-Select the Instance you wish to manage access to from the available list of instances. In the below screenshot, we'll select the Altis Demo Instance.
+Select the Instance you wish to manage access to from the available list of instances. In the screenshot below, we'll select the Altis Demo Instance.
 
 ![Example List of Instances](../assets/teams-select-instance.png)
 
