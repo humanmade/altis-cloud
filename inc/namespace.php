@@ -57,10 +57,11 @@ function bootstrap() {
 	$config = get_config();
 
 	$is_alb_healthcheck = isset( $_SERVER['HTTP_USER_AGENT'] ) && strpos( $_SERVER['HTTP_USER_AGENT'], 'ELB-HealthChecker' ) === 0;
+	$has_profiler = class_exists( 'ExcimerProfiler' ) || function_exists( 'xhprof_sample_enable' );
 
 	if (
 		$config['xray']
-		&& function_exists( 'xhprof_sample_enable' )
+		&& $has_profiler
 		&& php_sapi_name() !== 'cli'
 		&& ! class_exists( 'HM\\Cavalcade\\Runner\\Runner' )
 		&& ! $is_alb_healthcheck
