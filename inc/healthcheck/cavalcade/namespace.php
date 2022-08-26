@@ -7,6 +7,7 @@
 
 namespace Altis\Cloud\Healthcheck\Cavalcade;
 
+use WP_CLI;
 use WP_Error;
 
 const JOB_HOOK = 'hm-platform.healthcheck.cavalcade';
@@ -23,8 +24,20 @@ function bootstrap() {
 	// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 	add_filter( 'cron_schedules', __NAMESPACE__ . '\\add_cron_schedule' );
 
-	// Schedule if not already scheduled.
+	// Schedule on migrate command.
+	add_action( 'altis.migrate', __NAMESPACE__ . '\\schedule_job' );
+}
+
+/**
+ * Schedule the Cavalcade healthcheck.
+ *
+ * @return void
+ */
+function schedule_job() {
 	if ( ! wp_next_scheduled( JOB_HOOK ) && ( ! is_multisite() || is_main_site() ) ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			WP_CLI::log( 'Scheduling Cavalcade healthcheck...' );
+		}
 		wp_schedule_event( time(), JOB_SCHEDULE, JOB_HOOK );
 	}
 }
