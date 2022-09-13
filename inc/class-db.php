@@ -12,6 +12,8 @@ use LudicrousDB;
 use QM_Backtrace;
 use WP_Error;
 
+const SAVEQUERIES = true;
+
 /**
  * Ludicrous DB integration class.
  *
@@ -64,7 +66,7 @@ class DB extends LudicrousDB {
 			return $result;
 		}
 
-		$i = count( $this->queries ) - 1;
+		$i = count( (array) $this->queries ) - 1;
 		$this->queries[ $i ]['trace'] = new QM_Backtrace( [
 			'ignore_frames' => 1,
 		] );
