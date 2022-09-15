@@ -60,7 +60,7 @@ class DB extends LudicrousDB {
 		$end = microtime( true );
 		$this->time_spent += $end - $start;
 
-		if ( ! $has_qm || ! SAVEQUERIES ) {
+		if ( ! is_array( $this->queries ) || ! $has_qm || ! defined( 'SAVEQUERIES' ) || ! SAVEQUERIES ) {
 			return $result;
 		}
 
