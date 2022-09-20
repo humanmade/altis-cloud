@@ -19,7 +19,7 @@ All pages are cached by default, with the following exclusions:
   - `comment_*`
   - `hm_*`
   - `altis_*`
-- Any requests with the `Authentication` HTTP header will not be cached.
+- Any requests with the `Authorization` HTTP header will not be cached.
 - Any response with the `Cache-Control: no-cache` HTTP header will not be cached.
 - Any response with no content is not cached.
 - Any request to `xmlrpc.php`, `wp-cron.php` or `wp-app.php` are not cached.
