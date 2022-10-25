@@ -1,12 +1,10 @@
 # Geo Targeting / GeoIP
 
-Altis supports geolocation targeting when specifically enabled. Once enabled, developers can make use of the `Cloudfront-Viewer-Country` HTTP Header to serve content on a per-country basis.
-
-To enable Geo Targeting contact the Altis team.
+Altis supports geolocation targeting by default. Developers can make use of the `Cloudfront-Viewer-Country` HTTP Header to serve content on a per-country basis.
 
 ## Cache Variants
 
-When Geo Targeting is enabled, all [page caches](page-caching.md) will be stored per country. Depending on the shape of traffic, this can reduce cache hit rates considerably.
+When Geo Targeting is enabled, all [page caches](page-caching.md) will be stored per country. 
 
 ## Example
 
