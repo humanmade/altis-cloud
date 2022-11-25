@@ -12,8 +12,14 @@ The CDN cache is the fastest cache, and has typical response times around 20ms. 
 All pages are cached by default, with the following exclusions:
 
 - All `POST` requests are not cached
-- Any requests with cookies matching the patterns `wordpress_*`, `wp-*`, `wp_*`, `comment_*`, `hm_*` and  `altis_*` are not cached.
-- Any requests with the `Authentication` HTTP header will not be cached.
+- Any requests containing cookies with names that match the following patterns are not cached:
+  - `wordpress_*`
+  - `wp-*`
+  - `wp_*`
+  - `comment_*`
+  - `hm_*`
+  - `altis_*`
+- Any requests with the `Authorization` HTTP header will not be cached.
 - Any response with the `Cache-Control: no-cache` HTTP header will not be cached.
 - Any response with no content is not cached.
 - Any request to `xmlrpc.php`, `wp-cron.php` or `wp-app.php` are not cached.
