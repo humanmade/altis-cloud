@@ -49,8 +49,21 @@ The following build tools are pre-installed inside the build container for your 
 
 [asdf]: https://github.com/asdf-vm/asdf
 
-You can install other versions using build tools such as [nvm](https://github.com/nvm-sh/nvm) for Node versions.
+You can install other versions using build tools such as [nvm](https://github.com/nvm-sh/nvm) for Node versions, eg:
 
+```sh
+#!/bin/bash -e
+
+# Install composer dependencies
+composer install --no-dev --optimize-autoloader --apcu-autoloader
+
+# Install Node Version Manager (nvm)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+. ~/.nvm/nvm.sh
+
+# Use node version from an '.nvm' file
+nvm install
+```
 
 ## Example build scripts
 
