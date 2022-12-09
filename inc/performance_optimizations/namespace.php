@@ -73,5 +73,9 @@ function schedule_events_in_admin( $pre, string $hook ) {
 		return $pre;
 	}
 
-	return true;
+	// Non-empty filter return values are expected by wp_next_scheduled to have
+	// a numeric ->timestamp property.
+	return (object) [
+		'timestamp' => time() + HOUR_IN_SECONDS,
+	];
 }
