@@ -3,9 +3,12 @@ order: 100
 ---
 # Specifications
 
-- CPU Architecture: 64 bit
-- PHP Version: 7.4
-- MySQL Version: 5.6, 5.7
+- CPU Architecture: 64-bit, x86
+
+The following versions are available, and the specific version in use will depend on your configuration.
+
+- PHP Version: 7.4, 8.0, 8.1
+- MySQL Version: 5.6, 5.7 (compatible; using AWS Aurora)
 
 ## PHP Modules
 
