@@ -13,7 +13,9 @@ Each Altis environment is set up to track a particular GitHub repository and bra
 
 This build process transforms your source repository into a container, which can be deployed at a time of your choosing (or automatically deployed if you choose).
 
-Builds are run using a "build container"; this is a container which provides a stable environment for any custom scripts you may use. You can install software tools (such as different Node/npm versions) within this container, but note that the container is reset at the end of each run. Some files are retained in a persistent cache between runs, but note that this may be cleared at any time.
+Builds are run using a "build container"; this is a container which provides a stable environment for any custom scripts you may use. You can install software tools (such as different Node/npm versions) within this container, but note that the container is reset at the end of each run. 
+
+Some files are retained in a persistent cache between runs, but note that this may be cleared at any time and in some cases a dirty cache can cause issues with deployments. In particular changing Node/NPM versions in your build script may not be reflected until the build cache is cleared. Contact Support to have the build cache cleared.
 
 The build process follows these steps:
 
