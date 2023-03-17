@@ -184,7 +184,7 @@ function load_platform( $wp_debug_enabled ) {
 	if ( extension_loaded( 'afterburner' ) ) {
 		load_object_cache_afterburner();
 		disable_sessions();
-	} else if ( $config['memcached'] ) {
+	} elseif ( $config['memcached'] ) {
 		load_object_cache_memcached();
 		disable_sessions();
 	} elseif ( $config['redis'] ) {
@@ -426,7 +426,7 @@ function load_object_cache_redis() {
 function load_object_cache_afterburner() {
 	if ( defined( 'REDIS_AUTH' ) && defined( 'REDIS_HOST' ) && defined( 'REDIS_PORT' ) ) {
 		$secure = defined( 'REDIS_SECURE' ) ? REDIS_SECURE : true;
-		ini_set( 'afterburner.redis_server_info', sprintf('redis%s://:%s@%s:%d', $secure ? 's' : '', REDIS_AUTH, REDIS_HOST, REDIS_PORT ) );
+		ini_set( 'afterburner.redis_server_info', sprintf( 'redis%s://:%s@%s:%d', $secure ? 's' : '', REDIS_AUTH, REDIS_HOST, REDIS_PORT ) );
 	} else {
 		trigger_error( 'REDIS constants not defined.', E_USER_ERROR );
 	}
