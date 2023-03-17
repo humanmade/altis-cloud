@@ -181,21 +181,15 @@ function load_platform( $wp_debug_enabled ) {
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36';
 	}
 
-	if ( $config['memcached'] ) {
+	if ( extension_loaded( 'afterburner' ) ) {
+		load_object_cache_afterburner();
+		disable_sessions();
+	} else if ( $config['memcached'] ) {
 		load_object_cache_memcached();
+		disable_sessions();
 	} elseif ( $config['redis'] ) {
 		load_object_cache_redis();
-	}
-
-	// Session support.
-	if ( $config['redis'] ) {
 		load_session_handler();
-	} else {
-		disable_sessions();
-	}
-
-	if ( $config['ludicrousdb'] ) {
-		load_db();
 	}
 
 	if ( $config['cdn-media-purge'] ) {
@@ -390,34 +384,6 @@ function log_elasticsearch_request_errors( $response, string $context, string $c
 }
 
 /**
- * Load the object cache.
- *
- * Check the object caching configuration and load either memcached
- * or redis as appropriate.
- *
- * @deprecated 1.0.1 Object caching setup moved to dedicated functions.
- */
-function load_object_cache() {
-	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		trigger_error(
-			sprintf(
-				'%1$s is deprecated since version %2$s! Use %3$s instead.',
-				__FUNCTION__,
-				'1.0.1',
-				'load_object_cache_*()'
-			)
-		);
-	}
-	$config = get_config();
-
-	if ( $config['memcached'] ) {
-		load_object_cache_memcached();
-	} elseif ( $config['redis'] ) {
-		load_object_cache_redis();
-	}
-}
-
-/**
  * Load the Memcached Object Cache dropin.
  */
 function load_object_cache_memcached() {
@@ -450,6 +416,22 @@ function load_object_cache_redis() {
 
 	require Altis\ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
 
+	// cache must be initted once it's included, else we'll get a fatal.
+	wp_cache_init();
+}
+
+/**
+ * Configure Afterburner's Redis connection for the object cache.
+ */
+function load_object_cache_afterburner() {
+	if ( defined( 'REDIS_AUTH' ) && defined( 'REDIS_HOST' ) && defined( 'REDIS_PORT' ) ) {
+		$secure = defined( 'REDIS_SECURE' ) ? REDIS_SECURE : true;
+		ini_set( 'afterburner.redis_server_info', sprintf('redis%s://:%s@%s:%d', $secure ? 's' : '', REDIS_AUTH, REDIS_HOST, REDIS_PORT ) );
+	} else {
+		trigger_error( 'REDIS constants not defined.', E_USER_ERROR );
+	}
+	require __DIR__ . '/alloptions_fix/namespace.php';
+	Alloptions_Fix\bootstrap();
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
 }
