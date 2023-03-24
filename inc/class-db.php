@@ -64,29 +64,28 @@ class DB extends LudicrousDB {
 			return $result;
 		}
 
-		$i = count( $this->queries ) - 1;
-		$this->queries[ $i ]['trace'] = new QM_Backtrace( [
-			'ignore_frames' => 1,
-		] );
+		$i = $this->num_queries - 1;
+
+		if ( did_action( 'qm/cease' ) ) {
+			// It's not possible to prevent the parent class from logging queries because it reads
+			// the `SAVEQUERIES` constant and I don't want to override more methods than necessary.
+			$this->queries = [];
+		}
+
+		if ( ! isset( $this->queries[ $i ] ) ) {
+			return $result;
+		}
+
+		$this->queries[ $i ]['trace'] = new QM_Backtrace();
 
 		if ( ! isset( $this->queries[ $i ][3] ) ) {
 			$this->queries[ $i ][3] = $this->time_start;
 		}
 
 		if ( $this->last_error ) {
-			$code = 'qmdb';
-			if ( $this->use_mysqli ) {
-				if ( $this->dbh instanceof \mysqli ) {
-					// phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_errno
-					$code = mysqli_errno( $this->dbh );
-				}
-			} else {
-				if ( is_resource( $this->dbh ) ) {
-					// Please do not report this code as a PHP 7 incompatibility. Observe the surrounding logic.
-					// phpcs:ignore
-					$code = mysql_errno( $this->dbh );
-				}
-			}
+			// phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_errno
+			$code = mysqli_errno( $this->dbh );
+
 			$this->queries[ $i ]['result'] = new WP_Error( $code, $this->last_error );
 		} else {
 			$this->queries[ $i ]['result'] = $result;
