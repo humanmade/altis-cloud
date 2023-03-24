@@ -75,5 +75,5 @@ The following versions are available, and the specific version in use will depen
 # Limitations
 
 - Maximum upload size: 1GB (1GB for media upload endpoints, and 50MB for all other requests)
-- php execution timeout: 60s
+- php execution timeout: 30s, can be increased through an `ini_set()` call up to a maximum of 60 seconds
 - Cron task execution timeout: 1 hour
