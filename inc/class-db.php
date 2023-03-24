@@ -69,7 +69,7 @@ class DB extends LudicrousDB {
 		if ( did_action( 'qm/cease' ) ) {
 			// It's not possible to prevent the parent class from logging queries because it reads
 			// the `SAVEQUERIES` constant and I don't want to override more methods than necessary.
-			$this->queries = array();
+			$this->queries = [];
 		}
 
 		if ( ! isset( $this->queries[ $i ] ) ) {
@@ -83,6 +83,7 @@ class DB extends LudicrousDB {
 		}
 
 		if ( $this->last_error ) {
+			// phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_errno
 			$code = mysqli_errno( $this->dbh );
 
 			$this->queries[ $i ]['result'] = new WP_Error( $code, $this->last_error );
