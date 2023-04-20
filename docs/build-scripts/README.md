@@ -51,7 +51,7 @@ The following build tools are pre-installed inside the build container for your 
 
 [asdf]: https://github.com/asdf-vm/asdf
 
-You can install other versions using build tools such as [nvm](https://github.com/nvm-sh/nvm) for Node versions, eg:
+Note that [nvm](https://github.com/nvm-sh/nvm) is not installed by default because asdf provides the same functionality.
 
 ```sh
 #!/bin/bash -e
