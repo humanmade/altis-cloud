@@ -23,9 +23,13 @@ We recommend beginning this process at least a few weeks before your desired swi
 
 Before routing domains to Altis, you need to register the domain with the Altis infrastructure and CDN. This tells Altis that you want to associate the domain with the specific environment, and that the CDN should route requests to the environment.
 
-**Note:** This is not the same as domain registration, and Altis does not act as your registrar. We do not offer domain registration.
+(This is not the same as domain registration, and Altis does not act as your registrar. Altis does not currently offer the ability to purchase new domains.)
 
-To start with the registration process, select the "Add new domain…" button. Enter your base domain, excluding any `www.` or wildcards.
+To start with the registration process, select the "Add new domain…" button.
+
+**Note:** The new domains feature is rolling out progressively, and you may not yet be able to see the "Add new domain" button. [Contact Altis support](support://new) to enable the new domains feature.
+
+Enter your base domain, excluding any `www.` or wildcards.
 
 ![](assets/domain-entry.png)
 
