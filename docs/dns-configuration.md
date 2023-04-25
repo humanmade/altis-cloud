@@ -1,5 +1,14 @@
 # DNS Configuration
 
+Every Altis environment can have many domains configured, allowing seamless use of multisite across your network.
+
+You can view your domain settings within the Altis Dashboard: select your environment's Settings page, then select the Domains setting. You'll be able to view all your existing domains here, as well as add new domains.
+
+![](assets/domain-list.png)
+
+
+## Adding a domain
+
 Adding a new domain to Altis is a three step process.
 
 1. **Register domain with CDN** (registration)
@@ -8,48 +17,73 @@ Adding a new domain to Altis is a three step process.
 
 Note that this is only necessary for adding new top-level domains which have not already been configured. Wildcard subdomain configuration will allow you to add new subsites without requiring DNS changes.
 
-We recommend beginning this process at least a few weeks before your desired switch-over.
+We recommend beginning this process at least a few weeks before your desired switch-over. User-visible changes to your site will only happen during the switch-over stage, and there will be no visible change to your site before this.
+
+### Registration (CDN configuration)
+
+Before routing domains to Altis, you need to register the domain with the Altis infrastructure and CDN. This tells Altis that you want to associate the domain with the specific environment, and that the CDN should route requests to the environment.
+
+(This is not the same as domain registration, and Altis does not act as your registrar. Altis does not currently offer the ability to purchase new domains.)
+
+To start with the registration process, select the "Add new domain…" button.
+
+**Note:** The new domains feature is rolling out progressively, and you may not yet be able to see the "Add new domain" button. [Contact Altis support](support://new) to enable the new domains feature.
+
+Enter your base domain, excluding any `www.` or wildcards.
+
+![](assets/domain-entry.png)
+
+The next screen allows you to select which variants of the domain you want to add: either just this domain, with the `www.` subdomain, or with a wildcard subdomain. We recommend selecting a wildcard subdomain to enable the full suite of multisite capabilities for your domain, as this will avoid needing further manual steps when adding new subdomain sites in the future.
+
+![](assets/domain-select.png)
+
+Once you've selected the domains you wish to add, select "Add domain" to register the domain with the CDN.
+
+If you need to set up a more complex domain configuration (such as adding a wildcard to an already-registered domain), [contact Altis support](support://new).
 
 
-## Registration (CDN configuration)
-
-Before routing domains to Altis, your CDN configuration will need to be updated to route the domain correctly, as well as ensuring that SSL certificates are valid for your new domains.
-
-Altis configures the CDN on your behalf, and this step must be completed by the Altis team.
-
-To begin this process, [contact Altis support](support://new).
-
-
-## Verification
+### Verification
 
 Altis automatically issues SSL certificates and configures the CDN to serve these certificates to users. When adding a new domain, verification will be required to ensure that you control the domain.
 
-The Altis team will provide you with DNS CNAME records to add for SSL verification, provided by AWS. Additionally, if you wish to send email from this domain, additional records will be provided for email verification.
+Once you register the domain in the Altis Dashboard, you'll receive DNS records for verification in the form of CNAMEs. These records are provided by AWS, and reference `acm-validations.aws`.
 
-These records can be added before the regular web CNAME records are added, allowing Altis to verify your domain ahead of switch-over. These will not conflict with existing records, and will have no user impact.
+![](assets/domain-verification.png)
 
-**Note:** Once the DNS records have been provided by Altis, please endeavour to add them within 72 hours, as they may time out after this time.
+You can visit the Domains settings page at any time to view these records again if needed.
+
+These records must be added before the regular web CNAME records are added, allowing Altis to verify your domain ahead of switch-over. These will not conflict with existing records, and will have no user impact.
+
+**Note:** Once the DNS records have been provided by Altis, please endeavour to add them within 72 hours, as they may time out after this, and will be marked as "Failed". If a domain is marked as Failed, [contact Altis support](support://new) to continue the process.
 
 
-## Switch-over
+### Switch-over
 
-Once Altis has been configured, the final step is to route your custom domain to your Altis environment. This is done by adding a `CNAME` DNS record for your domain or subdomains.
+Once your domain has been verified, Altis will automatically update your environment to prepare it for switchover.
+
+The final step is to route your custom domain to your Altis environment. This is done by adding a `CNAME` DNS record for your domain or subdomains.
+
+The value for your CNAME record will be displayed on the Domains settings page, as well as your verification records. (Make sure you don't delete the verification records, as they're needed for certificate renewal.)
+
+![](assets/domain-switch.png)
 
 After these DNS changes are put into place, your site will be served by Altis; this is called the "switch-over", as your site will "switch" from any existing host to Altis.
+
+You can perform this step when you're ready to switch your traffic at any point after verification is complete.
 
 Altis can only provide hostnames to be used in DNS records, not IP addresses, as servers are dynamically allocated based on traffic. Therefore you _must_ use CNAME, ANAME, or ALIAS records when configuring and managing your own DNS.
 
 
-### CNAME records
+#### CNAME records
 
 The simplest way to route your domain to Altis is to add CNAME records for any subdomains you wish to use. For example, you may wish to use the `www.` subdomain for your main site.
 
-The Altis team will provide you with your project-specific domain to use in CNAME records, or this can be viewed by using the "Add domain" button within the Altis Dashboard.
+The Dashboard will show you your project-specific domain to use in CNAME record.
 
 CNAME records are not supported on the domain apex (or "naked domain"); this is the base domain without `www.`, such as `example.com`. For apex domains, you must use either ALIAS or ANAME records as supported by your DNS provider.
 
 
-### ALIAS/ANAME records
+#### ALIAS/ANAME records
 
 Commonly, you will want to implement a redirect from the domain apex to the subdomain, such as redirecting `example.com` to `www.example.com`.
 
