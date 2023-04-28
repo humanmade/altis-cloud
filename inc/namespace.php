@@ -11,6 +11,7 @@ use Altis;
 use Altis\Cloud\Fluent_Bit;
 use Altis\Cloud\Fluent_Bit\MsgPackFormatter;
 use Altis\Cloud\Session_Handler\Disallowed_Session_Handler;
+use Altis\Cloud\Session_Handler\WP_Cache_Session_Handler;
 use Aws\CloudFront\CloudFrontClient;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Aws\Credentials;
@@ -183,7 +184,7 @@ function load_platform( $wp_debug_enabled ) {
 
 	if ( extension_loaded( 'afterburner' ) ) {
 		load_object_cache_afterburner();
-		disable_sessions();
+		load_wp_cache_session_handler();
 	} elseif ( $config['memcached'] ) {
 		load_object_cache_memcached();
 		disable_sessions();
@@ -451,6 +452,21 @@ function load_session_handler() {
 	$client = new Predis\Client( $wp_object_cache->build_client_parameters( $redis_server ), [ 'prefix' => 'sessions:' ] );
 	$handler = new Predis\Session\Handler( $client );
 
+	session_set_save_handler( $handler, true );
+	session_name( 'altis_session' );
+}
+
+/**
+ * Load the WP Cache session handler.
+ *
+ * @return void
+ */
+function load_wp_cache_session_handler() {
+	if ( headers_sent() ) {
+		return;
+	}
+
+	$handler = new WP_Cache_Session_Handler();
 	session_set_save_handler( $handler, true );
 	session_name( 'altis_session' );
 }
