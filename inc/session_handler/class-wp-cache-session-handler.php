@@ -15,7 +15,12 @@ use SessionHandlerInterface;
  * Uses the WordPress object cache to store and retrieve session data.
  */
 class WP_Cache_Session_Handler implements SessionHandlerInterface {
-	protected int $ttl;
+	/**
+	 * The TTL for Redis objects
+	 *
+	 * @var int
+	 */
+	protected $ttl;
 
 	/**
 	 * Initialize the session handler.
@@ -31,8 +36,8 @@ class WP_Cache_Session_Handler implements SessionHandlerInterface {
 	 * No-op in this session handler as there is nothing to
 	 * initialize, the object cache takes care of all that.
 	 *
-	 * @param string $path
-	 * @param string $name
+	 * @param string $path Session path
+	 * @param string $name Session name
 	 *
 	 * @return bool
 	 */
@@ -54,7 +59,7 @@ class WP_Cache_Session_Handler implements SessionHandlerInterface {
 	/**
 	 * Destroy a session.
 	 *
-	 * @param string $id
+	 * @param string $id Session id
 	 *
 	 * @return bool
 	 */
@@ -65,7 +70,7 @@ class WP_Cache_Session_Handler implements SessionHandlerInterface {
 	/**
 	 * Read session data.
 	 *
-	 * @param string $id
+	 * @param string $id Session id
 	 *
 	 * @return string|false
 	 */
@@ -81,8 +86,8 @@ class WP_Cache_Session_Handler implements SessionHandlerInterface {
 	/**
 	 * Write session data.
 	 *
-	 * @param string $id
-	 * @param string $data
+	 * @param string $id Session id
+	 * @param string $data Session data
 	 *
 	 * @return bool
 	 */
@@ -91,14 +96,16 @@ class WP_Cache_Session_Handler implements SessionHandlerInterface {
 	}
 
 	/**
-	 * Clean up old essions.
+	 * Clean up old sessions.
 	 *
 	 * No-op as session expiration is taken care of
 	 * in Redis with our set TTLs.
 	 *
+	 * @param int $max_lifetime Max lifetime of a session
+	 *
 	 * @return int|bool
 	 */
-	public function gc( int $maxlifetime ) : int | false {
+	public function gc( int $max_lifetime ) : int | false {
 		return 0;
 	}
 }
