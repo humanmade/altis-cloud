@@ -72,9 +72,9 @@ class WP_Cache_Session_Handler implements SessionHandlerInterface {
 	 *
 	 * @param string $id Session id
 	 *
-	 * @return string|false
+	 * @return string
 	 */
-	public function read( string $id ) : string | false {
+	public function read( string $id ) : string {
 		$data = wp_cache_get( $id, 'sessions' );
 		if ( ! $data ) {
 			return '';
@@ -103,9 +103,9 @@ class WP_Cache_Session_Handler implements SessionHandlerInterface {
 	 *
 	 * @param int $max_lifetime Max lifetime of a session
 	 *
-	 * @return int|bool
+	 * @return int
 	 */
-	public function gc( int $max_lifetime ) : int | false {
+	public function gc( int $max_lifetime ) : int {
 		return 0;
 	}
 }
