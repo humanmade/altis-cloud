@@ -425,12 +425,6 @@ function load_object_cache_redis() {
  * Configure Afterburner's Redis connection for the object cache.
  */
 function load_object_cache_afterburner() {
-	if ( defined( 'REDIS_AUTH' ) && defined( 'REDIS_HOST' ) && defined( 'REDIS_PORT' ) ) {
-		$secure = defined( 'REDIS_SECURE' ) ? REDIS_SECURE : true;
-		ini_set( 'afterburner.redis_server_info', sprintf( 'redis%s://:%s@%s:%d', $secure ? 's' : '', REDIS_AUTH, REDIS_HOST, REDIS_PORT ) );
-	} else {
-		trigger_error( 'REDIS constants not defined.', E_USER_ERROR );
-	}
 	require __DIR__ . '/alloptions_fix/namespace.php';
 	Alloptions_Fix\bootstrap();
 	// cache must be initted once it's included, else we'll get a fatal.
