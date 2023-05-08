@@ -191,6 +191,8 @@ function load_platform( $wp_debug_enabled ) {
 	} elseif ( $config['redis'] ) {
 		load_object_cache_redis();
 		load_session_handler();
+	} else {
+		disable_sessions();
 	}
 
 	if ( $config['ludicrousdb'] ) {
