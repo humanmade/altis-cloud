@@ -12,7 +12,7 @@ use WP_CLI;
 use WP_CLI_Command;
 
 /**
- * CLI COmmand to run Altis Healthchecks.
+ * CLI Command to run Altis Healthchecks.
  */
 class CLI_Command extends WP_CLI_Command {
 
