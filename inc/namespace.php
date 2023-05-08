@@ -193,6 +193,10 @@ function load_platform( $wp_debug_enabled ) {
 		load_session_handler();
 	}
 
+	if ( $config['ludicrousdb'] ) {
+		load_db();
+	}
+
 	if ( $config['cdn-media-purge'] ) {
 		load_cdn_media_purge();
 	}
