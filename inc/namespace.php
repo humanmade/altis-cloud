@@ -11,6 +11,7 @@ use Altis;
 use Altis\Cloud\Fluent_Bit;
 use Altis\Cloud\Fluent_Bit\MsgPackFormatter;
 use Altis\Cloud\Session_Handler\Disallowed_Session_Handler;
+use Altis\Cloud\Session_Handler\WP_Cache_Session_Handler;
 use Aws\CloudFront\CloudFrontClient;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Aws\Credentials;
@@ -181,14 +182,14 @@ function load_platform( $wp_debug_enabled ) {
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36';
 	}
 
-	if ( $config['memcached'] ) {
+	if ( extension_loaded( 'afterburner' ) ) {
+		load_object_cache_afterburner();
+		load_wp_cache_session_handler();
+	} elseif ( $config['memcached'] ) {
 		load_object_cache_memcached();
+		disable_sessions();
 	} elseif ( $config['redis'] ) {
 		load_object_cache_redis();
-	}
-
-	// Session support.
-	if ( $config['redis'] ) {
 		load_session_handler();
 	} else {
 		disable_sessions();
@@ -390,34 +391,6 @@ function log_elasticsearch_request_errors( $response, string $context, string $c
 }
 
 /**
- * Load the object cache.
- *
- * Check the object caching configuration and load either memcached
- * or redis as appropriate.
- *
- * @deprecated 1.0.1 Object caching setup moved to dedicated functions.
- */
-function load_object_cache() {
-	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		trigger_error(
-			sprintf(
-				'%1$s is deprecated since version %2$s! Use %3$s instead.',
-				__FUNCTION__,
-				'1.0.1',
-				'load_object_cache_*()'
-			)
-		);
-	}
-	$config = get_config();
-
-	if ( $config['memcached'] ) {
-		load_object_cache_memcached();
-	} elseif ( $config['redis'] ) {
-		load_object_cache_redis();
-	}
-}
-
-/**
  * Load the Memcached Object Cache dropin.
  */
 function load_object_cache_memcached() {
@@ -455,6 +428,16 @@ function load_object_cache_redis() {
 }
 
 /**
+ * Configure Afterburner's Redis connection for the object cache.
+ */
+function load_object_cache_afterburner() {
+	require __DIR__ . '/alloptions_fix/namespace.php';
+	Alloptions_Fix\bootstrap();
+	// cache must be initted once it's included, else we'll get a fatal.
+	wp_cache_init();
+}
+
+/**
  * Load Redis session handler.
  *
  * @return void
@@ -469,6 +452,21 @@ function load_session_handler() {
 	$client = new Predis\Client( $wp_object_cache->build_client_parameters( $redis_server ), [ 'prefix' => 'sessions:' ] );
 	$handler = new Predis\Session\Handler( $client );
 
+	session_set_save_handler( $handler, true );
+	session_name( 'altis_session' );
+}
+
+/**
+ * Load the WP Cache session handler.
+ *
+ * @return void
+ */
+function load_wp_cache_session_handler() {
+	if ( headers_sent() ) {
+		return;
+	}
+
+	$handler = new WP_Cache_Session_Handler();
 	session_set_save_handler( $handler, true );
 	session_name( 'altis_session' );
 }
