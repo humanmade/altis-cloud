@@ -71,7 +71,7 @@ Traffic is routed to containers through a load balancer. This load balancer ensu
 
 Web containers automatically collect application performance monitoring (APM) data, which is available through the Altis Dashboard.
 
-The application containers can use our [Afterburner Cache](./afterburner-cache.md) which improves object cache
+The application containers use our [Afterburner Cache](./afterburner.md) which improves object cache
 performance.
 
 ## Database servers

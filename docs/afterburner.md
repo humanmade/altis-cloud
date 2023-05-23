@@ -1,4 +1,8 @@
-# Afterburner Cache
+# Afterburner
+
+Altis Afterburner is our PHP extension designed specifically to turbocharge your WordPress performance on Altis Cloud.
+
+## Afterburner Cache
 
 Afterburner cache is our object cache drop-in that replaces the existing PHP extension with a high-performing
 alternative to turbocharge your WordPress performance.
