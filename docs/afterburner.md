@@ -18,8 +18,3 @@ maintain the correct state efficiently.
 
 Should the Redis server disconnect or be unavailable for a period, the local cache will be cleared to prevent
 data race conditions.
-
-## Installation
-
-To enable Afterburner, contact [Altis Cloud Support](https://dashboard.altis-dxp.com/#/support) and ask for it to be
-enabled for your instance.
