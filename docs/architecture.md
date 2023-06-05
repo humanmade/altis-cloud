@@ -62,12 +62,17 @@ Three types of application containers are run within your environment:
 
 * **Cavalcade containers** handle [running scheduled and background tasks](./scheduled-tasks.md). These automatically scale based on the number of pending tasks, allowing huge numbers of tasks to be run simultaneously.
 
-Containers are treated as "throwaway" instances, which contain a copy of your codebase and Altis modules. No data is stored in application containers, allowing problematic containers to be removed and replaced at any time. Containers can also be added or removed dynamically, handling load during high traffic events (known as "horizontal scaling").
+Containers are treated as "throwaway" instances, which contain a copy of your codebase and Altis modules. No permanent
+data is stored in application containers, allowing problematic containers to be removed and replaced at any time.
+Containers can also be added or removed dynamically, handling load during high traffic events (known as "horizontal
+scaling").
 
 Traffic is routed to containers through a load balancer. This load balancer ensures traffic is distributed across containers evenly, and ensures that containers being added or removed are seamlessly added to the pool. The load balancer also acts as the firewall and ingress point to your environment, with strict security controls at the network and application layers.
 
 Web containers automatically collect application performance monitoring (APM) data, which is available through the Altis Dashboard.
 
+The application containers use our [Afterburner Cache](./afterburner.md) which improves object cache
+performance.
 
 ## Database servers
 
