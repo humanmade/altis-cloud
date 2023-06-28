@@ -197,11 +197,11 @@ function run_mysql_healthcheck() {
 function run_object_cache_healthcheck() {
 	global $wp_object_cache, $wpdb;
 
-	if ( method_exists( $wp_object_cache, 'getStats' ) && ! empty( $wp_object_cache->getStats() ) ) {
+	if ( ! empty( $wp_object_cache ) && method_exists( $wp_object_cache, 'getStats' ) && ! empty( $wp_object_cache->getStats() ) ) {
 		return new WP_Error( 'memcached-no-stats', 'Unable to get memcached stats.' );
 	}
 
-	if ( method_exists( $wp_object_cache, 'stats' ) ) {
+	if ( ! empty( $wp_object_cache ) && method_exists( $wp_object_cache, 'stats' ) ) {
 		ob_start();
 		$result = (string) $wp_object_cache->stats();
 		$result .= ob_get_clean();
