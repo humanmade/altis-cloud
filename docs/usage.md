@@ -58,6 +58,8 @@ If you’re on an annual billing plan, you may use up to 40% of your annual usag
 Additional overage is charged on a per-million basis above and beyond your included usage. For sustained levels of high traffic, contact your Account Manager to upgrade your plan.
 
 If you sustain high overage across a long period, your Account Manager may reach out to discuss upgrading your plan.
+
+
 ## What if I receive traffic spikes?
 
 Altis environments are designed to automatically scale to meet traffic demands, and can generally handle large levels of traffic without problem. Automatic scaling measures your traffic across a five minute window, automatically provisioning new servers and increasing resources to ensure a good experience for your users.
