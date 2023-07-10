@@ -40,6 +40,8 @@ Page Views are only collected as an aggregate count and do not contain any perso
 ## How much usage do I need?
 
 Altis will work with you to understand your unique needs, including looking at your historical usage and estimated traffic patterns, to right-size your environment for your requirements.
+
+
 ## What timeframe is used for page views?
 
 Page views statistics are collected in near-realtime from the CloudFront CDN, and aggregated into monthly statistics. Your subscription includes usage either on a monthly or yearly basis.
