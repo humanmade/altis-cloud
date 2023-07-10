@@ -1,4 +1,4 @@
-# Usage Limits
+# Usage
 
 Each Altis environment is tailored to fit your usage, giving your customers a great experience while ensuring you only pay for what you need. Altis measures your traffic usage based on pages served to your users.
 
