@@ -5,6 +5,8 @@ Each Altis environment is tailored to fit your usage, giving your customers a gr
 Altis environments are designed to scale to meet demand dynamically within minutes, and usage is only monitored on a monthly basis.
 
 Your usage is available within the Altis Dashboard, and is updated throughout the day.
+
+
 ## How traffic is measured
 
 Altis measures your usage based on requests made to the WordPress-based content management system measured as **Page Views**.
