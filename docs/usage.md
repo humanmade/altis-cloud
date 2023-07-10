@@ -10,6 +10,8 @@ Your usage is available within the Altis Dashboard, and is updated throughout th
 ## How traffic is measured
 
 Altis measures your usage based on requests made to the WordPress-based content management system measured as **Page Views**.
+
+
 ## What is a page view?
 
 Page Views are any requests made to your WordPress-based content management system which invoke your application.
