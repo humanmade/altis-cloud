@@ -69,6 +69,8 @@ Automatic scaling does not operate instantly and for large, instantaneous increa
 For applications with highly variable demand exceeding 10x or 100x typical traffic, such as blogs with high-traffic announcement posts, you can use the Traffic Burst feature of Altis. Traffic Burst prepares your site ahead of expected demand by pre-warming servers to reduce slowness during the scaling period, keeping a consistent user experience even as traffic increases. Contact your Account Manager for more information about Traffic Burst.
 
 Usage during traffic spikes are counted as normal towards your usage, and do not incur any additional cost.
+
+
 ## What if my usage varies over a year?
 
 As your environment is flexible to respond to changes in usage, flexible options for usage are available for customers with dynamic usage or seasonality. Contact your Account Manager to discuss flexible plans.
