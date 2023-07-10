@@ -47,6 +47,8 @@ Altis will work with you to understand your unique needs, including looking at y
 Page views statistics are collected in near-realtime from the CloudFront CDN, and aggregated into monthly statistics. Your subscription includes usage either on a monthly or yearly basis.
 
 You can view estimated page views for the current month-to-date and previous months within the Altis Dashboard. The final page view numbers are available within the monthly reports.
+
+
 ## What happens if I use more than my included usage?
 
 Included usage is based upon your typical traffic, ensuring you only pay for what you need.
