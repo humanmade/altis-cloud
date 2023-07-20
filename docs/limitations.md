@@ -32,7 +32,7 @@ Direct access to PHP files is not allowed on Altis, outside of `/wp-admin/*`. Fo
 
 ## Execution Time Limit
 
-All web requests are subject to a 60 second maximum execution. Anything that requires more time than this should be offloaded to a background cron task using `wp_schedule_single_event()` or similar.
+All web requests are subject to a 60-second maximum execution. Anything that requires more time than this should be offloaded to a background cron task using `wp_schedule_single_event()` or similar. See [Scheduled tasks](./scheduled-tasks.md) for more information.
 
 ## No Custom PHP Modules
 

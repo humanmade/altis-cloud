@@ -2,12 +2,13 @@
 
 WordPress provides an API for running scheduled tasks that are typically only triggered by uncached user visits to any page of the site, which can be quite unreliable. Additionally this built in cron job system does not scale well on a multi-server architecture such as that provided by Altis.
 
-Altis provides a service called Cavalcade to solve this problem by using a system process to trigger tasks. This has the added benefits of separating background task processing from the web server processes and supporting long running tasks, up to 1 hour. See the [infrastructure limitations guide](./limitations.md) for further details.
+Altis provides a service called Cavalcade to solve this problem by using a system process to trigger tasks. This has the added benefits of separating background task processing from the web server processes and supporting long-running tasks, up to 1 hour.
 
 Cavalcade is also used on the Local Server and Local Chassis environments to replicate the behaviour of cloud.
 
-The integration with WordPress is seamless, so existing WordPress themes, plugins and other 3rd party code that uses sheduled tasks will be compatible.
+The integration with WordPress is seamless, so existing WordPress themes, plugins and other 3rd party code that uses scheduled tasks will be compatible.
 
+Bear in mind, Altis runs on a read-only file system, and stores the uploads directory remotely. See the [infrastructure limitations guide](./limitations.md) for further details.
 
 ## Creating Scheduled Tasks
 
