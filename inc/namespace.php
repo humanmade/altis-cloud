@@ -1043,7 +1043,7 @@ function set_wp_debug_constants() : void {
 
 /**
  * Returns true when environment is running in the cloud. Returns false in all
- * other conditions, such as local-server or local-chassis.
+ * other conditions, such as local-server.
  *
  * @return bool
  */
