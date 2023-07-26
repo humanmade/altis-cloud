@@ -4,7 +4,7 @@ WordPress provides an API for running scheduled tasks that are typically only tr
 
 Altis provides a service called Cavalcade to solve this problem by using a system process to trigger tasks. This has the added benefits of separating background task processing from the web server processes and supporting long running tasks, up to 1 hour. See the [infrastructure limitations guide](./limitations.md) for further details.
 
-Cavalcade is also used on the Local Server and Local Chassis environments to replicate the behaviour of cloud.
+Cavalcade is also used on the Local Server environment to replicate the behaviour of cloud.
 
 The integration with WordPress is seamless, so existing WordPress themes, plugins and other 3rd party code that uses sheduled tasks will be compatible.
 
