@@ -7,8 +7,8 @@ order: 100
 
 The following versions are available, and the specific version in use will depend on your configuration.
 
-- PHP Version: 7.4, 8.0, 8.1
-- MySQL Version: 5.6, 5.7 (compatible; using AWS Aurora)
+- PHP Version: 7.4, 8.0, 8.1, 8.2  see [Altis compatibility chart](docs://guides/updating-php/#altis-compatibility-chart)
+- MySQL Version: 5.7 (compatible; using AWS Aurora)
 
 ## PHP Modules
 
