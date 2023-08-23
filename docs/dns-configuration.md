@@ -4,7 +4,7 @@ Every Altis environment can have many domains configured, allowing seamless use 
 
 You can view your domain settings within the Altis Dashboard: select your environment's Settings page, then select the Domains setting. You'll be able to view all your existing domains here, as well as add new domains.
 
-![](assets/domain-list.png)
+![](./assets/domain-list.png)
 
 
 ## Adding a domain
@@ -31,11 +31,11 @@ To start with the registration process, select the "Add new domain…" button.
 
 Enter your base domain, excluding any `www.` or wildcards.
 
-![](assets/domain-entry.png)
+![](./assets/domain-entry.png)
 
 The next screen allows you to select which variants of the domain you want to add: either just this domain, with the `www.` subdomain, or with a wildcard subdomain. We recommend selecting a wildcard subdomain to enable the full suite of multisite capabilities for your domain, as this will avoid needing further manual steps when adding new subdomain sites in the future.
 
-![](assets/domain-select.png)
+![](./assets/domain-select.png)
 
 Once you've selected the domains you wish to add, select "Add domain" to register the domain with the CDN.
 
@@ -48,7 +48,7 @@ Altis automatically issues SSL certificates and configures the CDN to serve thes
 
 Once you register the domain in the Altis Dashboard, you'll receive DNS records for verification in the form of CNAMEs. These records are provided by AWS, and reference `acm-validations.aws`.
 
-![](assets/domain-verification.png)
+![](./assets/domain-verification.png)
 
 You can visit the Domains settings page at any time to view these records again if needed.
 
@@ -65,7 +65,7 @@ The final step is to route your custom domain to your Altis environment. This is
 
 The value for your CNAME record will be displayed on the Domains settings page, as well as your verification records. (Make sure you don't delete the verification records, as they're needed for certificate renewal.)
 
-![](assets/domain-switch.png)
+![](./assets/domain-switch.png)
 
 After these DNS changes are put into place, your site will be served by Altis; this is called the "switch-over", as your site will "switch" from any existing host to Altis.
 
