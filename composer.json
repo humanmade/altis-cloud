@@ -29,7 +29,7 @@
 	},
 	"require": {
 		"php": ">=7.1",
-		"humanmade/wp-redis-predis-client": "0.1.0",
+		"humanmade/wp-redis-predis-client": "0.1.1",
 		"humanmade/aws-xray": "~1.3.4",
 		"humanmade/s3-uploads": "^3.0.7",
 		"humanmade/cavalcade": "^2.0.2",
