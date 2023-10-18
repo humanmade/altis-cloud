@@ -27,4 +27,4 @@ cache will be cleared to prevent data race conditions.
 ## Activation
 
 To activate Afterburner on your environment, 
-[create a support ticket](support://new) with the request.
+[create a support ticket](support://new) with the request. It requires Altis 16.0.4+ to work as expected.
