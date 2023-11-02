@@ -145,6 +145,11 @@ function bootstrap() {
 	if ( is_cloud() ) {
 		define( 'DISALLOW_FILE_MODS', true );
 	}
+
+	if ( extension_loaded( 'afterburner' ) ) {
+		require_once __DIR__ . '/afterburner/namespace.php';
+		Afterburner\bootstrap();
+	}
 }
 
 /**
