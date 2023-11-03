@@ -71,7 +71,7 @@ class QM_Output_Html extends \QM_Output_Html {
 			</tr>
 			<tr>
 			<td><?php echo esc_html__( 'All stats for this PHP worker', 'altis' ); ?></td>
-				<td><pre><?php echo esc_html( print_r( $stats ) ) ?></pre></td>
+				<td><pre><?php echo esc_html( print_r( $stats, true ) ) ?></pre></td>
 		</tbody>
 
 		<?php
