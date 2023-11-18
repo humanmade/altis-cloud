@@ -177,12 +177,16 @@ function cloudwatch_client() : CloudWatchClient {
  * @return CloudWatchLogsClient
  */
 function cloudwatch_logs_client() : CloudWatchLogsClient {
-	return Altis\get_aws_sdk()->createCloudWatchLogs( [
-		'version'     => '2014-03-28',
-		'http'        => [
-			'synchronous' => true,
-		],
-	] );
+	static $client;
+	if ( ! $client ) {
+		$client = Altis\get_aws_sdk()->createCloudWatchLogs( [
+			'version'     => '2014-03-28',
+			'http'        => [
+				'synchronous' => true,
+			],
+		] );
+	}
+	return $client;
 }
 
 /**
