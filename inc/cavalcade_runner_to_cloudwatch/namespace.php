@@ -158,12 +158,17 @@ function put_metric_data( $metric_name, $value, $dimensions = [], $unit = 'None'
  * @return CloudWatchClient
  */
 function cloudwatch_client() : CloudWatchClient {
-	return Altis\get_aws_sdk()->createCloudWatch( [
-		'version'     => '2010-08-01',
-		'http'        => [
-			'synchronous' => false,
-		],
-	] );
+	static $client;
+	if ( ! $client ) {
+		$client = Altis\get_aws_sdk()->createCloudWatch( [
+			'version'     => '2010-08-01',
+			'http'        => [
+				'synchronous' => false,
+			],
+		] );
+	}
+
+	return $client;
 }
 
 /**
