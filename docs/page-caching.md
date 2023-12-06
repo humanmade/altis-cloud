@@ -76,7 +76,9 @@ Non-cacheable requests (such as logged-in users) can safely use these headers.
 
 ## Customizations
 
-The page cache can be customised via your `composer.json`. The example below shows the default configuration:
+The Batcache page cache can be customised via your `composer.json` configuration.
+
+The default configuration is:
 
 ```json
 {
@@ -114,6 +116,8 @@ The page cache can be customised via your `composer.json`. The example below sho
 Some query string parameters have no effect on the content or output of the page. You can improve your cache hit rate by adding these parameters to the ignore list, which will instruct Batcache to treat the different URLs as equivalent.
 
 The page cache will filter these parameters out when generating the cache key as specified in the [Cache Key Calculation](#cache-key-calculation) section above, and will cause the cache key to be shared across more pages, improving your cache hit rate.
+
+**Note:** Overriding this configuration option will completely replace the configuration, so if you want to retain any of the default parameters, ensure you repeat them in your custom configuration.
 
 
 ### Headers
