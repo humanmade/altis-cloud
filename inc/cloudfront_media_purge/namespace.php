@@ -32,7 +32,7 @@ function purge_media_file_cache( int $media_id ) {
 	$upload_path_info = pathinfo( $upload_path );
 	$items            = [];
 	// Make sure the image filename is URL encoded, else CloudFront will not be able to purge it.
-	$items[]          = $upload_path_info['dirname'] . '/' . urlencode( $upload_path_info['filename'] ) . '*';
+	$items[] = $upload_path_info['dirname'] . '/' . urlencode( $upload_path_info['filename'] ) . '*';
 	if ( function_exists( 'tachyon_url' ) ) {
 		$tachyon_url       = tachyon_url( $upload_url );
 		$tachyon_path      = wp_parse_url( $tachyon_url, PHP_URL_PATH );
