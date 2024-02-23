@@ -6,7 +6,7 @@ You have access to several types of logging from sites on Altis have following l
 - Nginx Error log (two week retention)
 - WordPress Cron task logs (via Cavalcade, indefinite retention) 
 - Email logs (one month retention)
-- Access logs (via a custom REST API endpoint, indefinitely retention)
+- Access logs (via a custom REST API endpoint, indefinite retention)
 
 The logs can be viewed via [Altis Dashboard](./README.md) under a site's Logs tab.
 
