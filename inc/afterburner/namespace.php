@@ -1,7 +1,13 @@
 <?php
+/**
+ * Altis Afterburner namespace bootstrap file.
+ */
 
 namespace Altis\Cloud\Afterburner;
 
+/**
+ * Bootstrap function.
+ */
 function bootstrap() : void {
 	add_filter( 'qm/outputter/html', __NAMESPACE__ . '\\register_qm_output_html' );
 }
@@ -9,7 +15,7 @@ function bootstrap() : void {
 /**
  * Register the HTML outputter for the Xray panel
  *
- * @param array $output
+ * @param array $output The HTML output for the collector
  * @return array
  */
 function register_qm_output_html( array $output ) : array {
