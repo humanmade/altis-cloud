@@ -19,6 +19,8 @@ class QM_Output_Html extends \QM_Output_Html {
 
 	/**
 	 * Altis Config QM Panel Constructor.
+	 *
+	 * @param QM_Collector $collector Collector object.
 	 */
 	public function __construct( QM_Collector $collector ) {
 		parent::__construct( $collector );
@@ -71,7 +73,7 @@ class QM_Output_Html extends \QM_Output_Html {
 			</tr>
 			<tr>
 			<td><?php echo esc_html__( 'All stats for this PHP worker', 'altis' ); ?></td>
-				<td><pre><?php echo esc_html( print_r( $stats, true ) ) ?></pre></td>
+				<td><pre><?php echo esc_html( print_r( $stats, true ) ) // phpcs:ignore ?></pre></td>
 		</tbody>
 
 		<?php
