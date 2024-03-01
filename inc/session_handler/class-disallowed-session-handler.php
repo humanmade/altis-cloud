@@ -29,7 +29,10 @@ class Disallowed_Session_Handler implements \SessionHandlerInterface {
 		trigger_error( 'PHP Sessions requires Redis integration, which is currently not activated.', E_USER_WARNING );
 		return false;
 	}
-	function read( string $id ) : string | false {
+	/**
+	 * @return string|false
+	 */
+	function read( string $id ) {
 		trigger_error( 'PHP Sessions requires Redis integration, which is currently not activated.', E_USER_WARNING );
 		return false;
 	}
