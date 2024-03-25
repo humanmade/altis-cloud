@@ -584,6 +584,12 @@ function load_plugins() {
 		define( 'TACHYON_URL', get_main_site_url( '/tachyon' ) );
 	}
 
+	// Set the Tachyon Server version if it's not already defined. This is used to flag to Tachyon that we
+	// have a version of Tachyon that supports the newer "presign" query parameter.
+	if ( defined( 'TFA_VERSION' ) && version_compare( TFA_VERSION, '4.6.0', '>=' ) && ! defined( 'TACHYON_SERVER_VERSION' ) ) {
+		define( 'TACHYON_SERVER_VERSION', '3.0.0' );
+	}
+
 	if ( $config['s3-uploads'] ) {
 		add_filter( 'upload_dir', __NAMESPACE__ . '\\set_s3_uploads_bucket_url_hostname', 20 );
 		require_once Altis\ROOT_DIR . '/vendor/humanmade/s3-uploads/s3-uploads.php';
