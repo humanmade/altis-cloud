@@ -192,7 +192,7 @@ function load_platform( $wp_debug_enabled ) {
 		load_wp_cache_session_handler();
 		add_filter(
 			'translation_file_format',
-			static function ( string $preferred_format , string $domain ) : string {
+			static function ( string $preferred_format, string $domain ) : string {
 				return 'mo';
 			},
 			10,
