@@ -76,3 +76,4 @@ function pre_load_textdomain( $load, $domain, $mofile, $locale ) {
 	$wp_textdomain_registry->set( $domain, $locale, dirname( $mofile ) );
 	return true;
 }
+
