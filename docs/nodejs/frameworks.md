@@ -4,6 +4,8 @@ Node.js on Altis Cloud only officially supports the [Next.js framework](https://
 
 We're constantly evaluating additional frameworks to add support for - if you have any
 suggestions, [let us know via the roadmap](https://dashboard.altis-dxp.com/roadmap). You can additionally run
+[other frameworks](#other-frameworks) via a compatible `npm start` command, but please note this is not
+officially supported.
 
 ## Next.js
 
