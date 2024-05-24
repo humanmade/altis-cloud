@@ -40,7 +40,7 @@ For example, if you have a private repository at `composer.example.com` which ta
 
    This must be set *before* your `composer install` command.
 
-3. (Optional) Clean up the `auth.json` file after installation. This must be set *after* your `composer install` command.
+3. (Optional) Clean up the `auth.json` file after installation (`rm auth.json`). This must be run *after* your `composer install` command.
 
 **Note:** `composer config` writes configuration items to the `auth.json` file in your working directory. This directory is persisted across builds as part of the build cache, so for security, you may wish to delete this file.
 
@@ -105,7 +105,7 @@ As Altis already provisions keys onto the build server, you will need to add a s
 
 2. Add this private key as a [build secret](../variables-secrets.md)
 
-   If your key is longer than 4096 characters, you will not be able to store it in a build secret. Instead, you can store a shorter secret and use this to encrypt your key, then commit this file to your repository - `.config` is a convenient place to put this file.
+   **Note:** If your key is longer than 4096 characters, you will not be able to store it in a build secret. Instead, you can store a shorter secret and use this to encrypt your key, then commit this file to your repository - `.config` is a convenient place to put this file.
 
 3. Configure the Git host to provide access to your private dependencies using this key; these instructions depend on your Git host.
 
