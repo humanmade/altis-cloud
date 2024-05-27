@@ -30,11 +30,13 @@ Altis provides a convenient API to get these values, and you should use this API
 /**
  * Get the value of a variable or secret.
  *
+ * This includes both secrets and non-secret variables.
+ *
  * @param string $name Name of the variable or secret. Must match the name in the Altis Dashboard exactly.
  * @param mixed $default Default value to return if not set (such as in local environments).
- * @return string|mixed Value as a string if set, default value otherwise.
+ * @return string|null Value as a string if set, null otherwise.
  */
-Altis\get_variable( string $name, mixed $default = null ) : mixed;
+Altis\get_variable( string $name ) : ?string;
 ```
 
 **Note:** The current implementation uses environment variables, but this is not considered a stable API, and may change. Use the provided PHP API to ensure future compatibility.
