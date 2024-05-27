@@ -35,7 +35,7 @@ For example, if you have a private repository at `composer.example.com` which ta
 2. In your build script, set the Composer authentication key for this domain. For example, if you set your build secret with the name `EXAMPLE_AUTH`:
 
    ```
-   composer config bearer.composer.example.com "$EXAMPLE_AUTH"
+   composer config bearer.composer.example.com "$SECRET_EXAMPLE_AUTH"
    ```
 
    This must be set *before* your `composer install` command.
@@ -68,7 +68,7 @@ To use this:
 2. In your build script, tell Composer to use this secret by setting `COMPOSER_AUTH`. For example, if you set your build secret with the name `EXAMPLE_AUTH`:
 
    ```
-   export COMPOSER_AUTH="$EXAMPLE_AUTH"
+   export COMPOSER_AUTH="$SECRET_EXAMPLE_AUTH"
    ```
 
    This must be set before your `composer install` command.
