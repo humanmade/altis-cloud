@@ -14,6 +14,9 @@ namespace Altis\Cloud\Performance_Optimizations;
  */
 function bootstrap() {
 	increase_set_time_limit_on_async_upload();
+
+	// Avoid DB requests to Cavalcade on the front end.
+	add_filter( 'pre_get_scheduled_event', __NAMESPACE__ . '\\schedule_events_in_admin', 1, 2 );
 }
 
 /**
@@ -41,4 +44,34 @@ function increase_set_time_limit_on_async_upload() {
 		return;
 	}
 	set_time_limit( 120 );
+}
+
+/**
+ * Only schedule known events in the admin to avoid extra db requests on front end.
+ *
+ * @param null|false|object $pre Value to return instead. Default null to continue retrieving the event.
+ * @param string $hook Action hook of the event.
+ * @return null|false|object Value to return instead. Default null to continue retrieving the event.
+ */
+function schedule_events_in_admin( $pre, string $hook ) {
+	$admin_only_hooks = [
+		'wp_site_health_scheduled_check',
+		'wp_privacy_delete_old_export_files',
+		'wp_https_detection',
+	];
+
+	/**
+	 * Filter the scheduled event hooks to only fire in the admin context. This
+	 * is useful for avoiding database lookups on front end requests that are not
+	 * needed.
+	 *
+	 * @param array $backend_only_hooks The hook names to only run in the admin context.
+	 */
+	$admin_only_hooks = apply_filters( 'altis.cloud.admin_only_events', $admin_only_hooks );
+
+	if ( ! in_array( $hook, $admin_only_hooks, true ) || is_admin() ) {
+		return $pre;
+	}
+
+	return true;
 }
