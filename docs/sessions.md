@@ -1,18 +1,19 @@
 # Sessions
 
-Altis includes support for PHP sessions using Redis as the storage backend. In order to activate PHP sessions support you need to have Redis activated as well, eg:
+Altis includes support for PHP sessions using Redis as the storage backend. In order to activate PHP sessions support you need to
+have Redis activated as well, e.g.:
 
 ```json
 {
-	"extra": {
-		"altis": {
-			"modules": {
-				"cloud": {
-					"redis": true
-				}
-			}
-		}
-	}
+    "extra": {
+        "altis": {
+            "modules": {
+                "cloud": {
+                    "redis": true
+                }
+            }
+        }
+    }
 }
 ```
 

@@ -11,7 +11,7 @@ any plan. Contact your account manager for more information about pricing.
 Node.js hosting integrates directly into your existing Altis Cloud environment.
 
 Alongside your regular application containers (running WordPress), we run a second set of containers just for Node.js.
-These benefit from the same autoscaling architecture as your application servers, the Altis CDN, and WAF.
+These benefit from the same auto-scaling architecture as your application servers, the Altis CDN, and WAF.
 
 ![Node.js architecture diagram](../assets/architecture-node.png)
 
@@ -19,8 +19,8 @@ Just like your application cluster, each environment gets its own Node.js cluste
 and staging environments just like your production environment, without needing complex application-level logic within
 your Node.js application to switch between different backends.
 
-Your Node.js containers run alongside your application (WordPress + PHP) containers and independently autoscale to meet
-the traffic demand. Altis routes traffic to either your application or Node.js containers depending on the hostnames
+Your Node.js containers run alongside your application (WordPress + PHP) containers and independently auto-scale to meet
+the traffic demand. Altis routes traffic to either your application or Node.js containers depending on the host names
 attached to each.
 
 Since the Node.js containers live with your application, they also sit behind the Altis [CDN](../cdn/README.md)
