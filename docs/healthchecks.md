@@ -1,21 +1,23 @@
-# Healthchecks
+# Health checks
 
-Altis uses healthchecks to determine whether servers are healthy or need replacing, and whether minimum requirements such as PHP being available are met before applications are deployed.
+Altis uses health checks to determine whether servers are healthy or need replacing, and whether minimum requirements such as PHP
+being available are met before applications are deployed.
 
-**Note:** Any changes to the healthcheck configuration are considered to void your warranty, except as directed by the Altis team. Adjusting any configuration may cause catastrophic errors in your environments.
-
+**Note:** Any changes to the health check configuration are considered to void your warranty, except as directed by the Altis team.
+Adjusting any configuration may cause catastrophic errors in your environments.
 
 ## API
 
-There are 2 healthcheck endpoints. If any healthcheck fails the response code will be `500`, otherwise it will be `200`.
+There are 2 health check endpoints. If any health check fails the response code will be `500`, otherwise it will be `200`.
 
 **`/__instance_healthcheck`**
 
-Used during deployments to ensure containers meet the minimum requirements for running an application. By default this checks that PHP is available.
+Used during deployments to ensure containers meet the minimum requirements for running an application. By default this checks that
+PHP is available.
 
 **`/__healthcheck`**
 
-Used for application level healthchecks. By default these are:
+Used for application level health checks. By default these are:
 
 - PHP is running
 - Database is available
@@ -27,31 +29,34 @@ Used for application level healthchecks. By default these are:
 
 ### Response Format
 
-By default each healthcheck URL will show some HTML output detailing the checks and their status. To get the data in JSON format use one of the following options:
+By default each health check URL will show some HTML output detailing the checks and their status. To get the data in JSON format
+use one of the following options:
 
 - Send an `Accept` header in the request with the value `application/json`
 - Append the query string `?_accept=json`
 
 ### CLI Command
 
-A CLI command is also available for the application healthcheck:
+A CLI command is also available for the application health check:
 
-```
+```shell
 wp healthcheck run [--format=json]
 ```
 
+## Extending Health checks
 
-## Extending Healthchecks
-
-Custom healthchecks can be added to the default list using filters. The healthchecks are a keyed array of checks with the value being the result. Any non `true` value counts as a failed healthcheck. Typically an error message should be provided as the alternative value to `true`, however `false` will also work.
+Custom health checks can be added to the default list using filters. The health checks are a keyed array of checks with the value
+being the result. Any non `true` value counts as a failed health check. Typically an error message should be provided as the
+alternative value to `true`, however `false` will also work.
 
 **`altis_instance_healthchecks : array`**
 
-Filters the instance healthchecks. These run very early before WordPress has loaded so only core PHP functions and autoloaded code installed via Composer is available.
+Filters the instance health checks. These run early, before WordPress has loaded, so only core PHP functions and auto-loaded code
+installed via Composer is available.
 
 **`altis_healthchecks : array`**
 
-Filters the application level healthchecks. These are run after WordPress and all plugins have loaded. For example:
+Filters the application level health checks. These are run after WordPress and all plugins have loaded. For example:
 
 ```php
 add_filter( 'altis_healthchecks', function ( $checks ) {
@@ -61,12 +66,11 @@ add_filter( 'altis_healthchecks', function ( $checks ) {
 } );
 ```
 
-
 ## Configuration
 
-Healthcheck behaviour is generally not user configurable, and is handled automatically for you by the Cloud module.
+Health check behaviour is generally not user configurable, and is handled automatically for you by the Cloud module.
 
-To disable the healthchecks, set `modules.cloud.healthcheck` to false:
+To disable the health checks, set `modules.cloud.healthcheck` to false:
 
 ```json
 {

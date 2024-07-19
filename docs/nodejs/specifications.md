@@ -21,7 +21,7 @@ The following versions are available, and the specific version in use will depen
 **Note:** The operating system environment is not part of the stable API, and is subject to change. We strongly
 recommend against using Node add-ons (native dependencies) built with node-gyp.
 
-### Environment Variables
+### Runtime Environment Variables
 
 The following variables are available in the runtime environment:
 
@@ -33,9 +33,9 @@ The following variables are available in the runtime environment:
 ## Build Environment
 
 Your application builds within a Docker container, which is specifically designed for the build process and includes
-build tools such as Composer and npm.
+build tools such as `composer` and `npm`.
 
-### Environment Variables
+### Build Environment Variables
 
 The following variables are available in the build environment:
 
@@ -59,7 +59,7 @@ The following limitations apply to your build process:
 - Unlike your WordPress-based application, Node.js on Altis Cloud currently only supports automatic build and
   deployment.
 
-### Runtime Environment
+### Runtime Environment Limitations
 
 The following limitations apply to your runtime environment:
 

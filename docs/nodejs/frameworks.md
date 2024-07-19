@@ -14,22 +14,22 @@ Altis natively supports the [Next.js framework](https://nextjs.org/) with out-of
 We recommend starting with the [Altis Node.js Skeleton project](https://github.com/humanmade/altis-nodejs-skeleton),
 which includes all the pieces you'll need to get started with Next.js.
 
-### Link Prefetching
+### Link Pre-fetching
 
-We recommend disabling [link prefetching](https://nextjs.org/docs/app/api-reference/components/link#prefetch) for less
+We recommend disabling [link pre-fetching](https://nextjs.org/docs/app/api-reference/components/link#prefetch) for less
 frequently used links in Next.js.
 
 ```jsx
 <Link
-	href="/blog"
-	prefetch={ false }
+    href="/blog"
+    prefetch={ false }
 >
-	Latest News
+    Latest News
 </Link>
 ```
 
-Link prefetching causes unnecessary network requests for many users, and each prefetch request will count towards your
-billable page views. Consider carefully whether prefetching is necessary for the user experience, and enable it only on
+Link pre-fetching causes unnecessary network requests for many users, and each pre-fetch request will count towards your
+billable page views. Consider carefully whether pre-fetching is necessary for the user experience, and enable it only on
 a case-by-case basis rather than as your default.
 
 ## Other Frameworks
