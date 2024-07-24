@@ -53,7 +53,7 @@ Email logs are [available within the Altis Dashboard](./dashboard/logs.md) conta
 
 ## Acceptable Usage
 
-Maximum attachment size is 10mb.
+The maximum attachment size is 10MB.
 
 Altis can send transactional email (e.g. signup requests, ecommerce receipts, automated alerts) or marketing email (e.g. newsletters). Altis email systems can handle large volumes of email as necessary, and prior authorisation is not necessary for these uses.
 
