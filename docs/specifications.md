@@ -12,6 +12,7 @@ The following versions are available, and the specific version in use will depen
 
 ## PHP Modules
 
+<!-- vale Vale.Spelling = NO -->
 - apcu
 - calendar
 - Core
@@ -19,7 +20,7 @@ The following versions are available, and the specific version in use will depen
 - curl
 - date
 - dom
-- excimer
+- Excimer
 - exif
 - fileinfo
 - filter
@@ -71,9 +72,10 @@ The following versions are available, and the specific version in use will depen
 - Zend OPcache
 - zip
 - zlib
+<!-- vale Vale.Spelling = YES -->
 
-# Limitations
+## Limitations
 
 - Maximum upload size: 1GB (1GB for media upload endpoints, and 50MB for all other requests)
-- php execution timeout: 60s
+- PHP execution timeout: 60s
 - Cron task execution timeout: 1 hour
