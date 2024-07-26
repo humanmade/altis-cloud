@@ -61,6 +61,8 @@ Altis can send transactional email (e.g. sign-up requests, ecommerce receipts, a
 newsletters). Altis email systems can handle large volumes of email as necessary, and prior authorisation is not necessary for these
 uses.
 
+The maximum attachment size is 10MB.
+
 Sending unsolicited email (spam) is not permitted and may lead to account termination.
 
 Email delivery and bounce rates are your responsibility. The Altis team monitors your bounce rate and may require changes to
