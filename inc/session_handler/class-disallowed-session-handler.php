@@ -17,7 +17,7 @@ namespace Altis\Cloud\Session_Handler;
  * Disables creation of sessions via short-circuiting session_open() calls.
  */
 class Disallowed_Session_Handler implements \SessionHandlerInterface {
-	function open( string $save_path, string $session_name ) : bool {
+	function open( string $path, string $name ) : bool {
 		trigger_error( 'PHP Sessions requires Redis integration, which is currently not activated.', E_USER_WARNING );
 		return false;
 	}
@@ -32,7 +32,7 @@ class Disallowed_Session_Handler implements \SessionHandlerInterface {
 	/**
 	 * @return string|false
 	 */
-	function read( string $id ) {
+	function read( string $id ) : string|false {
 		trigger_error( 'PHP Sessions requires Redis integration, which is currently not activated.', E_USER_WARNING );
 		return false;
 	}
@@ -43,7 +43,7 @@ class Disallowed_Session_Handler implements \SessionHandlerInterface {
 	/**
 	 * @return int|false
 	 */
-	function gc( int $maxlifetime ) {
+	function gc( int $max_lifetime ) : int|false {
 		trigger_error( 'PHP Sessions requires Redis integration, which is currently not activated.', E_USER_WARNING );
 		return false;
 	}
