@@ -146,6 +146,10 @@ If the presence of a particular cookie means that the generated page should be u
 the `unique-cookies` property. It's recommended to name the cookies accordingly to a current exclusion pattern if you want to access
 them via PHP e.g. `wp_*`.
 
+By default, requests beginning with `wp`, `wordpress`, or `comment_author` skip the cache, as Batcache generates a `no-cache`
+header. This behaviour can be overridden by explicitly setting the `Cache-Control` header to force caching (note: prefixed cookies
+form part of the cache key).
+
 **Note:** This will not change the value on the CDN cache. Enterprise customers can contact Altis support to apply customisations at
 the CDN level.
 
