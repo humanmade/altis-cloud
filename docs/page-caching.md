@@ -36,13 +36,16 @@ likely not be active during testing and QA. See the [configuration](#configurati
 Each page is stored within cache storage as identified by a cache key. The cache key follows the pattern:
 
 ```text
-{method}:{protocol}:{host}:{path}:{query_params}
+{method}:{protocol}:{host}:{path}:{query_params}:{cookies}
 ```
 
 Query parameters can be [customized](#customizations) to ignore certain query parameters which do not effect the page content.
 
 **Note:** The cache key for the CDN cache is fixed, and query parameters can not be ignored within the CDN cache. The CDN cache key
 cannot be changed.
+
+**Note:** Cookies are included in the cache key at the CDN level, but Batcache instructs the CDN not to cache pages with them set
+by default. Caching can be enabled (see below), but will still be unique per user.
 
 ## Time-to-live and maximum age
 
