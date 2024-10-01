@@ -35,12 +35,6 @@ function bootstrap() {
 function on_job_started( Worker $worker, Job $job ) {
 	global $job_start_times;
 	$job_start_times[ $job->id ] = microtime( true );
-	put_metric_data( 'Invocations', 1, [
-		'Application' => HM_ENV,
-		'Job' => $job->hook,
-	] );
-	put_metric_data( 'Invocations', 1, [ 'Application' => HM_ENV ] );
-	put_metric_data( 'Invocations', 1 );
 }
 
 /**
@@ -50,11 +44,6 @@ function on_job_started( Worker $worker, Job $job ) {
  * @param Job $job The current Cavalcade cron job.
  */
 function on_job_failed( Worker $worker, Job $job ) {
-	put_metric_data( 'Failed', 1, [
-		'Application' => HM_ENV,
-		'Job' => $job->hook,
-	] );
-	put_metric_data( 'Failed', 1, [ 'Application' => HM_ENV ] );
 	put_metric_data( 'Failed', 1 );
 	on_end_job( $worker, $job, 'fail' );
 }
@@ -66,12 +55,6 @@ function on_job_failed( Worker $worker, Job $job ) {
  * @param Job $job The current Cavalcade cron job.
  */
 function on_job_completed( Worker $worker, Job $job ) {
-	put_metric_data( 'Completed', 1, [
-		'Application' => HM_ENV,
-		'Job' => $job->hook,
-	] );
-	put_metric_data( 'Completed', 1, [ 'Application' => HM_ENV ] );
-	put_metric_data( 'Completed', 1 );
 	on_end_job( $worker, $job, 'success' );
 }
 
@@ -80,18 +63,120 @@ function on_job_completed( Worker $worker, Job $job ) {
  *
  * @param Worker $worker The Cavalcade runner process.
  * @param Job $job The current Cavalcade cron job.
- * @param string $status The job status.
+ * @param 'success'|'fail' $status The job status.
  */
 function on_end_job( Worker $worker, Job $job, string $status ) {
 	global $job_start_times;
 	$duration = microtime( true ) - $job_start_times[ $job->id ];
 	unset( $job_start_times[ $job->id ] );
-	put_metric_data( 'Duration', $duration, [
-		'Application' => HM_ENV,
-		'Job' => $job->hook,
-	], 'Seconds' );
-	put_metric_data( 'Duration', $duration, [ 'Application' => HM_ENV ], 'Seconds' );
-	put_metric_data( 'Duration', $duration, [], 'Seconds' );
+
+	$status_metric = $status === 'success' ? 'Completed' : 'Failed';
+
+	// Batch all the metrics together to avoid many API calls.
+	$data = [];
+	$data[] = [
+		'MetricName' => $status_metric,
+		'Dimensions' => [
+			[
+				'Name' => 'Application',
+				'Value' => HM_ENV,
+			],
+			[
+				'Name' => 'Job',
+				'Value' => $job->hook,
+			],
+		],
+		'Value' => 1,
+	];
+	$data[] = [
+		'MetricName' => $status_metric,
+		'Dimensions' => [
+			[
+				'Name' => 'Application',
+				'Value' => HM_ENV,
+			],
+		],
+		'Value' => 1,
+	];
+	$data[] = [
+		'MetricName' => $status_metric,
+		'Value' => 1,
+	];
+
+	$data[] = [
+		'MetricName' => 'Invocations',
+		'Dimensions' => [
+			[
+				'Name' => 'Application',
+				'Value' => HM_ENV,
+			],
+			[
+				'Name' => 'Job',
+				'Value' => $job->hook,
+			],
+		],
+		'Value' => 1,
+	];
+	$data[] = [
+		'MetricName' => 'Invocations',
+		'Dimensions' => [
+			[
+				'Name' => 'Application',
+				'Value' => HM_ENV,
+			],
+		],
+		'Value' => 1,
+	];
+	$data[] = [
+		'MetricName' => 'Invocations',
+		'Value' => 1,
+	];
+	$data[] = [
+		'MetricName' => 'Duration',
+		'Dimensions' => [
+			[
+				'Name' => 'Application',
+				'Value' => HM_ENV,
+			],
+			[
+				'Name' => 'Job',
+				'Value' => $job->hook,
+			],
+		],
+		'Value' => $duration,
+	];
+	$data[] = [
+		'MetricName' => 'Duration',
+		'Unit' => 'Seconds',
+		'Dimensions' => [
+			[
+				'Name' => 'Application',
+				'Value' => HM_ENV,
+			],
+			[
+				'Name' => 'Job',
+				'Value' => $job->hook,
+			],
+		],
+		'Value' => $duration,
+	];
+	$data[] = [
+		'MetricName' => 'Duration',
+		'Unit' => 'Seconds',
+		'Dimensions' => [
+			[
+				'Name' => 'Application',
+				'Value' => HM_ENV,
+			],
+		],
+		'Value' => $duration,
+	];
+	$data[] = [
+		'MetricName' => 'Duration',
+		'Unit' => 'Seconds',
+		'Value' => $duration,
+	];
+	put_metric_data_multiple( $data );
 
 	// Workaround to get the stdout / stderr for the job.
 	$reflection = new ReflectionClass( $worker );
@@ -144,6 +229,23 @@ function put_metric_data( $metric_name, $value, $dimensions = [], $unit = 'None'
 					'Value' => $value,
 				],
 			],
+			'Namespace' => 'Cavalcade',
+		]);
+	} catch ( Exception $e ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		trigger_error( sprintf( 'Error from CloudWatch API: %s', $e->getMessage() ), E_USER_WARNING );
+	}
+}
+
+/**
+ * Save metric data to CloudWatch.
+ *
+ * @param array{ MetricName: string, ?Unit: string, ?Dimensions: { Name: string, value: int}[], Value: float }[] $data The metric data to save.
+ */
+function put_metric_data_multiple( array $data ) {
+	try {
+		cloudwatch_client()->putMetricData([
+			'MetricData' => $data,
 			'Namespace' => 'Cavalcade',
 		]);
 	} catch ( Exception $e ) {
