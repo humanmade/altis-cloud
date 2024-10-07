@@ -36,13 +36,16 @@ likely not be active during testing and QA. See the [configuration](#configurati
 Each page is stored within cache storage as identified by a cache key. The cache key follows the pattern:
 
 ```text
-{method}:{protocol}:{host}:{path}:{query_params}
+{method}:{protocol}:{host}:{path}:{query_params}:{cookies}
 ```
 
 Query parameters can be [customized](#customizations) to ignore certain query parameters which do not effect the page content.
 
 **Note:** The cache key for the CDN cache is fixed, and query parameters can not be ignored within the CDN cache. The CDN cache key
 cannot be changed.
+
+**Note:** Cookies are included in the cache key at the CDN level, but Batcache instructs the CDN not to cache pages with them set
+by default. Caching can be enabled (see below), but will still be unique per user.
 
 ## Time-to-live and maximum age
 
@@ -145,6 +148,10 @@ the CDN level.
 If the presence of a particular cookie means that the generated page should be unique you add the cookie name to
 the `unique-cookies` property. It's recommended to name the cookies accordingly to a current exclusion pattern if you want to access
 them via PHP e.g. `wp_*`.
+
+By default, requests beginning with `wp`, `wordpress`, or `comment_author` skip the cache, as Batcache generates a `no-cache`
+header. This behaviour can be overridden by explicitly setting the `Cache-Control` header to force caching on the CDN (note:
+prefixed cookies form part of the CDN cache key, and so are unique for each cookie value).
 
 **Note:** This will not change the value on the CDN cache. Enterprise customers can contact Altis support to apply customisations at
 the CDN level.
