@@ -129,7 +129,7 @@ function create_package_id( ?string $package_id, string $slug, string $file, boo
 
 	// Check domain.
 	if ( ! defined( 'ELASTICSEARCH_HOST' ) || ! ELASTICSEARCH_HOST ) {
-		return new WP_Error( 'elasticsearch_host_not_found', 'Could not find an AWS ElasticSearch Service Domain to associate the package with.' );
+		return new WP_Error( 'elasticsearch_host_not_found', 'Could not find an AWS Elasticsearch Service Domain to associate the package with.' );
 	}
 
 	// Get AES client.
