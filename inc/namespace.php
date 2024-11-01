@@ -137,7 +137,7 @@ function bootstrap() {
 	// Display environment details in admin sidebar.
 	Environment_Indicator\bootstrap();
 
-	// Sign ElasticSearch HTTP requests and log errors.
+	// Sign Elasticsearch HTTP requests and log errors.
 	add_action( 'http_api_debug', __NAMESPACE__ . '\\log_elasticsearch_request_errors', 10, 5 );
 	add_filter( 'http_request_args', __NAMESPACE__ . '\\on_http_request_args', 11, 2 );
 
@@ -363,7 +363,7 @@ function sign_psr7_request( RequestInterface $request ) : RequestInterface {
 }
 
 /**
- * Log ElasticSearch request errors.
+ * Log Elasticsearch request errors.
  *
  * @param array|WP_Error $response Response data.
  * @param string $context The http_api_debug action context.
@@ -388,10 +388,10 @@ function log_elasticsearch_request_errors( $response, string $context, string $c
 
 	if ( is_wp_error( $response ) ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( sprintf( 'Error in ElasticSearch request: %s (%s)', $response->get_error_message(), $response->get_error_code() ), E_USER_WARNING );
+		trigger_error( sprintf( 'Error in Elasticsearch request: %s (%s)', $response->get_error_message(), $response->get_error_code() ), E_USER_WARNING );
 	} elseif ( ! $is_valid_res ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		trigger_error( sprintf( 'Error in ElasticSearch request: %s (%s)', wp_remote_retrieve_body( $response ), $request_response_code ), E_USER_WARNING );
+		trigger_error( sprintf( 'Error in Elasticsearch request: %s (%s)', wp_remote_retrieve_body( $response ), $request_response_code ), E_USER_WARNING );
 	}
 }
 
