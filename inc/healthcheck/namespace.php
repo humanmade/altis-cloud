@@ -287,12 +287,12 @@ function run_cron_healthcheck() {
 }
 
 /**
- * Run ElasticSearch health check.
+ * Run Elasticsearch health check.
  */
 function run_elasticsearch_healthcheck() {
 	$host = Cloud\get_elasticsearch_url();
 
-	// If no host is set then ElasticSearch not in use.
+	// If no host is set then Elasticsearch not in use.
 	if ( empty( $host ) ) {
 		return true;
 	}
