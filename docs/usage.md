@@ -38,6 +38,8 @@ Enterprise environment tier customers may work with the Altis team to create cus
 Analytics services including Altis Analytics and Google Analytics measure traffic using JavaScript in users’ browsers. This allows these tools to collect detailed visitor data including location, browser versions, and page view duration. These traffic counts can differ from Page Views for a number of reasons, including users who block JavaScript or run ad blockers, browser caches, and custom filtering within web analytics tools.
 
 Your billing usage is always based on page views measured by the Altis backend and not measured by other tools.
+
+
 ## What data is collected for page view statistics?
 
 Page Views are only collected as an aggregate count and do not contain any personal information about your visitors.
