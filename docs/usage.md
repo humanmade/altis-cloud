@@ -42,7 +42,7 @@ Your billing usage is always based on page views measured by the Altis backend a
 
 ## What data is collected for page view statistics?
 
-Page Views are only collected as an aggregate count and do not contain any personal information about your visitors.
+Page Views are collected as an aggregate count from the CDN access logs Altis stores. For further information, consult the Altis data processing addendum.
 
 
 ## How much usage do I need?
