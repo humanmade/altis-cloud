@@ -1079,9 +1079,12 @@ function is_cloud() : bool {
  *                          will not be created if it does not already exist.
  * @param string $log_stream Name of the log stream. This value is used as
  *                           provided.
+ * @param int $batch_size The amount of log items to buffer before flushing them.
+ *                        FLogs are automatically flushed / written out when the
+ *                        LoggerInterface is destructed. Defaults to 1000.
  * @return Psr\Log\LoggerInterface
  */
-function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
+function get_logger( string $log_group, string $log_stream, int $batch_size = 1000 ) : LoggerInterface {
 	// $tag_name is designed to be used with Fluent Bit and doubles as a nice
 	// index for storing our loggers in. Tags must be prefixed with 'app.' to be
 	// correctly routed by our Fluent Bit container. Fluent Bit is configured
@@ -1119,7 +1122,7 @@ function get_logger( string $log_group, string $log_stream ) : LoggerInterface {
 			Altis\get_environment_name() . '/' . $log_group,
 			$log_stream,
 			null, // log retention when creating a new group (we disable this).
-			1000, // how many logs to send in a single batch.
+			$batch_size, // how many logs to send in a single batch.
 			[],  // tags for log group (we disable group creation).
 			Logger::DEBUG, // PSR log level.
 			true, // bubble logs through multiple handlers.
