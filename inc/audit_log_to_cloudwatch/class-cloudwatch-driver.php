@@ -203,6 +203,15 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 	 * @return array
 	 */
 	public function get_column_values( $column ) {
+
+		// By default we don't load the column values, as doing so is very slow and pages
+		// will likely timeout. The column values will still function, it's just that options
+		// in drop-downs will show _all_ values, not just the ones that exist in the db of
+		// audit logs.
+		if ( ! apply_filters( 'altis.cloud.audit_log_load_column_values', false ) ) {
+			return [];
+		}
+
 		$values = wp_cache_get( $column, 'stream_column_values' );
 		if ( $values === false ) {
 			$query = "stats distinct( $column ) by $column";
