@@ -102,7 +102,7 @@ as `example.com`. This is a limitation of the DNS system and the CNAME specifica
 ALIAS or ANAME records. These are newer 'virtual' record types and are both the same. One or the other may be supported by your 
 DNS provider.
 
-#### Apex Redirects
+#### Domain Apex
 
 Commonly, you will want to implement a redirect from the domain apex to the subdomain, such as redirecting `example.com`
 to `www.example.com`.
