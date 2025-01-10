@@ -426,7 +426,7 @@ function load_object_cache_redis() {
 	Alloptions_Fix\bootstrap();
 	\WP_Predis\add_filters();
 
-	require Altis\ROOT_DIR . '/vendor/humanmade/wp-redis/object-cache.php';
+	require Altis\ROOT_DIR . '/vendor/pantheon-systems/wp-redis/object-cache.php';
 
 	// cache must be initted once it's included, else we'll get a fatal.
 	wp_cache_init();
@@ -602,7 +602,7 @@ function load_plugins() {
 	}
 
 	if ( $config['redis'] ) {
-		require_once Altis\ROOT_DIR . '/vendor/humanmade/wp-redis/wp-redis.php';
+		require_once Altis\ROOT_DIR . '/vendor/pantheon-systems/wp-redis/wp-redis.php';
 	}
 
 	if ( $config['aws-ses-wp-mail'] ) {
