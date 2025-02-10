@@ -1,7 +1,7 @@
 # Altis CLI
 
 The Altis CLI tool provides a command line interface for running Altis utilities and commands. It is a wrapper around some of
-the functionality available iin the Altis Dashboard.
+the functionality available in the Altis Dashboard.
 
 The tool is currently in beta, and we would love your feedback on the tool. You can determine the current version using
 `altis-cli --version` and get help on the available commands using `altis-cli --help`.
