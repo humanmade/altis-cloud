@@ -39,7 +39,7 @@ The following commands are available in the Altis CLI tool
 Each as one or more sub commands. Use `altis-cli help` to get the most up-to-date list of commands.
 
 ```sh
-$ bin/altis-cli  --help
+$ altis-cli  --help
 altis-cli <command>
 
 Commands:
@@ -67,7 +67,7 @@ Commands:
 The app caches a list of the stacks you have access to. This command clears that cache.
 
 ```sh
-$ bin/altis-cli cli clear-cache
+$ altis-cli cli clear-cache
 ✔ Cleared cache
 ```
 
@@ -164,13 +164,13 @@ Options:
 For example, to create a database only backup, you would run the following command:
 
 ```sh
-bin/altis-cli stack backup --database --no-downloads platform-test
+altis-cli stack backup --database --no-downloads platform-test
 
 Starting backup for platform-test...
 (node:72569) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Backup started, resume later with...
-  hm stack backup platform-test --resume platform-test/backups:2025-02-10-11-33-07
+  altis-cli stack backup platform-test --resume platform-test/backups:2025-02-10-11-33-07
 
 Connected!
 Starting new backup.
@@ -196,7 +196,7 @@ the same backup.
 
 ```sh
 Backup started, resume later with...
-  hm stack backup platform-test --resume platform-test/backups:2025-02-10-11-33-07
+  altis-cli stack backup platform-test --resume platform-test/backups:2025-02-10-11-33-07
 ```
 
 ### Stack backups
@@ -204,7 +204,7 @@ Backup started, resume later with...
 This command lists all the backups saved against the named stack. For example:
 
 ```sh
-$ bin/altis-cli stack backups platform-test
+$ altis-cli stack backups platform-test
 ⠋ Loading backups for platform-test…
 ✔ Loading backups for platform-test…
 ? Select backup to download: (Use arrow keys)
@@ -222,8 +222,8 @@ Use your arrow keys to scroll through the backup names. It also displays the bac
 specified back up to your default `Downloads` directory.
 
 ```
-Downloading to /Users/mikelittle/Downloads/platform-test-2025-02-10-12-16-24
-✔ Downloaded. Copied /Users/mikelittle/Downloads/platform-test-2025-02-10-12-16-24 to clipboard.
+Downloading to /Users/username/Downloads/platform-test-2025-02-10-12-16-24
+✔ Downloaded. Copied /Users/username/Downloads/platform-test-2025-02-10-12-16-24 to clipboard.
 ```
 
 ### Stack deploy
@@ -231,7 +231,7 @@ Downloading to /Users/mikelittle/Downloads/platform-test-2025-02-10-12-16-24
 This command allows you to deploy (or redeploy) a previously build version of your application.
 
 ```sh
-$ bin/altis-cli stack deploy --help
+$ altis-cli stack deploy --help
 altis-cli stack deploy [stack]
 
 Deploy a given stack.
@@ -252,7 +252,7 @@ If the one you choose is not the latest build, it will inform you the stack is a
 deployed) and remind you to use the `--force` flag to deploy an older build.
 
 ```sh
-$ bin/altis-cli stack deploy platform-test
+$ altis-cli stack deploy platform-test
 ⠋ Loading builds for platform-test…
 ✔ Loading builds for platform-test…
 ? Select build to use: platform-test:7f6af7f7-5ee4-47d4-b130-c25e62ccdc13
@@ -268,7 +268,7 @@ Note: If a build failed, Altis will not be able to find a docker image of that b
 Once you select the build to deploy, it works through the deployment process, showing you the progress as it goes.
 
 ```sh
-$ bin/altis-cli stack deploy platform-test --force
+$ altis-cli stack deploy platform-test --force
 stty: 'standard input': unable to perform all requested operations
 ⠋ Loading builds for platform-test…
 ✔ Loading builds for platform-test…
@@ -315,7 +315,7 @@ The `stack info` command will list information about the specified stack. This i
 associated with the stack, infrastructure, database, and web server information.
 
 ```sh
-$ bin/altis-cli stack info platform-test
+$ altis-cli stack info platform-test
 ⠋ Fetching information for platform-test
 
 platform-test
@@ -356,7 +356,7 @@ Running this command will checkout the code for the stack (using the information
 install`, once the code is checked out.
 
 ```sh
-$ ../bin/altis-cli stack local-setup platform-test
+$ altis-cli stack local-setup platform-test
 ⠋ Loading repository for platform-test…(node:48439) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 ✔ Loading repository for platform-test…
@@ -384,7 +384,7 @@ The php-logs command will show the php logs for the specified stack. It has a nu
 will be displayed.
 
 ```sh
-$ bin/altis-cli stack php-logs tail platform-test
+$ altis-cli stack php-logs tail platform-test
 altis-cli stack php-logs [stack]
 
 Show PHP logs for a stack.
@@ -401,19 +401,19 @@ Options:
 For example, to specify only the log files after a certain date, you can call it like this:
 
 ```sh
-bin/altis-cli stack php-logs --after 2025/02/04 platform-test
+altis-cli stack php-logs --after 2025/02/04 platform-test
 ```
 
 You can combine the before and after parameters to limit the logs to a specific range of days.
 
 ```sh
-bin/altis-cli stack php-logs --after 2025/01/30 --before 2025/02/01 platform-test
+altis-cli stack php-logs --after 2025/01/30 --before 2025/02/01 platform-test
 ```
 
 You can also specify a time as part of the before and after parameters
 
 ```sh
-bin/altis-cli stack php-logs --after 2025/01/28T10:17 --before 2025/01/28T10:25 platform-test
+altis-cli stack php-logs --after 2025/01/28T10:17 --before 2025/01/28T10:25 platform-test
 ```
 
 Using the tail parameter will give you a live feed of logs entries as they are created. Use `CTRL+C` to exit the feed.
@@ -421,7 +421,7 @@ Using the tail parameter will give you a live feed of logs entries as they are c
 ### Stack scp
 
 ```sh
-$ bin/altis-cli stack scp --help
+$ altis-cli stack scp --help
 altis-cli stack scp <src> <dest>
 
 Copy a file to/from a stack. Remote src/dest are determined by a colon in the
@@ -436,7 +436,7 @@ Options:
 This command allows you to copy a file from your local to the stack.
 
 ```sh
-$ bin/altis-cli stack scp ./Cheese-DSC05391.jpg platform-test:/tmp/Cheese-DSC05391.jpg
+$ altis-cli stack scp ./Cheese-DSC05391.jpg platform-test:/tmp/Cheese-DSC05391.jpg
 stty: 'standard input': unable to perform all requested operations
 ⠋ Connecting to platform-test
 ✔ Cheese-DSC05391.jpg          [============================================>] 100.0% (273.86KB/273.86KB, 365.15KB/s)
@@ -445,7 +445,7 @@ stty: 'standard input': unable to perform all requested operations
 Or from the stack to your local device
 
 ```sh
-$ bin/altis-cli stack scp platform-test:content/themes/twentytwentytwo/assets/images/ducks.jpg ducks.jpg
+$ altis-cli stack scp platform-test:content/themes/twentytwentytwo/assets/images/ducks.jpg ducks.jpg
 ⠋ Connecting to platform-test
 ✔ ducks.jpg          [<============================================] 100.0% (373.85KB/364.27KB, 221.54KB/s)
 ```
