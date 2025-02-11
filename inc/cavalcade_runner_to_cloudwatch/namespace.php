@@ -59,7 +59,7 @@ function on_job_completed( Worker $worker, Job $job ) {
 }
 
 /**
- * Called when a job completed or failed via Cavalcade, and sends a Dureaction metric to CloudWatch.
+ * Called when a job completed or failed via Cavalcade, and sends a Duraction metric to CloudWatch.
  *
  * @param Worker $worker The Cavalcade runner process.
  * @param Job $job The current Cavalcade cron job.
@@ -81,20 +81,6 @@ function on_end_job( Worker $worker, Job $job, string $status ) {
 				'Name' => 'Application',
 				'Value' => HM_ENV,
 			],
-			[
-				'Name' => 'Job',
-				'Value' => $job->hook,
-			],
-		],
-		'Value' => 1,
-	];
-	$data[] = [
-		'MetricName' => $status_metric,
-		'Dimensions' => [
-			[
-				'Name' => 'Application',
-				'Value' => HM_ENV,
-			],
 		],
 		'Value' => 1,
 	];
@@ -110,55 +96,12 @@ function on_end_job( Worker $worker, Job $job, string $status ) {
 				'Name' => 'Application',
 				'Value' => HM_ENV,
 			],
-			[
-				'Name' => 'Job',
-				'Value' => $job->hook,
-			],
-		],
-		'Value' => 1,
-	];
-	$data[] = [
-		'MetricName' => 'Invocations',
-		'Dimensions' => [
-			[
-				'Name' => 'Application',
-				'Value' => HM_ENV,
-			],
 		],
 		'Value' => 1,
 	];
 	$data[] = [
 		'MetricName' => 'Invocations',
 		'Value' => 1,
-	];
-	$data[] = [
-		'MetricName' => 'Duration',
-		'Dimensions' => [
-			[
-				'Name' => 'Application',
-				'Value' => HM_ENV,
-			],
-			[
-				'Name' => 'Job',
-				'Value' => $job->hook,
-			],
-		],
-		'Value' => $duration,
-	];
-	$data[] = [
-		'MetricName' => 'Duration',
-		'Unit' => 'Seconds',
-		'Dimensions' => [
-			[
-				'Name' => 'Application',
-				'Value' => HM_ENV,
-			],
-			[
-				'Name' => 'Job',
-				'Value' => $job->hook,
-			],
-		],
-		'Value' => $duration,
 	];
 	$data[] = [
 		'MetricName' => 'Duration',
