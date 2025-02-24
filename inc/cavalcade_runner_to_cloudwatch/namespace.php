@@ -59,7 +59,7 @@ function on_job_completed( Worker $worker, Job $job ) {
 }
 
 /**
- * Called when a job completed or failed via Cavalcade, and sends a Duraction metric to CloudWatch.
+ * Called when a job completed or failed via Cavalcade, and sends a Duration metric to CloudWatch.
  *
  * @param Worker $worker The Cavalcade runner process.
  * @param Job $job The current Cavalcade cron job.
