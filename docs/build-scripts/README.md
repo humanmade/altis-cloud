@@ -54,11 +54,11 @@ Your build script can run any commands you'd like, including installing or confi
 
 The following build tools are pre-installed inside the build container for your script:
 
-- `PHP` 7.4
-- `Composer` 1.10
-- `Node` 12.18
-- `npm` 6.14
-- `Git` 2.25
+- `PHP` The version of PHP set for the application
+- `Composer` 2.8.6
+- `Node` 22.11
+- `npm` 9.9.x
+- `Git` 2.40.x
 - [`asdf`](https://github.com/asdf-vm/asdf) package manager (with Node plugin)
 
 Note that [`nvm`](https://github.com/nvm-sh/nvm) is not installed by default because `asdf` provides the same functionality.
