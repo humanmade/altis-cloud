@@ -69,3 +69,18 @@ location ~* config.local.yaml {
     return 404;
 }
 ```
+
+If you wanted to allow a normally blocked location to be accessed, you could use a `location` block to override the default. For
+example, Altis blocks all urls beginning with a `.` as these are often sensitive files you do not want to be accessed.
+
+But one use case might be to allow access to specific `.well-known` urls. For example, to allow `Webfinger` requests you would
+add the following location block.
+
+```nginxconf
+location ~ /\.well-known/webfinger {
+    try_files $uri /index.php$is_args$args;
+}
+```
+
+Note: this is added as a regular expression match `~` to ensure it overrides the default blocking rule.
+See the [nginx documentation](https://nginx.org/en/docs/http/ngx_http_core_module.html#location) for details on location matching.
