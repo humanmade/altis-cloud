@@ -2,7 +2,7 @@
 
 Altis automatically provisions, maintains, and renews TLS certificates for your domains. TLS configuration is managed by Altis, including the use of secure algorithms.
 
-Domains are validated for SSL provisioning as part of the [DNS configuration process](../dns-configuration.md) when adding a new domain.
+Domains are validated for SSL provisioning as part of the [DNS configuration process](./dns-configuration.md) when adding a new domain.
 
 Certificates issued by Altis use RSA 2048-bit keys, signed by the Amazon certificate authority.
 
