@@ -32,7 +32,8 @@ to purchase new domains.)
 
 To start with the registration process, select the "Add new domain…" button.
 
-Enter your base domain, excluding any `www.` or wildcards.
+Enter your base domain, excluding any `www.` or wildcards. If you are adding a subdomain, enter the full subdomain (e.g.
+`blog.example.com`).
 
 ![Screenshot of domain entry field](./assets/domain-entry.png)
 
