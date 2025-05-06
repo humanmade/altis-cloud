@@ -145,6 +145,11 @@ function bootstrap() {
 	if ( is_cloud() ) {
 		define( 'DISALLOW_FILE_MODS', true );
 	}
+
+	if ( extension_loaded( 'afterburner' ) ) {
+		require_once __DIR__ . '/afterburner/namespace.php';
+		Afterburner\bootstrap();
+	}
 }
 
 /**
@@ -580,6 +585,15 @@ function load_plugins() {
 		// Override the default host name for Tachyon to match the current site.
 		add_filter( 'tachyon_url', __NAMESPACE__ . '\\set_tachyon_hostname', 20 );
 		define( 'TACHYON_URL', get_main_site_url( '/tachyon' ) );
+	}
+
+	// Define TFA_VERSION from the environment variable.
+	defined( 'TFA_VERSION' ) || define( 'TFA_VERSION', getenv( 'TFA_VERSION' ) ?: '0' );
+
+	// Set the Tachyon Server version if it's not already defined. This is used to flag to Tachyon that we
+	// have a version of Tachyon that supports the newer "presign" query parameter.
+	if ( version_compare( TFA_VERSION, '4.6.0', '>=' ) && ! defined( 'TACHYON_SERVER_VERSION' ) ) {
+		define( 'TACHYON_SERVER_VERSION', '3.0.0' );
 	}
 
 	if ( $config['s3-uploads'] ) {
