@@ -106,7 +106,10 @@ The default configuration is:
                             "mc_cid",
                             "mc_eid",
                             "fbclid",
-                            "_ga"
+                            "_ga",
+                            "dclid",
+                            "gclid",
+                            "twclid"
                         ],
                         "unique-headers": [],
                         "unique-cookies": []
