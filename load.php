@@ -38,6 +38,9 @@ add_action( 'altis.modules.init', function () {
 				'mc_eid',
 				'fbclid',
 				'_ga',
+				'dclid',
+				'gclid',
+				'twclid',
 			],
 			'unique-headers' => [
 				'cloudfront-viewer-country',
