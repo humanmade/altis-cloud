@@ -21,3 +21,28 @@ Should the Redis server disconnect or be unavailable for a period, the local cac
 ## Activation
 
 To activate Afterburner on your environment, [create a support ticket](support://new) with the request.
+
+If Afterburner is enabled on your environment, an Afterburner item is added to the Query Monitor Toolbar Menu.
+
+### Local Environments
+
+You can enable Afterbuirner in Altis Local Server by setting
+the `altis.modules.local-server.afterburner` value to `true`:
+
+```json
+{
+    "extra": {
+        "altis": {
+            "modules": {
+                "local-server": {
+                    "afterburner": true
+                }
+            }
+        }
+    }
+}
+```
+
+Afterburner is only enabled on PHP versions later than 7.4.
+
+
