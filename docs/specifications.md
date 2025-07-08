@@ -20,7 +20,7 @@ The following versions are available, and the specific version in use will depen
 - curl
 - date
 - dom
-- Excimer
+- excimer
 - exif
 - fileinfo
 - filter
@@ -36,16 +36,15 @@ The following versions are available, and the specific version in use will depen
 - libxml
 - mbstring
 - mcrypt
-- memcached
 - msgpack
 - mysqli
 - mysqlnd
-- newrelic
 - openssl
 - pcntl
 - pcre
 - PDO
 - pdo_mysql
+- pdo_sqlite
 - Phar
 - posix
 - readline
@@ -56,7 +55,9 @@ The following versions are available, and the specific version in use will depen
 - SimpleXML
 - soap
 - sockets
+- sodium
 - SPL
+- sqlite3
 - ssh2
 - standard
 - sysvmsg
@@ -64,7 +65,6 @@ The following versions are available, and the specific version in use will depen
 - sysvshm
 - tokenizer
 - v8js (experimental)
-- wddx
 - xml
 - xmlreader
 - xmlwriter
