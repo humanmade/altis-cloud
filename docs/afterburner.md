@@ -21,3 +21,11 @@ Should the Redis server disconnect or be unavailable for a period, the local cac
 ## Activation
 
 To activate Afterburner on your environment, [create a support ticket](support://new) with the request.
+
+To activate Afterburner on your local development environment, see
+[this page for instructions](docs://local-server/using-afterburner.md).
+
+## Statistics
+
+Once Afterburner is enabled on your environment, an Afterburner item is added to the Query Monitor Toolbar Menu. This item
+provides some statistics about the Afterburner cache, including the number of hits and misses, and the total memory used.
