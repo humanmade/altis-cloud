@@ -3,12 +3,12 @@
 The Altis CLI tool provides a command line interface for running Altis utilities and commands. It is a wrapper around some of
 the functionality available in the Altis Dashboard.
 
-The tool is currently in beta, and we would love your feedback on the tool. You can determine the current version using
+We are always looking to improve our tools, and we would love your feedback on the tool. You can determine the current version using
 `altis-cli --version` and get help on the available commands using `altis-cli --help`.
 
 ## Installing
 
-You need Node v18 or later.
+You need Node v22 or later.
 
 To install it globally run the following command:
 
@@ -76,11 +76,11 @@ $ altis-cli cli clear-cache
 These commands manipulate the stored access configuration. The command stores your authentication token with the Altis Dashboard in
 a private file in your profile.
 
-- On Mac this file is stored in `$HOME/Library/Application Support/hm-cli/config.json`
-- On Windows, if `LOCALAPPDATA` is defined, it is stored in  `$LOCALAPPDATA\hm-cli\config.json`. Otherwise, it is stored in
-  `$USERPROFILE\Local Settings\Application Data\hm-cli\config.json`
-- On Linux, if the environment variable `XDG_CONFIG_HOME` is defined, it is stored in `$XDG_CONFIG_HOME/hm-cli/config.json`.
-  Otherwise in  `$HOME/hm-cli/config.json`
+- On Mac this file is stored in `$HOME/Library/Application Support/altis-cli/config.json`
+- On Windows, if `LOCALAPPDATA` is defined, it is stored in  `$LOCALAPPDATA\altis-cli\config.json`. Otherwise, it is stored in
+  `$USERPROFILE\Local Settings\Application Data\altis-cli\config.json`
+- On Linux, if the environment variable `XDG_CONFIG_HOME` is defined, it is stored in `$XDG_CONFIG_HOME/altis-cli/config.json`.
+  Otherwise in  `$HOME/altis-cli/config.json`
 
 ```sh
 $ altis-cli config
@@ -143,7 +143,7 @@ Commands:
 ### Stack backup
 
 The `stack backup` command is used to create and download backups for your application. Note the default is to include both database
-and downloads in the backup.
+and uploads in the backup.
 
 ```sh
 altis-cli stack backup [stack]
@@ -191,7 +191,7 @@ Writing manifest file.
 ✔ Complete!
 ```
 
-If a backup is going to take a long time and in case it may time out, the command outputs the resume command to use to resume
+If a backup is going to take a long time and in case it may time out, the command outputs the `resume` command to use to resume
 the same backup.
 
 ```sh
@@ -219,16 +219,17 @@ $ altis-cli stack backups platform-test
 ```
 
 Use your arrow keys to scroll through the backup names. It also displays the backup size. Pressing enter will download the
-specified back up to your default `Downloads` directory.
+specified back up to your default `Downloads` directory. It will also copy the path to the downloaded backup to your clipboard 
+ready to use in other commands.
 
-```
+```shell
 Downloading to /Users/username/Downloads/platform-test-2025-02-10-12-16-24
 ✔ Downloaded. Copied /Users/username/Downloads/platform-test-2025-02-10-12-16-24 to clipboard.
 ```
 
 ### Stack deploy
 
-This command allows you to deploy (or redeploy) a previously build version of your application.
+This command allows you to deploy (or redeploy) a previously built version of your application.
 
 ```sh
 $ altis-cli stack deploy --help
@@ -304,9 +305,9 @@ Completed service platform-test-app-e292cb32
 ✔ Complete!
 ```
 
-Once the deploy has completed, the change will also show up on the Altis Dashboard.
+Once the deployment has completed, the change will also show up on the Altis Dashboard.
 
-Note: if you have `autodeploy` enabled on ths stack in the Altis Dashboard, the command is unable to obtain a deployment lock and
+Note: if you have `autodeploy` enabled on the stack in the Altis Dashboard, the command is unable to obtain a deployment lock and
 thus cannot deploy.
 
 ### Stack info
@@ -352,7 +353,7 @@ This command lists all the stacks you have access to.
 
 ### Stack local-setup
 
-Running this command will checkout the code for the stack (using the information stored in Altis Dashboard), and run `composer 
+Running this command will check out the code for the stack (using the information stored in Altis Dashboard), and run `composer
 install`, once the code is checked out.
 
 ```sh
@@ -380,8 +381,8 @@ Run `composer server start` to get started
 
 ### Stack php-logs
 
-The php-logs command will show the php logs for the specified stack. It has a number of options to determine which sub set of logs
-will be displayed.
+The `php-logs` command will show the PHP logs for the specified stack. It has a number of options to determine which sub set of
+logs will be displayed.
 
 ```sh
 $ altis-cli stack php-logs tail platform-test
@@ -418,7 +419,7 @@ altis-cli stack php-logs --after 2025/01/28T10:17 --before 2025/01/28T10:25 plat
 
 Using the tail parameter will give you a live feed of logs entries as they are created. Use `CTRL+C` to exit the feed.
 
-### Stack scp
+### Stack `scp`
 
 ```sh
 $ altis-cli stack scp --help
@@ -463,8 +464,9 @@ Common commands:
     Flush the object cache.
 
 www-data@69bd895c6935:/usr/src/app$ ls
-Dockerfile.gobinary  assets	  composer.json  content  hello.aarch64  index.php  tests   wordpress	wp-config-production.php
-README.md	     build-go.sh  composer.lock  hello	  hello.x86_64	 main.go    vendor  wp-config-production-sample.php  wp-config.php
+Dockerfile.gobinary  assets    composer.json  content  hello.aarch64  index.php  tests   wordpress  wp-config-production.php
+README.md       build-go.sh  composer.lock  hello    hello.x86_64   main.go    vendor  wp-config-production-sample.php  
+wp-config.php
 
 www-data@69bd895c6935:/usr/src/app$ wp theme list
 
