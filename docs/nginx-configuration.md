@@ -71,9 +71,9 @@ location ~* config.local.yaml {
 ```
 
 If you wanted to allow a normally blocked location to be accessed, you could use a `location` block to override the default. For
-example, Altis blocks all urls beginning with a `.` as these are often sensitive files you do not want to be accessed.
+example, Altis blocks all URLs beginning with a `.` as these are often sensitive files you do not want to be accessed.
 
-But one use case might be to allow access to specific `.well-known` urls. For example, to allow `Webfinger` requests you would
+One use case might be to allow access to specific `.well-known` URLs. For example, to allow `Webfinger` requests you would
 add the following location block to `.config/nginx-additions.conf`.
 
 ```nginxconf

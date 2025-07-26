@@ -13,6 +13,7 @@ The following versions are available, and the specific version in use will depen
 ## PHP Modules
 
 <!-- vale Vale.Spelling = NO -->
+<!-- vale Vale.Terms = NO -->
 - apcu
 - calendar
 - Core
@@ -72,6 +73,7 @@ The following versions are available, and the specific version in use will depen
 - Zend OPcache
 - zip
 - zlib
+<!-- vale Vale.Terms = YES -->
 <!-- vale Vale.Spelling = YES -->
 
 ## Limitations
