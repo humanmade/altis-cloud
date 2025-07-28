@@ -84,8 +84,8 @@ After these DNS changes are put into place, your site will be served by Altis; t
 
 You can perform this step at any point after verification is complete when you're ready to switch your traffic.
 
-Altis can only provide host names (fully qualified domain names) to be used in DNS records, not IP addresses, as servers are 
-dynamically allocated based on traffic. Therefore, you *must* use CNAME, ANAME, or ALIAS records when configuring and managing 
+Altis can only provide host names (fully qualified domain names) to be used in DNS records, not IP addresses, as servers are
+dynamically allocated based on traffic. Therefore, you *must* use CNAME, ANAME, or ALIAS records when configuring and managing
 your own DNS.
 
 #### CNAME records
@@ -95,12 +95,11 @@ to use the `www.` subdomain for your main site.
 
 The Dashboard will show you your project-specific domain to use in the CNAME record.
 
-
 #### ALIAS/ANAME records
 
 CNAME records are not supported on the domain apex (or "naked domain"); that is, the base domain without `www.`, such
-as `example.com`. This is a limitation of the DNS system and the CNAME specification. For apex domains, you must use either 
-ALIAS or ANAME records. These are newer 'virtual' record types and are both the same. One or the other may be supported by your 
+as `example.com`. This is a limitation of the DNS system and the CNAME specification. For apex domains, you must use either
+ALIAS or ANAME records. These are newer 'virtual' record types and are both the same. One or the other may be supported by your
 DNS provider.
 
 #### Domain Apex
