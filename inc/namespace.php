@@ -152,6 +152,8 @@ function bootstrap() {
 		require_once __DIR__ . '/afterburner/namespace.php';
 		Afterburner\bootstrap();
 	}
+
+	set_php_error_message_format();
 }
 
 /**
@@ -1224,4 +1226,21 @@ function register_trace_qm_panel_menu_item( array $menu ) : array {
 	unset( $menu['aws-xray-trace'] );
 
 	return $menu;
+}
+
+/**
+ * Set the PHP error message format to include the XRay trace ID.
+ *
+ * This requires the https://github.com/humanmade/error-message-format/ PHP
+ * extension to be installed. If it's not, this will have no effect.
+ *
+ * @return void
+ */
+function set_php_error_message_format() : void {
+	if ( function_exists( 'HM\\Platform\\XRay\\get_root_trace_id' ) ) {
+		$trace_id = XRay\get_root_trace_id();
+		ini_set( 'error_message_format', '{message} (Trace ID: ' . $trace_id . ')' );
+	} else if ( php_sapi_name() === 'cli' ) {
+		ini_set( 'error_message_format', '{message} (CLI: ' . implode( ' ', $_SERVER['argv'] ) . ')' );
+	}
 }
