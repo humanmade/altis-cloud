@@ -7,6 +7,8 @@ setting. You'll be able to view all your existing domains here, as well as add n
 
 ![Screenshot of the Domains settings panel](./assets/domain-list.png)
 
+> **Note:** If you do not see the Domains settings panel in your Altis Dashboard, it may be because self-service domain management is disabled for your environment. In this case, please [contact Altis support](support://new) to request domain changes or enable this feature.
+
 ## Adding a domain
 
 Adding a new domain to Altis is a three step process.
