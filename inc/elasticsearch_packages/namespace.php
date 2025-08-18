@@ -35,7 +35,7 @@ function bootstrap() : void {
 	add_filter( 'altis.search.packages_dir', __NAMESPACE__ . '\\packages_dir', 9 );
 	add_filter( 'altis.search.create_package_id', __NAMESPACE__ . '\\create_package_id', 10, 4 );
 	add_filter( 'altis.search.get_package_id', __NAMESPACE__ . '\\get_package_id', 10, 2 );
-	add_action( 'altis.search.check_package_status', __NAMESPACE__ . '\\on_check_package_status', 10, 3 );
+	add_action( 'altis.search.check_package_status', __NAMESPACE__ . '\\on_check_package_status', 10, 4 );
 	add_action( 'altis.search.delete_package', __NAMESPACE__ . '\\delete_package', 10, 2 );
 	add_action( 'altis.search.deleted_package', __NAMESPACE__ . '\\on_deleted_package', 10, 4 );
 	add_action( 'altis.search.updated_all_index_settings', __NAMESPACE__ . '\\on_update_index_settings' );
