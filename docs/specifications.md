@@ -36,7 +36,6 @@ The following versions are available, and the specific version in use will depen
 - json
 - libxml
 - mbstring
-- mcrypt
 - msgpack
 - mysqli
 - mysqlnd
@@ -48,6 +47,7 @@ The following versions are available, and the specific version in use will depen
 - pdo_sqlite
 - Phar
 - posix
+- random
 - readline
 - redis
 - Reflection
@@ -65,7 +65,7 @@ The following versions are available, and the specific version in use will depen
 - sysvsem
 - sysvshm
 - tokenizer
-- v8js (experimental)
+- v8js
 - xml
 - xmlreader
 - xmlwriter
