@@ -270,7 +270,6 @@ Once you select the build to deploy, it works through the deployment process, sh
 
 ```sh
 $ altis-cli stack deploy platform-test --force
-stty: 'standard input': unable to perform all requested operations
 ⠋ Loading builds for platform-test…
 ✔ Loading builds for platform-test…
 ? Select build to use: platform-test:c56d7dfc-d3f7-46b7-af16-05506bd5924b
