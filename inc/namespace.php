@@ -860,7 +860,7 @@ function get_ec2_instance_metadata() : array {
 	$token = null;
 	$headers = [];
 
-	// Try to get IMDSv2 token
+	// Try to get IMDSv2 token.
 	try {
 		$token_response = $client->request(
 			'PUT',
@@ -877,7 +877,7 @@ function get_ec2_instance_metadata() : array {
 			$token = (string) $token_response->getBody();
 		}
 	} catch ( Exception $e ) {
-		// IMDSv2 not available, fallback to IMDSv1
+		// IMDSv2 not available, fallback to IMDSv1.
 		$token = null;
 	}
 
@@ -922,7 +922,7 @@ function get_ec2_instance_metadata() : array {
 	if ( function_exists( 'apcu_store' ) ) {
 		apcu_store( $cache_key, $metadata );
 	}
-	
+
 	return $metadata;
 }
 
