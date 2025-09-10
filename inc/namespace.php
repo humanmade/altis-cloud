@@ -1240,8 +1240,5 @@ function set_php_error_message_format() : void {
 	if ( function_exists( 'HM\\Platform\\XRay\\get_root_trace_id' ) ) {
 		$trace_id = XRay\get_root_trace_id();
 		ini_set( 'error_message_format', '{message} (Trace ID: ' . $trace_id . ')' );
-	} elseif ( php_sapi_name() === 'cli' ) {
-		$arg = isset( $_SERVER['argv'] ) ? implode( ' ', $_SERVER['argv'] ) : '';
-		ini_set( 'error_message_format', '{message} (CLI: ' . $arg . ')' );
 	}
 }
