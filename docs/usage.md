@@ -91,3 +91,16 @@ Usage during traffic spikes are counted as normal towards your usage, and do not
 
 As your environment is flexible to respond to changes in usage, flexible options for usage are available for customers with dynamic
 usage or seasonality. Contact your Account Manager to discuss flexible plans.
+
+## Understanding traffic breakdown in monthly reports
+
+Altis Dashboard's monthly reports provide a breakdown off traffic allowing you to understand the make-up of the
+overall billed page views. Analysis is performed on the User Agent for all billable page views and it categorized as follows:
+
+- **browser**: Views from all browser user agents. Includes desktop browsers, mobile browsers and in-app browsers.
+- **search-indexing**: Search crawlers such as Bing Bot or Google Bot.
+- **crawler**: Miscellanious web crawlers such as Amazonbot, Applebot etc.
+- **ai-bot**: Views from AI agents such as OpenAI training, ChatGPT etc. The list of AI user agents is based on [ai.robots.txt](https://github.com/ai-robots-txt/ai.robots.txt).
+- **other-bot**: All other self-identified bot traffic such as `curl`.
+- **unknown**: User agents that are not understood.
+- **not-specified**: Page views with an empty User Agent header.
