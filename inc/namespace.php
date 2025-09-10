@@ -192,6 +192,14 @@ function load_platform( $wp_debug_enabled ) {
 	if ( extension_loaded( 'afterburner' ) ) {
 		load_object_cache_afterburner();
 		load_wp_cache_session_handler();
+		add_filter(
+			'translation_file_format',
+			static function ( string $preferred_format, string $domain ) : string {
+				return 'mo';
+			},
+			10,
+			2
+		);
 	} elseif ( $config['memcached'] ) {
 		load_object_cache_memcached();
 		disable_sessions();
