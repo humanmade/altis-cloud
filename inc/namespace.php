@@ -877,7 +877,7 @@ function get_ec2_instance_metadata() : array {
 		if ( $token_response->getStatusCode() === 200 ) {
 			$token = (string) $token_response->getBody();
 		} else {
-			trigger_error('IMDSv2 token request failed', E_USER_NOTICE);
+			trigger_error( 'IMDSv2 token request failed', E_USER_NOTICE );
 			if ( function_exists( 'apcu_store' ) ) {
 				apcu_store( $cache_key, [] );
 			}
