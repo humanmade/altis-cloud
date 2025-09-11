@@ -867,14 +867,49 @@ function get_ec2_instance_metadata() : array {
 	}
 
 	$client = new Client();
+	$token = null;
+
+	// Only support IMDSv2: require token, no fallback.
+	try {
+		$token_response = $client->request(
+			'PUT',
+			'http://169.254.169.254/latest/api/token',
+			[
+				'timeout' => 1,
+				'headers' => [
+					'X-aws-ec2-metadata-token-ttl-seconds' => '21600',
+				],
+				'on_stats' => __NAMESPACE__ . '\\on_request_stats',
+			]
+		);
+		if ( $token_response->getStatusCode() === 200 ) {
+			$token = (string) $token_response->getBody();
+		} else {
+			trigger_error( 'IMDSv2 token request failed', E_USER_NOTICE );
+			if ( function_exists( 'apcu_store' ) ) {
+				apcu_store( $cache_key, [] );
+			}
+			return [];
+		}
+	} catch ( Exception $e ) {
+		trigger_error( 'IMDSv2 token required but could not be retrieved: ' . $e->getMessage(), E_USER_NOTICE );
+		if ( function_exists( 'apcu_store' ) ) {
+			apcu_store( $cache_key, [] );
+		}
+		return [];
+	}
 
 	try {
-		$request = $client->request( 'GET', 'http://169.254.169.254/latest/dynamic/instance-identity/document', [
-			'timeout' => 1,
-			'on_stats' => __NAMESPACE__ . '\\on_request_stats',
-		] );
+		$request = $client->request(
+			'GET',
+			'http://169.254.169.254/latest/dynamic/instance-identity/document',
+			[
+				'timeout' => 1,
+				'headers' => [ 'X-aws-ec2-metadata-token' => $token ],
+				'on_stats' => __NAMESPACE__ . '\\on_request_stats',
+			]
+		);
 	} catch ( Exception $e ) {
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Unable to get instance metadata. Error: %s', $e->getMessage() ), E_USER_NOTICE );
 		if ( function_exists( 'apcu_store' ) ) {
 			apcu_store( $cache_key, [] );
@@ -883,7 +918,6 @@ function get_ec2_instance_metadata() : array {
 	}
 
 	if ( $request->getStatusCode() !== 200 ) {
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		trigger_error( sprintf( 'Unable to get instance metadata. Returned response code: %s', $request->getStatusCode() ), E_USER_NOTICE );
 		if ( function_exists( 'apcu_store' ) ) {
 			apcu_store( $cache_key, [] );
@@ -892,15 +926,12 @@ function get_ec2_instance_metadata() : array {
 	}
 
 	$metadata = json_decode( $request->getBody(), true );
-
 	if ( ! $metadata ) {
 		$metadata = [];
 	}
-
 	if ( function_exists( 'apcu_store' ) ) {
 		apcu_store( $cache_key, $metadata );
 	}
-
 	return $metadata;
 }
 
