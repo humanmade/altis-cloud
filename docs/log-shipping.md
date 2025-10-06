@@ -49,46 +49,6 @@ Replace `<DEST_BUCKET>` with your bucket name and `<environment-name>` with your
 }
 ```
 
-## KMS Key Support
-
-S3 buckets have secure default encryption enabled by default. Custom KMS keys are only required for environments with strict compliance requirements that need their own key management.
-
-If your S3 bucket enforces server-side encryption with AWS KMS, you can provide your own KMS key for enhanced security and control.
-
-If you want to enforce KMS encryption on all objects in your bucket:
-
-```json
-{
-  "Sid": "RequireKmsOnWrites",
-  "Effect": "Deny",
-  "Principal": "*",
-  "Action": "s3:PutObject",
-  "Resource": "arn:aws:s3:::<DEST_BUCKET>/*",
-  "Condition": {
-    "StringNotEquals": {
-      "s3:x-amz-server-side-encryption": "aws:kms"
-    }
-  }
-}
-```
-
-Your KMS key must allow the Altis role to encrypt data. Add this statement to your KMS key policy:
-
-```json
-{
-  "Sid": "AllowAltisRoleUseOfKey",
-  "Effect": "Allow",
-  "Principal": {
-    "AWS": "arn:aws:iam::577418818413:role/<environment-name>-log-shipping-s3-events"
-  },
-  "Action": [
-    "kms:Encrypt",
-    "kms:GenerateDataKey*"
-  ],
-  "Resource": "*"
-}
-```
-
 ## Lifecycle Management
 
 You are responsible for managing the lifecycle of the log files in your S3 bucket, including storage costs, retention policies, and access patterns. Consider setting up S3 lifecycle rules to automatically transition older logs to cheaper storage classes or delete them after your required retention period.
@@ -97,6 +57,6 @@ You are responsible for managing the lifecycle of the log files in your S3 bucke
 
 Log Shipping requires configuration of your S3 bucket. The feature is not enabled by default and requires setup by the Altis team.
 
-When requesting Log Shipping setup, provide your destination S3 bucket name and KMS key ARN (if using customer-managed encryption).
+When requesting Log Shipping setup, provide your destination S3 bucket name.
 
 Contact support or your account manager to enable Log Shipping for your environment.
