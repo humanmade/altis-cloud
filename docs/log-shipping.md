@@ -51,7 +51,9 @@ Replace `<DEST_BUCKET>` with your bucket name and `<environment-name>` with your
 
 ## KMS Key Support
 
-If your S3 bucket enforces server-side encryption with AWS KMS, you can provide your own KMS key for enhanced security.
+S3 buckets have secure default encryption enabled by default. Custom KMS keys are only required for environments with strict compliance requirements that need their own key management.
+
+If your S3 bucket enforces server-side encryption with AWS KMS, you can provide your own KMS key for enhanced security and control.
 
 If you want to enforce KMS encryption on all objects in your bucket:
 
