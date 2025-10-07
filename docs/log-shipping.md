@@ -20,35 +20,6 @@ Log Shipping is commonly used for:
 - **Business intelligence**: Track user behavior and site usage for business insights
 - **Data archival**: Maintain long-term historical records of site activity
 
-## S3 Bucket Permissions
-
-You must create a bucket policy that allows Altis to write log files to your destination bucket. The Altis service uses the following role:
-
-- **Altis Account ID**: `577418818413`
-- **Role Name**: `<environment-name>-log-shipping-s3-events`
-- **Principal ARN**: `arn:aws:iam::577418818413:role/<environment-name>-log-shipping-s3-events`
-
-Replace `<DEST_BUCKET>` with your bucket name and `<environment-name>` with your Altis environment name:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowAltisToWriteCloudFrontLogs",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::577418818413:role/<environment-name>-log-shipping-s3-events"
-      },
-      "Action": [
-        "s3:PutObject"
-      ],
-      "Resource": "arn:aws:s3:::<DEST_BUCKET>/<environment-name>/cloudfront/*"
-    }
-  ]
-}
-```
-
 ## Lifecycle Management
 
 You are responsible for managing the lifecycle of the log files in your S3 bucket, including storage costs, retention policies, and access patterns. Consider setting up S3 lifecycle rules to automatically transition older logs to cheaper storage classes or delete them after your required retention period.
