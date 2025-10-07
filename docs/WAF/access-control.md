@@ -39,11 +39,18 @@ The **Allowlist** (sometimes referred to as a "whitelist") lets you specify IP a
 4. Enter the desired IP address or CIDR range (see [IP Range Limitations](#ip-range-limitations)).
 5. Click **Save**.
 
+
+![Screenshot of the Access Control IP section](./assets/access-control-ip.png)
+
+
 ### Removing an IP or Range
 
 1. In the appropriate list (Blocklist or Allowlist), locate the IP or range you wish to remove.
 2. Click the **Delete** button next to the entry.
 3. Confirm the deletion when prompted.
+
+![Screenshot of the Access Control IP delete](./assets/remove-ips.png)
+
 
 ## IP Range Limitations
 
