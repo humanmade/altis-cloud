@@ -17,15 +17,15 @@ The **Blocklist** allows you to deny all traffic originating from specified IP a
 
 **Use Cases:**
 - Blocking malicious actors or IPs with suspicious activity.
-- Preventing access from certain data centers usually used for spam traffic. 
+- Preventing access from certain data centers often used for spam traffic. 
 
 ## Allowlist
 
-The **Allowlist** (sometimes referred to as a "whitelist") lets you specify IP addresses or ranges that are exempt from the default WAF rate limits. Requests from allowlisted IPs will not be subject to rate limiting, ensuring uninterrupted access.
+The **Allowlist** lets you specify IP addresses or ranges that are exempt from the default WAF rate limits. Requests from allowlisted IPs will not be subject to rate limiting, ensuring uninterrupted access.
 
 **Use Cases:**
 - Ensuring trusted partners or internal teams are never rate-limited.
-- Allowing monitoring or uptime services,  unrestricted access.
+- Allowing monitoring or uptime services unrestricted access.
 
 > **Note:** Only use the allowlist for trusted IPs, as bypassing rate limits can increase exposure to abuse.
 
@@ -40,7 +40,7 @@ The **Allowlist** (sometimes referred to as a "whitelist") lets you specify IP a
 5. Click **Save**.
 
 
-![Screenshot of the Access Control IP section](./assets/access-control-ip.png)
+![Screenshot of the Access Control IP section](../assets/access-control-ip.png)
 
 
 ### Removing an IP or Range
@@ -49,7 +49,7 @@ The **Allowlist** (sometimes referred to as a "whitelist") lets you specify IP a
 2. Click the **Delete** button next to the entry.
 3. Confirm the deletion when prompted.
 
-![Screenshot of the Access Control IP delete](./assets/remove-ips.png)
+![Screenshot of the Access Control IP delete](../assets/remove-ips.png)
 
 
 ## IP Range Limitations
@@ -67,6 +67,3 @@ The **Allowlist** (sometimes referred to as a "whitelist") lets you specify IP a
 
 - [Firewall and Rate Limiting](https://docs.altis-dxp.com/cloud/firewall/)
 
-
-
-If you have questions or require assistance, please contact your platform administrator or support team.
