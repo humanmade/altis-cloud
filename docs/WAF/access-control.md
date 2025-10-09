@@ -1,6 +1,10 @@
 # IP Access Control
 
-The **IP Access Control** feature allows administrators to manage network access and rate limiting at the IP address level. This feature complements the default Web Application Firewall (WAF) protections by enabling more granular control over which IPs are blocked or allowed to bypass rate limits.
+The **IP Access Control** feature allows administrators to manage
+network access and rate limiting at the IP address level. This feature
+complements the default Web Application Firewall (WAF) protections by
+enabling more granular control over which IPs are blocked or allowed to
+bypass rate limits.
 
 For more information on WAF and default rate limits, see the [Firewall documentation](https://docs.altis-dxp.com/cloud/firewall/).
 
@@ -9,21 +13,25 @@ For more information on WAF and default rate limits, see the [Firewall documenta
 - **Blocklist**: Deny all access from specific IP addresses or ranges.
 - **Allowlist**: Permit specified IP addresses or ranges to bypass WAF rate limits.
 
-This feature is accessible from the Altis Dashboard and is designed for simple, effective access management.
+This feature is accessible from the Altis Dashboard and is designed for
+simple, effective access management.
 
 ## Blocklist
 
-The **Blocklist** allows you to deny all traffic originating from specified IP addresses or IP ranges. Any request from a blocklisted IP will be automatically rejected and will not reach your application.
+The **Blocklist** allows you to deny all traffic originating from specified IP addresses or IP ranges. Any
+request from a blocklisted IP will be automatically rejected and will not reach your application.
 
 **Use Cases:**
+
 - Blocking malicious actors or IPs with suspicious activity.
-- Preventing access from certain data centers often used for spam traffic. 
+- Preventing access from certain data centers often used for spam traffic.I
 
 ## Allowlist
 
 The **Allowlist** lets you specify IP addresses or ranges that are exempt from the default WAF rate limits. Requests from allowlisted IPs will not be subject to rate limiting, ensuring uninterrupted access.
 
 **Use Cases:**
+
 - Ensuring trusted partners or internal teams are never rate-limited.
 - Allowing monitoring or uptime services unrestricted access.
 
@@ -39,9 +47,7 @@ The **Allowlist** lets you specify IP addresses or ranges that are exempt from t
 4. Enter the desired IP address or CIDR range (see [IP Range Limitations](#ip-range-limitations)).
 5. Click **Save**.
 
-
 ![Screenshot of the Access Control IP section](../assets/access-control-ip.png)
-
 
 ### Removing an IP or Range
 
@@ -50,7 +56,6 @@ The **Allowlist** lets you specify IP addresses or ranges that are exempt from t
 3. Confirm the deletion when prompted.
 
 ![Screenshot of the Access Control IP delete](../assets/remove-ips.png)
-
 
 ## IP Range Limitations
 
@@ -66,4 +71,3 @@ The **Allowlist** lets you specify IP addresses or ranges that are exempt from t
 ## Related Documentation
 
 - [Firewall and Rate Limiting](https://docs.altis-dxp.com/cloud/firewall/)
-
