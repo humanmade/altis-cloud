@@ -28,7 +28,8 @@ request from a blocklisted IP will be automatically rejected and will not reach 
 
 ## Allowlist
 
-The **Allowlist** lets you specify IP addresses or ranges that are exempt from the default WAF rate limits. Requests from allowlisted IPs will not be subject to rate limiting, ensuring uninterrupted access.
+The **Allowlist** lets you specify IP addresses or ranges that are exempt from the default WAF rate limits.
+Requests from allowlisted IPs will not be subject to rate limiting, ensuring uninterrupted access.
 
 **Use Cases:**
 
