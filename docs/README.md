@@ -16,6 +16,7 @@ or build on top of.
 - Scalable multi-threaded scheduled tasks
 - S3 storage for media assets
 - [Geo targeting](geo-targeting.md)
+- [Log shipping](log-shipping.md)
 - [Customizable nginx configuration](nginx-configuration.md)
 - [Page caching](page-caching.md)
 - Database caching
