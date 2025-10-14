@@ -24,7 +24,7 @@ request from a blocklisted IP will be automatically rejected and will not reach 
 **Use Cases:**
 
 - Blocking malicious actors or IPs with suspicious activity.
-- Preventing access from certain data centers often used for spam traffic.I
+- Preventing access from certain data centers often used for spam traffic.
 
 ## Allowlist
 
