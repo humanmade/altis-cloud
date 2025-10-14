@@ -6,7 +6,7 @@ complements the default Web Application Firewall (WAF) protections by
 enabling more granular control over which IPs are blocked or allowed to
 bypass rate limits.
 
-For more information on WAF and default rate limits, see the [Firewall documentation](https://docs.altis-dxp.com/cloud/firewall/).
+For more information on WAF and default rate limits, see the [Firewall documentation](docs://cloud/firewall/).
 
 ## Feature Overview
 
@@ -71,4 +71,4 @@ Requests from allowlisted IPs will not be subject to rate limiting, ensuring uni
 
 ## Related Documentation
 
-- [Firewall and Rate Limiting](https://docs.altis-dxp.com/cloud/firewall/)
+- [Firewall and Rate Limiting](docs://cloud/firewall/)
