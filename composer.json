@@ -31,7 +31,7 @@
 		"php": ">=8.2",
 		"humanmade/wp-redis-predis-client": "~0.2.0",
 		"humanmade/aws-xray": "~1.3.9",
-		"humanmade/s3-uploads": "^3.0.10",
+		"humanmade/s3-uploads": "^3.0.11",
 		"humanmade/cavalcade": "^2.0.2",
 		"pantheon-systems/wp-redis": "1.4.6",
 		"humanmade/wordpress-pecl-memcached-object-cache": "2.1.0",
