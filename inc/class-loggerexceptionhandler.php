@@ -8,6 +8,7 @@
 namespace Altis\Cloud;
 
 use Monolog\Handler\HandlerWrapper;
+use Monolog\LogRecord;
 use Throwable;
 
 /**
@@ -18,10 +19,11 @@ class LoggerExceptionHandler extends HandlerWrapper {
 	/**
 	 * Check handler for exceptions.
 	 *
-	 * @param array $record The structured error log record.
+	 * @param LogRecord $record The structured error log record.
+	 *
 	 * @return bool
 	 */
-	public function handle( array $record ) : bool {
+	public function handle( LogRecord $record ) : bool {
 		try {
 			return $this->handler->handle( $record );
 		} catch ( Throwable $e ) {
