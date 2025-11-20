@@ -71,7 +71,7 @@ composer install --no-dev --optimize-autoloader --apcu-autoloader
 
 # Install Node Version Manager (nvm)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
-. ~/.nvm/nvm.sh
+. ~/.nvm/nvm.sh --install
 
 # Use node version from an '.nvm' file
 nvm install
