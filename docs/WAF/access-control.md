@@ -26,7 +26,8 @@ request from a blocklisted IP will be automatically rejected and will not reach 
 - Blocking malicious actors or IPs with suspicious activity.
 - Preventing access from certain data centers often used for spam traffic.
 
-> **Note:** You cannot add an IP address to the blocklist if it's already in the allowlist. To block an allowed IP, you must first remove it from the allowlist.
+> **Note:** You cannot add an IP address to the blocklist if it's already in the allowlist. To block an allowed IP, you must first
+remove it from the allowlist.
 
 ## Allowlist
 
