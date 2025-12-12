@@ -5,7 +5,7 @@ In some situations you may need to invalidate specific URLs on the CDN. You can 
 using `Altis\Cloud\purge_cdn_paths()` helper function.
 
 ```php
-use Altis\Cloud\purge_cdn_paths;
+use function Altis\Cloud\purge_cdn_paths;
 
 purge_cdn_paths( [
     '/sample-page/*',
