@@ -39,7 +39,8 @@
 		"humanmade/ludicrousdb": "~5.0.7",
 		"humanmade/aws-ses-wp-mail": "~1.3.1",
 		"monolog/monolog": "^2.9",
-		"maxbanton/cwh": "^2.0"
+		"maxbanton/cwh": "^2.0",
+		"humanmade/afterburner-object-cache": "^1.0.0"
 	},
 	"extra": {
 		"altis": {
