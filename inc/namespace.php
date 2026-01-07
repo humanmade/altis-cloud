@@ -441,6 +441,10 @@ function load_object_cache_afterburner() {
 	require __DIR__ . '/alloptions_fix/namespace.php';
 	Alloptions_Fix\bootstrap();
 	// cache must be initted once it's included, else we'll get a fatal.
+
+	if ( class_exists( 'Afterburner\\LocalRedisCache' ) ) {
+		require Altis\ROOT_DIR . '/vendor/humanmade/afterburner-object-cache/object-cache.php';
+	}
 	wp_cache_init();
 }
 
