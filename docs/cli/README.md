@@ -418,7 +418,7 @@ altis-cli stack php-logs --after 2025/01/28T10:17 --before 2025/01/28T10:25 plat
 
 Using the tail parameter will give you a live feed of logs entries as they are created. Use `CTRL+C` to exit the feed.
 
-### Stack `scp`
+### Stack scp
 
 ```sh
 $ altis-cli stack scp --help
