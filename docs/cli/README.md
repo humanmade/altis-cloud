@@ -28,7 +28,7 @@ Or you can run it using `npx`:
 npx altis-cli
 ```
 
-## commands available
+## Commands available
 
 The following commands are available in the Altis CLI tool
 
