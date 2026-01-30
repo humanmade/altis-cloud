@@ -43,6 +43,7 @@ class QM_Output_Html extends \QM_Output_Html {
 	 */
 	public function output() {
 		$stats = Afterburner\ObjectCache\getStats();
+		$request_stats = Afterburner\ObjectCache\getRequestStats();
 		?>
 		<?php $this->before_tabular_output(); ?>
 
@@ -72,8 +73,17 @@ class QM_Output_Html extends \QM_Output_Html {
 				<td><code><?php echo esc_html( round( $stats->redis_total_time / 1000 ) ) ?>ms</code></td>
 			</tr>
 			<tr>
-			<td><?php echo esc_html__( 'All stats for this PHP worker', 'altis' ); ?></td>
-				<td><pre><?php echo esc_html( print_r( $stats, true ) ) // phpcs:ignore ?></pre></td>
+				<td><?php echo esc_html__( 'All stats for this PHP worker', 'altis' ); ?></td>
+				<td>
+					<pre><?php echo esc_html( print_r( $stats, true ) ) // phpcs:ignore ?></pre>
+				</td>
+			</tr>
+			<tr>
+				<td><?php echo esc_html__( 'All stats for this request', 'altis' ); ?></td>
+				<td>
+					<pre><?php echo esc_html( print_r( $request_stats, true ) ) // phpcs:ignore ?></pre>
+				</td>
+			</tr>
 		</tbody>
 
 		<?php
