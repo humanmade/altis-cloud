@@ -23,9 +23,13 @@ the `altis.modules.cloud.email-from-address` setting.
 
 ```json
 {
-    "modules": {
-        "cloud": {
-            "email-from-address": "webmaster@mydomainname.com"
+    "extra": {
+        "altis": {
+            "modules": {
+                "cloud": {
+                    "email-from-address": "webmaster@mydomainname.com"
+                }
+            }
         }
     }
 }
@@ -81,9 +85,13 @@ example. (By default this is set to `false`, which uses the default region.)
 
 ```json
 {
-    "modules": {
-        "cloud": {
-            "email-region": "us-east-1"
+    "extra": {
+        "altis": {
+            "modules": {
+                "cloud": {
+                    "email-region": "us-east-1"
+                }
+            }
         }
     }
 }
