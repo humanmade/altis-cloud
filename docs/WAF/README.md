@@ -15,7 +15,7 @@ files.
 
 Our WAF blocks known-bad actors based on IP address and behaviour, using public reputation lists including AWS' IP reputation list and
 managed rules for known attack patterns. We also block access to certain sensitive files and system paths, and at an application level
-(as set in your configuration) access to the XML-RPC API.
+[access to the XML-RPC API (as set in your configuration)](docs://cms/xmlrpc/).
 
 The Altis team proactively manages these protections on your behalf, including updating rules in response to newly discovered
 vulnerabilities in WordPress and commonly used plugins.
@@ -36,7 +36,7 @@ Per-IP rate limits are applied at multiple tiers across all environments as stan
 
 - **CDN-level rate limits** apply across the entire environment, tuned by our engineers based on your traffic patterns. Contact Altis
   support if you need these adjusted.
-- **Per-container rate limits** restrict the rate of requests to dynamic pages (PHP) on each application server.
+- **Per-container rate limits** restrict the rate of requests to dynamic pages (PHP) on each application container.
 - **Sensitive page rate limits** apply stricter controls to login and administration pages.
 
 These rate limits are monitored and adjusted across the platform depending on industry-wide threat analysis; contact Altis support
