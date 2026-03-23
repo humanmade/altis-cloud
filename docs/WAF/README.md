@@ -66,11 +66,8 @@ You can now self-manage allow lists to allow specific IP addresses through the f
 
 Altis maintains a global team of cloud engineers on-call with multiple tiers of coverage, 24/7/365.
 
-We use a wide range of alerts covering both internal and external metrics:
-
-- **Internal metrics**: CPU usage, memory usage, disk space, scaling behaviour, and network throughput.
-- **External metrics**: Error rates experienced by customers, including server error thresholds that trigger alerts when a
-  significant proportion of requests are failing.
+We monitor system performance and customer impact metrics around the clock. Our on-call engineers are notified of issues via
+alerts with automatic escalation if needed.
 
 Additionally, urgent support tickets filed via the Altis Dashboard or the emergency email address trigger an alert to on-call
 engineers immediately.
