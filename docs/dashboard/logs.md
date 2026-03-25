@@ -16,21 +16,3 @@ The date range can be specified for all logs types. Some log types will also sup
 
 ![Screenshot of a logs filter being applied](../assets/logs-with-filter.png)
 
-## Log Delivery
-
-Log delivery to CloudWatch can be switched off, however this is not recommended as logs will not be available in the Altis
-Dashboard.
-
-```json
-{
-    "extra": {
-        "altis": {
-            "modules": {
-                "cloud": {
-                    "php-errors-to-cloudwatch": false
-                }
-            }
-        }
-    }
-}
-```
