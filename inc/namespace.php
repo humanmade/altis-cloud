@@ -253,11 +253,6 @@ function load_platform( $wp_debug_enabled ) {
 	SES_To_CloudWatch\bootstrap();
 	Performance_Optimizations\bootstrap();
 
-	if ( $config['php-errors-to-cloudwatch'] ) {
-		require_once __DIR__ . '/error_handler/namespace.php';
-		Error_Handler\bootstrap();
-	}
-
 	if ( $config['audit-log-to-cloudwatch'] ) {
 		require_once __DIR__ . '/audit_log_to_cloudwatch/namespace.php';
 		Audit_Log_To_CloudWatch\bootstrap();
