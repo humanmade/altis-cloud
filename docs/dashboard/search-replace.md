@@ -1,8 +1,9 @@
 # Search and Replace on Sync
 
-During a database sync, Altis can automatically perform string replacements on imported data. Mappings are applied in-transit
-before data is stored in the destination database. This allows environment-specific values, such as domain names, to be updated for
-the target environment as part of the sync process.
+During a database sync, Altis can automatically perform string replacements on
+imported data. Mappings are applied in transit before data is stored in the
+destination database. This allows environment-specific values, such as domain
+names, to be updated for the target environment as part of the sync process.
 
 Mappings are fetched from `composer.json` at the currently deployed SHA.
 
@@ -10,8 +11,9 @@ Mappings are fetched from `composer.json` at the currently deployed SHA.
 
 Configure mappings under `extra.altis.cloud.search-replace` in `composer.json`.
 
-Each top-level key should be the ID of the environment you are syncing **into**. Under each environment, define a set of
-`"find": "replace"` pairs to apply during the database sync.
+Each top-level key should be the ID of the environment you are syncing
+**into**. Under each environment, define a set of `"find": "replace"` pairs
+to apply during the database sync.
 
 ```json
 {
@@ -33,17 +35,17 @@ Each top-level key should be the ID of the environment you are syncing **into**.
 }
 ```
 
-In this example, if a database is synced into `staging`, every occurrence of `example.com` will be replaced with
-`staging.example.com`.
+In this example, if a database is synced into `staging`, every occurrence of
+`example.com` will be replaced with `staging.example.com`.
 
-Likewise, if a database is synced into `development`, both `example.com` and `www.example.com` will be replaced with their
-development equivalents.
+Likewise, if a database is synced into `development`, both `example.com` and
+`www.example.com` will be replaced with their development equivalents.
 
 ## Notes
 
-The following points apply to search replace mappings:
+The following points apply to search-replace mappings:
 
 - Mappings use plain string replacement. Regular expressions are not supported.
-- You can define multiple find and replace pairs for each target environment.
+- You can define multiple find-and-replace pairs for each target environment.
 - The mapping key always refers to the target environment, not the source environment.
 - Mappings are only applied during database syncs, and are not applied to uploaded assets.
