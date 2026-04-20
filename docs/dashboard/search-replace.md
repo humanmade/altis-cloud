@@ -15,6 +15,16 @@ Each top-level key should be the **exact** ID of the environment you are syncing
 **into**. Under each environment, define a set of `"find": "replace"` pairs
 to apply during the database sync.
 
+Search and replace mappings use plain string replacement only. Regular
+expressions are not supported.
+
+You can define multiple find-and-replace pairs for each target environment.
+The mapping key always refers to the target environment, not the source
+environment.
+
+Mappings are only applied during database syncs. They are not applied to
+uploaded assets.
+
 ```json
 {
     "extra": {
@@ -40,13 +50,3 @@ In this example, if a database is synced into `example-stag-01`, every occurrenc
 
 Likewise, if a database is synced into `example-dev-01`, both `example.com` and
 `www.example.com` will be replaced with `example-dev.altis.cloud`.
-
-## Notes
-
-The following points apply to search-replace mappings:
-
-- Mappings use plain string replacement. Regular expressions are not supported.
-- You can define multiple find-and-replace pairs for each target environment.
-- Use the exact environment ID as the mapping key.
-- The mapping key always refers to the target environment, not the source environment.
-- Mappings are only applied during database syncs, and are not applied to uploaded assets.
