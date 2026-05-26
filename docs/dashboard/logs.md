@@ -16,6 +16,19 @@ The date range can be specified for all logs types. Some log types will also sup
 
 ![Screenshot of a logs filter being applied](../assets/logs-with-filter.png)
 
+## Common PHP-FPM warnings
+
+You may occasionally see PHP-FPM warnings similar to the following in the PHP error logs:
+
+```text
+server reached pm.max_children setting, consider raising it
+```
+
+This warning is expected on Altis Cloud and does not indicate that your application needs a PHP-FPM configuration change.
+Altis Cloud manages request capacity by automatically scaling web containers horizontally, rather than by increasing the number of
+PHP-FPM workers within a single container. In most cases, this log entry can be ignored unless it correlates with user-visible
+performance issues or other application errors.
+
 ## Log Delivery
 
 Log delivery to CloudWatch can be switched off, however this is not recommended as logs will not be available in the Altis
