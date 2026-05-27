@@ -1,44 +1,53 @@
-# Altis Dashboard Import Export
+# Sync and Export
 
 The Altis Dashboard allows you to perform data migrations between environments, as well as perform data exports for use in local
 development environments.
 
-You can find the Import & Export features under the Data tab of the selected Altis Environment.
+You can find these features under the Sync and Export tab of the selected Altis Environment.
 
 ![import export view](../assets/import-export-view.png)
 
-From here you can view and download previous exports, displayed as a list, ordered by date.
+## Sync
+
+Environment syncing copies data from one environment to another in a single, automated operation. It handles the database
+import, uploads copy, [URL search-replace](./search-replace.md), cache flush, and any
+[post-sync steps](https://docs.altis-dxp.com/core/cli-command/#wp-altis-post-sync) automatically, without any manual intervention required.
+
+### Starting a sync
+
+![sync popup](../assets/sync-popup.png)
+
+1. In the Altis Dashboard, go to the **Sync and Export** tab of the environment you want to sync **into** (the destination).
+2. Click **Sync**.
+3. Under **Copy data from**, select the source environment.
+4. Under **Sync options**, choose what to sync:
+   - **Database.** Syncs the full database. Expand **Customize** to specify individual tables. URL mappings are applied
+     automatically during the sync based on your [search and replace configuration](./search-replace.md).
+   - **Run post-sync actions.** Runs any [post-sync actions](https://docs.altis-dxp.com/core/cli-command/#wp-altis-post-sync)
+     configured for the destination environment after the database sync.
+   - **Uploads.** Copies uploaded files such as images, videos, and PDFs. Expand **Restrict to subpath** to limit the copy
+     to a specific directory. Matching files will be overwritten.
+5. Click **Review Sync** and confirm to start.
+
+Progress is shown in real time, with each step listed as it completes. If a step fails, the error is surfaced inline alongside
+the step that failed.
+
+### Sync history
+
+![sync history](../assets/sync-history.png)
+
+The Dashboard keeps a record of all sync operations for the environment, accessible from the **Sync and Export** tab.
+Each entry shows who initiated the sync, the source and destination environments, and the status of each step including any errors.
+
+## Export
+
+From the **Sync and Export** tab you can view and download previous exports, displayed as a list, ordered by date.
 
 You can also create a new export of your database and/or assets. Typically, this will be your WordPress Uploads directory,
 comprising your media uploads and any other assets your application stores there.
 
 To create a new export, press the export button. This will display a new pop-up (as shown below) in which you can choose to export
-the uploads and/or the database. If you choose to create an export of the Uploads, you’ll be able to optionally specify a path. This
+the uploads and/or the database. If you choose to create an export of the Uploads, you'll be able to optionally specify a path. This
 is useful if you only want to export the assets in a specific directory.
 
 ![export modal](../assets/export-modal.png)
-
-You can also import your database and assets from one environment to another, via the Altis Dashboard.
-
-To do this, in the Altis Dashboard, first go to the environment you want to import into. Then select Import. A pop-up form will
-appear. Select the source environment you will import from. Choose database and/or uploaded assets. As mentioned above, you can
-select a sub-path of the assets, if desired.
-
-![import modal](../assets/import-modal.png)
-
-Importing is a destructive, non-reversible process. Any existing data in the database will be deleted and replaced with the data
-from the source environment. **Important** Once the Import is complete, you will need to run a search-replace on the URLs in the
-database via the Altis CLI.
-
-**Important** before running the search-replace it's a good idea to create a `screen` session. If you are unfamiliar with screen
-sessions, checkout [this helpful article](https://linuxize.com/post/how-to-use-linux-screen/#starting-linux-screen). As
-the [maximum CLI session time](https://docs.altis-dxp.com/cloud/dashboard/cli/#limitations) is 20 minutes, running the
-search-replace in a `screen` session avoids this limit.
-
-If you’d like to learn more or are unfamiliar with WP CLI search-replace command, we recommend you familiarise yourself with these
-commands. Make use of the `--dry-run` flag before making permanent changes to the database. See the following article for more
-information: <https://developer.wordpress.org/cli/commands/search-replace>.
-
-**Note:** These features are designed with the idea that ‘code moves up, content moves down’. We do not recommend you migrate
-content from non-production environments to production environments. Content should typically flow
-from `production` -> `staging` -> `development` -> `test`, etc.
