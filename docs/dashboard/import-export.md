@@ -11,7 +11,7 @@ You can find these features under the Sync and Export tab of the selected Altis 
 
 Environment syncing copies data from one environment to another in a single, automated operation. It handles the database
 import, uploads copy, [URL search-replace](./search-replace.md), cache flush, and any
-[post-sync steps](https://docs.altis-dxp.com/core/cli-command/#wp-altis-post-sync) automatically, without any manual intervention required.
+[post-sync steps](docs://core/cli-command/#wp-altis-post-sync) automatically, without any manual intervention required.
 
 ### Starting a sync
 
@@ -23,7 +23,7 @@ import, uploads copy, [URL search-replace](./search-replace.md), cache flush, an
 4. Under **Sync options**, choose what to sync:
    - **Database.** Syncs the full database. Expand **Customize** to specify individual tables. URL mappings are applied
      automatically during the sync based on your [search and replace configuration](./search-replace.md).
-   - **Run post-sync actions.** Runs any [post-sync actions](https://docs.altis-dxp.com/core/cli-command/#wp-altis-post-sync)
+   - **Run post-sync actions.** Runs any [post-sync actions](docs://core/cli-command/#wp-altis-post-sync)
      configured for the destination environment after the database sync.
    - **Uploads.** Copies uploaded files such as images, videos, and PDFs. Expand **Restrict to subpath** to limit the copy
      to a specific directory. Matching files will be overwritten.
@@ -43,11 +43,14 @@ Each entry shows who initiated the sync, the source and destination environments
 
 From the **Sync and Export** tab you can view and download previous exports, displayed as a list, ordered by date.
 
-You can also create a new export of your database and/or assets. Typically, this will be your WordPress Uploads directory,
-comprising your media uploads and any other assets your application stores there.
+You can also create a new export of your database and/or uploads folder.
 
 To create a new export, press the export button. This will display a new pop-up (as shown below) in which you can choose to export
 the uploads and/or the database. If you choose to create an export of the Uploads, you'll be able to optionally specify a path. This
-is useful if you only want to export the assets in a specific directory.
+is useful if you only want to export the uploads in a specific directory.
 
 ![export modal](../assets/export-modal.png)
+
+**Note:** These features are designed with the idea that 'code moves up, content moves down'. We do not recommend you migrate
+content from non-production environments to production environments. Content should typically flow
+from `production` -> `staging` -> `development` -> `test`, etc.
