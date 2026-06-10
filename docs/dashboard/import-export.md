@@ -29,7 +29,7 @@ import, uploads copy, [URL search-replace](./search-replace.md), cache flush, an
      to a specific directory. Matching files will be overwritten.
 5. Click **Review Sync** and confirm to start.
 
-Progress is shown in real time, with each step listed as it completes. If a step fails, the error is surfaced inline alongside
+Progress is shown in real time, with each step listed as it completes. If a step fails, the error is shown inline alongside
 the step that failed.
 
 ### Sync history
