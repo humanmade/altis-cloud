@@ -25,7 +25,6 @@ add_action( 'altis.modules.init', function () {
 		'email-from-address' => null,
 		'email-region' => false,
 		'audit-log-to-cloudwatch' => $is_cloud,
-		'php-errors-to-cloudwatch' => $is_cloud,
 		'cdn-media-purge' => false,
 		'page-cache' => [
 			'ignored-query-string-params' => [
