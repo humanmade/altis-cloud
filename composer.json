@@ -23,6 +23,7 @@
 			"inc/session_handler/class-disallowed-session-handler.php",
 			"inc/session_handler/class-wp-cache-session-handler.php",
 			"inc/class-loggerexceptionhandler.php",
+			"inc/support_login/namespace.php",
 			"inc/namespace.php",
 			"wp-config.php"
 		]
