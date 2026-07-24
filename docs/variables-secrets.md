@@ -71,6 +71,15 @@ Both variables and secrets are available to your build script as environment var
 
 Changes to values apply immediately, and will affect your next build.
 
+### Secret redaction in build output
+
+Secret values are automatically redacted from your build log. If your build script prints a secret — for example, an error message
+that echoes back one of its arguments — each occurrence of the secret's value is replaced with `••••••` before it reaches the log.
+
+Redaction matches the literal value only: if your script transforms a secret before printing it (e.g. base64- or
+URL-encoding it), the transformed form is not detected. Very short secret values (fewer than four characters) are not redacted,
+as masking them could obscure unrelated output. Build variables (`VAR_`) are not secret and are never redacted.
+
 ## Limitations
 
 The following limitations apply:
