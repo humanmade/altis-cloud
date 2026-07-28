@@ -97,25 +97,9 @@ The settings page splits the rules into three groups.
 
 ### Bot Categories
 
-Bots are automatically classified into into categories based their purpose, as
-determined by self-reported user-agent and other signals.
-
-| Category           | Description                                    |
-|--------------------|------------------------------------------------|
-| Advertising        | Advertising bots and crawlers                  |
-| Archiver           | Web archiving bots                             |
-| Content Fetcher    | Content fetching services (e.g. RSS readers)   |
-| Email Client       | Email client link previews                     |
-| HTTP Library       | HTTP client libraries used by scripts and APIs |
-| Link Checker       | Link validation bots                           |
-| Miscellaneous      | Uncategorized bots                             |
-| Monitoring         | Uptime and monitoring services                 |
-| Scraping Framework | Web scraping frameworks                        |
-| Search Engine      | Search engine crawlers                         |
-| Security           | Security scanners and crawlers                 |
-| SEO                | SEO analysis tools                             |
-| Social Media       | Social media crawlers and link-preview embeds  |
-| AI                 | AI training and inference crawlers             |
+Bots are automatically classified into categories based their purpose, as determined by self-reported
+user-agent and other signals. For example, Advertising, Monitoring, Search Engine. See the
+*Settings* > *Traffic Management* page for the full list of categories and their descriptions.
 
 ### Signals
 
