@@ -26,7 +26,7 @@ user-agent strings, IP address reputation, request patterns, and (for the add-on
 interrogation and machine-learning analysis. Traffic Management lets you:
 
 - **See** how much of your traffic is automated, broken down by category and signal.
-  With the [add-on](#what-the-advanced-traffic-management-add-on-adds), you can also see individual 
+  With the [add-on](#what-the-advanced-traffic-management-add-on-adds), you can also see individual
   bot names and the organizations behind them.
 - **Decide** how each type of automated traffic is handled: allow it, block it, or make it
   prove it's human.
@@ -66,22 +66,22 @@ The **Mode** setting controls how Traffic Management behaves overall. We recomme
 **Count Only** mode, reviewing the Traffic page for a week or two to understand your traffic,
 and only then switching to **Active**.
 
-| Mode | Behaviour |
-| --- | --- |
-| **Disabled** | Rules are not active. No automated traffic is classified or acted on. |
+| Mode           | Behaviour                                                                                                                                                                                      |
+|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Disabled**   | Rules are not active. No automated traffic is classified or acted on.                                                                                                                          |
 | **Count Only** | Rules are evaluated and their matches are counted in your analytics, but **no requests are blocked or challenged**. This is the safe way to see what *would* happen before enforcing anything. |
-| **Active** | Rules are enforced. The per-rule action you set for each category, signal, and protection is applied. |
+| **Active**     | Rules are enforced. The per-rule action you set for each category, signal, and protection is applied.                                                                                          |
 
 ## Actions
 
 When Traffic Management is **Active**, each rule can be set to one of the following actions.
 Setting a rule to anything other than **Allow** means matching requests are acted on.
 
-| Action | What happens |
-| --- | --- |
-| **Allow** | Matching requests are permitted through. Use this for traffic you want to keep, such as search engines. |
-| **Block** | Matching requests are rejected with an HTTP `403` and never reach your application. |
-| **CAPTCHA** | Matching requests are shown a CAPTCHA puzzle on an interstitial page. Humans can solve it and continue; most bots cannot. Solving it issues a token so the visitor isn't repeatedly challenged. |
+| Action        | What happens                                                                                                                                                                                                                                                                                                                       |
+|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Allow**     | Matching requests are permitted through. Use this for traffic you want to keep, such as search engines.                                                                                                                                                                                                                            |
+| **Block**     | Matching requests are rejected with an HTTP `403` and never reach your application.                                                                                                                                                                                                                                                |
+| **CAPTCHA**   | Matching requests are shown a CAPTCHA puzzle on an interstitial page. Humans can solve it and continue; most bots cannot. Solving it issues a token so the visitor isn't repeatedly challenged.                                                                                                                                    |
 | **Challenge** | Matching requests are given a silent, background browser check — no puzzle is shown. Real browsers pass automatically and invisibly; automated clients that can't run the challenge are stopped. **Challenge is available only with the [Advanced Traffic Management add-on](#what-the-advanced-traffic-management-add-on-adds).** |
 
 The CAPTCHA puzzle is accessible — it offers both visual and audio variants and is available
@@ -104,22 +104,22 @@ Bots that identify themselves are grouped into categories based their purpose. B
 affects only unverified bots in it — verified bots like Googlebot are left alone. AI is the one
 exception (see below).
 
-| Category | Description |
-| --- | --- |
-| Advertising | Advertising bots and crawlers |
-| Archiver | Web archiving bots |
-| Content Fetcher | Content fetching services (e.g. RSS readers) |
-| Email Client | Email client link previews |
-| HTTP Library | HTTP client libraries used by scripts and APIs |
-| Link Checker | Link validation bots |
-| Miscellaneous | Uncategorized bots |
-| Monitoring | Uptime and monitoring services |
-| Scraping Framework | Web scraping frameworks |
-| Search Engine | Search engine crawlers |
-| Security | Security scanners and crawlers |
-| SEO | SEO analysis tools |
-| Social Media | Social media crawlers and link-preview embeds |
-| AI | AI training and inference crawlers |
+| Category           | Description                                    |
+|--------------------|------------------------------------------------|
+| Advertising        | Advertising bots and crawlers                  |
+| Archiver           | Web archiving bots                             |
+| Content Fetcher    | Content fetching services (e.g. RSS readers)   |
+| Email Client       | Email client link previews                     |
+| HTTP Library       | HTTP client libraries used by scripts and APIs |
+| Link Checker       | Link validation bots                           |
+| Miscellaneous      | Uncategorized bots                             |
+| Monitoring         | Uptime and monitoring services                 |
+| Scraping Framework | Web scraping frameworks                        |
+| Search Engine      | Search engine crawlers                         |
+| Security           | Security scanners and crawlers                 |
+| SEO                | SEO analysis tools                             |
+| Social Media       | Social media crawlers and link-preview embeds  |
+| AI                 | AI training and inference crawlers             |
 
 > **The AI category works differently.** Unlike other categories, the action you choose for the AI category applies
 > to *all* matching bots, verified or not. This lets you block AI crawlers even when
@@ -129,17 +129,18 @@ exception (see below).
 
 Signals are indicators that a request is automated, these are used for traffic that doesn't fall into a clean category.
 
-| Signal | Description |
-| --- | --- |
-| Automated Browser | The client browser shows indicators of being automated (e.g. headless or scripted). |
-| Known Bot Data Center | The request originates from a hosting provider or data center commonly used by bots. |
-| Non-Browser User Agent | The user-agent string doesn't look like a real web browser (often API clients). |
+| Signal                 | Description                                                                          |
+|------------------------|--------------------------------------------------------------------------------------|
+| Automated Browser      | The client browser shows indicators of being automated (e.g. headless or scripted).  |
+| Known Bot Data Center  | The request originates from a hosting provider or data center commonly used by bots. |
+| Non-Browser User Agent | The user-agent string doesn't look like a real web browser (often API clients).      |
 
 ### Targeted Protections
 
 The most sophisticated detections, aimed at bots that deliberately hide and don't identify
 themselves. These use browser checks, fingerprinting, request-rate analysis, and
-machine learning. **Targeted Protections require the [Advanced Traffic Management add-on.](#what-the-advanced-traffic-management-add-on-adds)**
+machine learning. **Targeted Protections require
+the [Advanced Traffic Management add-on.](#what-the-advanced-traffic-management-add-on-adds)**
 
 They fall into a few families:
 
@@ -182,7 +183,7 @@ The **Advanced Traffic Management add-on** adds:
 - **The Challenge action** — silent background browser checks, so you can stop bots without
   showing anyone a puzzle.
 - **Richer analytics** — the Identified bots and Bot organizations tables on the Traffic page,
-naming the specific bots hitting your site and the companies behind them.
+  naming the specific bots hitting your site and the companies behind them.
 
 To enable the add-on, or for help deciding whether it's right for your site, contact your
 account manager or Altis support.
