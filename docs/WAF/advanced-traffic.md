@@ -6,17 +6,17 @@ maintaining lists of individual user agents, you control traffic at the level of
 (such as AI crawlers or SEO tools) and *signals* (such as requests from known data centers),
 choosing to allow it, block it, or require it to prove it's human.
 
-It builds on the default [Web Application Firewall](./README.md) protections, is available to
-all Altis customers, and is managed entirely from the Altis Dashboard — no code or
-configuration changes required. The **Advanced Traffic Management** add-on extends it with a
-silent background Challenge action and machine-learning-based targeted rules (see
-[What the Advanced Traffic Management add-on adds](#what-the-advanced-traffic-management-add-on-adds)).
+Traffic Management extends the default [Web Application Firewall](./README.md) protections available to
+all Altis customers with the detection and control capabilities provided by AWS WAF Bot Control. Altis
+handles the underlying setup and surfaces AWS WAF detection results in plain language through the
+Dashboard, giving you self-service control over automated traffic without requiring any code or
+configuration changes. You decide what to allow, block, or challenge.
 
-Traffic Management is built on AWS WAF Bot Control. Altis manages the underlying rule group on
-your behalf and surfaces its detection results and controls in the Dashboard using
-plain-language terminology — everything is configured from the Altis Dashboard, not from AWS.
+More advanced detections, such as silent background Challenge actions and machine-learning-based
+targeted rules, require the Advanced Traffic Management add-on. See [What the Advanced Traffic
+Management add-on adds](#what-the-advanced-traffic-management-add-on-adds) for more details.
 
-For simpler, header-based control, see [User-Agent Blocking](./ua-blocking.md). To manage
+For simpler, HTTP header-based control, see [User-Agent Blocking](./ua-blocking.md). To manage
 access at the IP address level, see [IP Access Control](./access-control.md).
 
 ## What Traffic Management does
@@ -25,8 +25,8 @@ Every request to your environment is inspected and classified using a range of s
 user-agent strings, IP address reputation, request patterns, and (for the add-on) browser
 interrogation and machine-learning analysis. Traffic Management lets you:
 
-- **See** how much of your traffic is automated, broken down by category, signal, and — with
-  the add-on — individual bot name and operating organization.
+- **See** how much of your traffic is automated, broken down by category and signal.
+With the [add-on](#what-the-advanced-traffic-management-add-on-adds), you can also see individual bot names and the organizations behind them..
 - **Decide** how each type of automated traffic is handled: allow it, block it, or make it
   prove it's human.
 
@@ -35,7 +35,7 @@ Traffic Management appears in two places in the Dashboard:
 - The **Traffic** page shows analytics: how your traffic breaks down between verified bots,
   unverified bots, and non-bot (human) requests, and what has been allowed or blocked.
 - The **Traffic Management** settings page (under **Application Settings**) is where you
-  configure the mode and per-rule actions described below.
+  configure the mode and choose an action for each rule.
 
 ![The Traffic Management settings page](../assets/atm-settings.png)
 
@@ -49,13 +49,13 @@ Traffic Management appears in two places in the Dashboard:
   IP ranges, or a bot using the Web Bot Auth protocol). An *unverified* bot claims an identity
   that cannot be confirmed, or none at all.
   Most rules only act on unverified traffic — verified bots are labelled but left alone.
-- **Category** — the *kind* of bot, such as a search engine, an SEO tool, or an AI crawler.
-  Categories are determined from self-identifying signals like the user agent.
-- **Signal** — a heuristic indicator that a request is automated, such as coming from a known
+- **Signal** — an indicator that a request is automated, such as coming from a known
   bot data center or using a non-browser user agent. Signals apply to traffic that doesn't
   fall into a clean category.
+- **Category** — the *kind* of bot, such as a search engine, an SEO tool, or an AI crawler.
+  Categories are determined from self-identifying signals like the user agent.
 - **Token** — a small piece of session data AWS WAF issues to legitimate browsers. Many of
-  the targeted protections rely on the presence and consistency of this token to tell real
+  the targeted protections rely on it to tell real
   browsers apart from bots. Tokens are issued automatically when the CAPTCHA or Challenge
   actions run.
 
@@ -67,7 +67,7 @@ and only then switching to **Active**.
 
 | Mode | Behaviour |
 | --- | --- |
-| **Disabled** | Bot control rules are not active. No automated traffic is classified or acted on. |
+| **Disabled** | Rules are not active. No automated traffic is classified or acted on. |
 | **Count Only** | Rules are evaluated and their matches are counted in your analytics, but **no requests are blocked or challenged**. This is the safe way to see what *would* happen before enforcing anything. |
 | **Active** | Rules are enforced. The per-rule action you set for each category, signal, and protection is applied. |
 
@@ -81,7 +81,7 @@ Setting a rule to anything other than **Allow** means matching requests are acte
 | **Allow** | Matching requests are permitted through. Use this for traffic you want to keep, such as search engines. |
 | **Block** | Matching requests are rejected with an HTTP `403` and never reach your application. |
 | **CAPTCHA** | Matching requests are shown a CAPTCHA puzzle on an interstitial page. Humans can solve it and continue; most bots cannot. Solving it issues a token so the visitor isn't repeatedly challenged. |
-| **Challenge** | Matching requests are given a silent, background browser challenge — no puzzle is shown. Genuine browsers pass automatically and invisibly; automated clients that can't run the challenge are stopped. **Challenge is available only with the Advanced Traffic Management add-on.** |
+| **Challenge** | Matching requests are given a silent, background browser check — no puzzle is shown. Real browsers pass automatically and invisibly; automated clients that can't run the challenge are stopped. **Challenge is available only with the [Advanced Traffic Management add-on](#what-the-advanced-traffic-management-add-on-adds).** |
 
 The CAPTCHA puzzle is accessible — it offers both visual and audio variants and is available
 in multiple languages. The interstitial page shown while a CAPTCHA is pending **does not count
@@ -90,18 +90,18 @@ towards your page views**.
 > **CAPTCHA vs. Challenge.** A CAPTCHA interrupts the visitor with a puzzle, so use it where
 > some friction is acceptable, or where a rule might occasionally misidentify a real user and
 > you'd rather give them a way through than block them outright. A Challenge is invisible to
-> real users, making it the better default for protecting normal pages — but it requires the
-> Advanced Traffic Management add-on.
+> real users, making it the better default for protecting normal pages — if you have the
+> [Advanced Traffic Management add-on](#what-the-advanced-traffic-management-add-on-adds).
 
 ## Rule groups
 
-The rules are organised into three groups on the settings page.
+The settings page splits the rules into three groups.
 
 ### Bot Categories
 
-Self-identifying bots grouped by purpose. Setting a category to Block (or CAPTCHA/Challenge)
-affects only *unverified* bots in that category — verified bots such as Googlebot are always
-allowed, with one exception noted below.
+Bots that identify themselves are grouped into categories based their purpose. Blocking or challenging a category
+affects only unverified bots in it — verified bots like Googlebot are left alone. AI is the one
+exception (see below).
 
 | Category | Description |
 | --- | --- |
@@ -120,13 +120,13 @@ allowed, with one exception noted below.
 | Social Media | Social media crawlers and link-preview embeds |
 | AI | AI training and inference crawlers |
 
-> **AI crawlers are different.** Unlike other categories, the AI rule applies your chosen
-> action to *all* matching bots, verified or not. This lets you block AI crawlers even when
+> **The AI category works differently.** Unlike other categories, the action you choose for the AI category applies
+> to *all* matching bots, verified or not. This lets you block AI crawlers even when
 > they identify themselves honestly.
 
 ### Signals
 
-Heuristic indicators of automation, applied to traffic that isn't a cleanly categorised bot.
+Signals are indicators that a request is automated, these are used for traffic that doesn't fall into a clean category.
 
 | Signal | Description |
 | --- | --- |
@@ -137,8 +137,8 @@ Heuristic indicators of automation, applied to traffic that isn't a cleanly cate
 ### Targeted Protections
 
 The most sophisticated detections, aimed at bots that deliberately hide and don't identify
-themselves. These use browser interrogation, fingerprinting, request-rate analysis, and
-machine learning. **Targeted Protections require the Advanced Traffic Management add-on.**
+themselves. These use browser checks, fingerprinting, request-rate analysis, and
+machine learning. **Targeted Protections require the [Advanced Traffic Management add-on.](#what-the-advanced-traffic-management-add-on-adds)**
 
 They fall into a few families:
 
@@ -174,12 +174,14 @@ blocking.
 
 ## What the Advanced Traffic Management add-on adds
 
-Every Altis customer gets bot categories and signals with the Allow / Block / CAPTCHA actions.
+Every Altis customer gets bot categories and signals with the Allow, Block, and CAPTCHA actions.
 The **Advanced Traffic Management add-on** adds:
 
-- **Targeted Protections** — the ML-driven and fingerprint-based rules described above.
-- **The Challenge action** — invisible background browser challenges.
-- **Identified bots and organizations** analytics on the Traffic page.
+- **Targeted Protections** — the machine-learning and fingerprint-based rules above.
+- **The Challenge action** — silent background browser checks, so you can stop bots without
+  showing anyone a puzzle.
+- **Richer analytics** — the Identified bots and Bot organizations tables on the Traffic page,
+naming the specific bots hitting your site and the companies behind them.
 
 To enable the add-on, or for help deciding whether it's right for your site, contact your
 account manager or Altis support.
