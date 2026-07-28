@@ -1,10 +1,10 @@
 # Traffic Management
 
-**Traffic Management** gives you self-service control over the automated traffic — bots,
+The **Traffic Management** feature gives administrators self-service control over the automated traffic — bots,
 crawlers, scrapers, and scripted clients — that reaches your environment. Rather than
-maintaining lists of individual user agents, you control traffic at the level of *categories*
-(such as AI crawlers or SEO tools) and *signals* (such as requests from known data centers),
-choosing to allow it, block it, or require it to prove it's human.
+maintaining lists of individual user agents, you define rules based on traffic *categories*
+(such as AI crawlers or SEO tools) and *signals* (such as requests originating from known data centers).
+For each type of traffic, you can choose whether to allow it, block it, or require it to prove that it's human.
 
 Traffic Management extends the default [Web Application Firewall](./README.md) protections available to
 all Altis customers with the detection and control capabilities provided by AWS WAF Bot Control. Altis
@@ -26,7 +26,8 @@ user-agent strings, IP address reputation, request patterns, and (for the add-on
 interrogation and machine-learning analysis. Traffic Management lets you:
 
 - **See** how much of your traffic is automated, broken down by category and signal.
-With the [add-on](#what-the-advanced-traffic-management-add-on-adds), you can also see individual bot names and the organizations behind them..
+  With the [add-on](#what-the-advanced-traffic-management-add-on-adds), you can also see individual 
+  bot names and the organizations behind them.
 - **Decide** how each type of automated traffic is handled: allow it, block it, or make it
   prove it's human.
 
@@ -194,8 +195,6 @@ account manager or Altis support.
   don't harm SEO. Remember verified bots are generally left alone regardless.
 - **Prefer Challenge over Block for page traffic.** A background Challenge stops bots without
   inconveniencing real visitors; reserve Block for traffic you're confident is unwanted.
-- **Escalate targeted rules by confidence.** Challenge or CAPTCHA the Low/Medium levels and
-  Block only High/Maximum, to minimise false positives.
 - **Review regularly.** Bot behaviour changes; revisit the Traffic page periodically and
   adjust your actions.
 
