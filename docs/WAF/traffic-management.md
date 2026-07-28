@@ -130,8 +130,6 @@ They fall into a few families:
 - **Token reuse (ML)** — a single token being reused across many distinct IP addresses,
   countries, or networks (ASNs), reported at Low, Medium, and High confidence.
 
-Because these rules escalate by confidence level, a common pattern is to Challenge or CAPTCHA
-
 With the ML-based rules, a confidence rating is assigned to the signal based on
 the model's output. A common pattern is to Challenge or CAPTCHA lower-confidence
 levels and Block only the high-confidence ones.
