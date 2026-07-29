@@ -7,6 +7,9 @@ and [AWS Shield Advanced](https://aws.amazon.com/shield/).
 Our firewall has protected customers against active attacks, including HTTP request floods up to 1 million requests per second,
 sustained over hours.
 
+WAF behaviour is [customizable](#firewall-customizations) including self-service changes within the Altis Dashboard, and custom
+rulesets available as an add-on.
+
 ## Protection against exploits
 
 The Altis WAF includes protection against web exploits, including Cross-Site Scripting (XSS), SQL injections (SQLi), and other known
@@ -88,18 +91,26 @@ Once an alert is validated, engineers begin our incident management process:
 
 ## Firewall customizations
 
-Our firewall is maintained as standard across our platform, and for most customers, you'll never need to worry about your site. Our
-platform also provides a variety of options for limiting access further, such
-as [custom nginx configuration](./nginx-configuration.md).
+Our firewall is maintained as standard across our platform, and for most customers, you'll never need to worry about your site. For
+those cases when you do, we provide a variety of customizations you can adjust:
 
-For customers with advanced use cases, the firewall can be customized at an environment level. This includes allowing specific IP
-addresses to bypass the firewall, custom blocking rules such as VPN requirements for backend access, and the use of third-party
-origins.
+* Control incoming traffic by category or signal with [Traffic Management](traffic-management.md)
+* Block individual user-agents or exclude them from rate limits with [User-Agent Controls](ua-blocking.md)
+* Manage access by IP address or range with [IP Access Control](access-control.md)
+
+For more advanced control, many additional controls including blocking routes and behaviours can be implemented via
+[custom nginx configuration](../nginx-configuration.md). This allows writing arbitrary nginx rules, however operates *after* the
+CDN and edge cache, so can't block all traffic.
+
+### Custom Firewall Rules
+
+For customers with advanced use cases, the firewall can be customized at an environment level. This includes complex blocking rules,
+restricting access to only a select set of IPs (such as a corporate VPN), and the use of third-party origins.
 
 Firewall customizations come with a degree of risk, and are carefully managed by our team in conjunction with your requirements. For
 example, allowing a specific IP address to bypass these protections may increase the chance of your infrastructure being
 overwhelmed. During the initial setup and testing of customizations, the Altis team will work with you to tune the configuration to
 manage risk.
 
-Firewall customizations are a non-standard feature of Altis, and may come with additional charges. Contact Altis support to inquire
-further.
+Custom Firewall Rules are available as an add-on to your existing Altis plan, and come with additional charges. Contact your account
+manager to learn more.
