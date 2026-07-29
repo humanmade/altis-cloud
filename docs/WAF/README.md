@@ -37,13 +37,13 @@ DDoS protection operates at multiple network layers:
 
 Per-IP rate limits are applied at multiple tiers across all environments as standard:
 
-- **CDN-level rate limits** apply across the entire environment, tuned by our engineers based on your traffic patterns. Contact Altis
-  support if you need these adjusted.
+- **CDN-level rate limits** apply across the entire environment, tuned by our engineers based on your traffic patterns.
 - **Per-container rate limits** restrict the rate of requests to dynamic pages (PHP) on each application container.
 - **Sensitive page rate limits** apply stricter controls to login and administration pages.
 
-These rate limits are monitored and adjusted across the platform depending on industry-wide threat analysis; contact Altis support
-for further information about the currently-applied rate limits.
+These rate limits are monitored and adjusted across the platform depending on industry-wide threat analysis. Some rate limits can be
+adjusted if your traffic follows exceptional patterns; Altis support can provide further information about the currently-applied
+limits and available adjustments.
 
 Altis also includes advanced DDoS protection as standard for our customers. We actively monitor all environments for attacks, with
 automated interventions and mitigation. Our engineers are on-call 24/7 to respond if necessary, and we work with the AWS Shield
@@ -56,14 +56,13 @@ example, stricter rate limits on backend requests (such as `/wp-admin`) may be p
 
 Our system operates automatically to detect and mitigate threats. In some cases, this can lead to legitimate users being blocked.
 
-If you believe your IP address has been blocked accidentally, contact Altis support, who can investigate why an IP address may be
-blocked.
+For legitimate use cases, you can allow known IP addresses to bypass rate limits. This may include office IPs, corporate VPN ranges,
+and external testers. The [IP access control functionality in the Altis Dashboard](./access-control.md) provides an Allowlist which
+will permit addresses to bypass the WAF rate limit.
 
 For customers with additional DDoS mitigation in place, legitimate backend users (such as editors and site admins) may be blocked
-at a higher rate than normal. As part of organizing additional mitigation, Altis engineers can relax these mitigation for your
+at a higher rate than normal. As part of organizing additional mitigation, Altis engineers can relax these mitigations for your
 users. (Note that regular firewall rules may still apply.)
-
-You can now self-manage allow lists to allow specific IP addresses through the firewall.
 
 ## Monitoring & alerting
 
