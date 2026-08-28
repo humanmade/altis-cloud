@@ -137,6 +137,11 @@ function bootstrap() {
 	// Display environment details in admin sidebar.
 	Environment_Indicator\bootstrap();
 
+	// Temporary login access for Altis Support.
+	if ( $config['support-login'] ?? true ) {
+		Support_Login\bootstrap();
+	}
+
 	// Sign Elasticsearch HTTP requests and log errors.
 	if ( isset( $config['elasticsearch'] ) && $config['elasticsearch'] ) {
 		add_action( 'http_api_debug', __NAMESPACE__ . '\\log_elasticsearch_request_errors', 10, 5 );

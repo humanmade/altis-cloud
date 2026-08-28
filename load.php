@@ -26,6 +26,7 @@ add_action( 'altis.modules.init', function () {
 		'email-region' => false,
 		'audit-log-to-cloudwatch' => $is_cloud,
 		'cdn-media-purge' => false,
+		'support-login' => true,
 		'page-cache' => [
 			'ignored-query-string-params' => [
 				'utm_campaign',
