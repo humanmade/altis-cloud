@@ -7,6 +7,9 @@ and [AWS Shield Advanced](https://aws.amazon.com/shield/).
 Our firewall has protected customers against active attacks, including HTTP request floods up to 1 million requests per second,
 sustained over hours.
 
+WAF behaviour is [customizable](#firewall-customizations) including self-service changes within the Altis Dashboard, and custom
+rulesets available as an add-on.
+
 ## Protection against exploits
 
 The Altis WAF includes protection against web exploits, including Cross-Site Scripting (XSS), SQL injections (SQLi), and other known
@@ -34,13 +37,13 @@ DDoS protection operates at multiple network layers:
 
 Per-IP rate limits are applied at multiple tiers across all environments as standard:
 
-- **CDN-level rate limits** apply across the entire environment, tuned by our engineers based on your traffic patterns. Contact Altis
-  support if you need these adjusted.
+- **CDN-level rate limits** apply across the entire environment, tuned by our engineers based on your traffic patterns.
 - **Per-container rate limits** restrict the rate of requests to dynamic pages (PHP) on each application container.
 - **Sensitive page rate limits** apply stricter controls to login and administration pages.
 
-These rate limits are monitored and adjusted across the platform depending on industry-wide threat analysis; contact Altis support
-for further information about the currently-applied rate limits.
+These rate limits are monitored and adjusted across the platform depending on industry-wide threat analysis. Some rate limits can be
+adjusted if your traffic follows exceptional patterns; Altis support can provide further information about the currently-applied
+limits and available adjustments.
 
 Altis also includes advanced DDoS protection as standard for our customers. We actively monitor all environments for attacks, with
 automated interventions and mitigation. Our engineers are on-call 24/7 to respond if necessary, and we work with the AWS Shield
@@ -53,14 +56,13 @@ example, stricter rate limits on backend requests (such as `/wp-admin`) may be p
 
 Our system operates automatically to detect and mitigate threats. In some cases, this can lead to legitimate users being blocked.
 
-If you believe your IP address has been blocked accidentally, contact Altis support, who can investigate why an IP address may be
-blocked.
+For legitimate use cases, you can allow known IP addresses to bypass rate limits. This may include office IPs, corporate VPN ranges,
+and external testers. The [IP access control functionality in the Altis Dashboard](./access-control.md) provides an Allowlist which
+will permit addresses to bypass the WAF rate limit.
 
 For customers with additional DDoS mitigation in place, legitimate backend users (such as editors and site admins) may be blocked
-at a higher rate than normal. As part of organizing additional mitigation, Altis engineers can relax these mitigation for your
+at a higher rate than normal. As part of organizing additional mitigation, Altis engineers can relax these mitigations for your
 users. (Note that regular firewall rules may still apply.)
-
-You can now self-manage allow lists to allow specific IP addresses through the firewall.
 
 ## Monitoring & alerting
 
@@ -88,18 +90,26 @@ Once an alert is validated, engineers begin our incident management process:
 
 ## Firewall customizations
 
-Our firewall is maintained as standard across our platform, and for most customers, you'll never need to worry about your site. Our
-platform also provides a variety of options for limiting access further, such
-as [custom nginx configuration](./nginx-configuration.md).
+Our firewall is maintained as standard across our platform, and for most customers, you'll never need to worry about your site. For
+those cases when you do, we provide a variety of customizations you can adjust:
 
-For customers with advanced use cases, the firewall can be customized at an environment level. This includes allowing specific IP
-addresses to bypass the firewall, custom blocking rules such as VPN requirements for backend access, and the use of third-party
-origins.
+* Control incoming traffic by category or signal with [Traffic Management](traffic-management.md)
+* Block individual user-agents or exclude them from rate limits with [User-Agent Controls](ua-blocking.md)
+* Manage access by IP address or range with [IP Access Control](access-control.md)
+
+For more advanced control, many additional controls including blocking routes and behaviours can be implemented via
+[custom nginx configuration](../nginx-configuration.md). This allows writing arbitrary nginx rules, however operates *after* the
+CDN and edge cache, so can't block all traffic.
+
+### Custom Firewall Rules
+
+For customers with advanced use cases, the firewall can be customized at an environment level. This includes complex blocking rules,
+restricting access to only a select set of IPs (such as a corporate VPN), and the use of third-party origins.
 
 Firewall customizations come with a degree of risk, and are carefully managed by our team in conjunction with your requirements. For
 example, allowing a specific IP address to bypass these protections may increase the chance of your infrastructure being
 overwhelmed. During the initial setup and testing of customizations, the Altis team will work with you to tune the configuration to
 manage risk.
 
-Firewall customizations are a non-standard feature of Altis, and may come with additional charges. Contact Altis support to inquire
-further.
+Custom Firewall Rules are available as an add-on to your existing Altis plan, and come with additional charges. Contact your account
+manager to learn more.
