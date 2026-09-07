@@ -56,6 +56,63 @@ Traffic Management appears in two places in the Dashboard:
 
 [wba]: https://datatracker.ietf.org/wg/webbotauth/about/
 
+## How rules are applied
+
+Traffic Management runs inside the Altis [Web Application Firewall](./README.md) at the CDN
+edge, so decisions are made before a request reaches your application. Two details of how it
+is wired up matter when you are interpreting the analytics or choosing actions.
+
+### Rules only act on page requests
+
+Every HTTP request is classified, and the analytics on the Traffic page reflect all of your
+traffic. The rules you configure are narrower: they only act on requests that are likely to
+be a person (or a bot) loading a page, and skip the supporting requests around them. The
+following are never blocked or challenged by Traffic Management rules:
+
+- Static files such as CSS, JavaScript, images, fonts, and XML or text files.
+- Media uploads and images served through the image resizing service.
+- WordPress core, theme, and plugin asset directories.
+- REST API requests (`/wp-json/`), `admin-ajax.php`, `admin-post.php`, and XML-RPC.
+- Requests from IP addresses on your [IP allowlist](./access-control.md).
+
+This filter is deliberately close to the heuristic Altis uses to estimate page views, so
+that a bot which is blocked disappears from your page views rather than from your asset
+requests. Altis maintains the exact list of exclusions and it may change over time.
+
+Because the analytics cover all requests and the rules cover only page requests, the numbers
+on the Traffic page are larger than the set of requests your rules act on. See
+[Reading the Traffic page](#reading-the-traffic-page).
+
+The practical consequences:
+
+- **Blocking a category stops that bot loading pages.** It does not stop the same client
+  fetching images or static files, and it does not stop it calling the REST API. If you need
+  to shut a client out of your site entirely, use [User-Agent Blocking](./ua-blocking.md) or
+  [IP Access Control](./access-control.md), which apply to every request.
+- **The Traffic page will show more requests for a category than the rule acts on.** A search
+  engine crawler that loads one page and then fetches its images and CSS shows up in the
+  Search Engine row of the bot breakdown for every one of those requests, but only the page
+  request is subject to your Search Engine action. A client that only calls the REST API or
+  only downloads media still appears in the breakdown, even though no Traffic Management
+  rule will ever act on it.
+- **Logged-in administration traffic is covered by the rules.** Requests to `/wp-admin/`
+  pages and `wp-login.php` are treated as page requests (only their static assets and AJAX
+  endpoints are excluded).
+  If editors report being challenged, check the Signals rules first, particularly
+  Known Bot Data Center if your team works from a VPN or office network hosted in a data
+  center. Adding the network to the IP allowlist exempts it from Traffic Management.
+
+### Where Traffic Management sits in the firewall
+
+Traffic Management rules are evaluated after the rest of the Altis firewall: the IP
+blocklist, User-Agent blocklist, rate limits, and the managed exploit protections. A request
+that is already blocked by one of those never reaches Traffic Management, so it is counted
+in the firewall's **Blocked Requests** total but does not appear in the bot breakdown.
+
+Rules only act on *unverified* bots. A verified bot (for example, Googlebot crawling from
+Google's published IP ranges) is still labelled and counted under its category, but the
+action you set for that category is not applied to it.
+
 ## Mode
 
 The **Mode** setting controls how Traffic Management behaves overall. We recommend starting in
@@ -136,17 +193,39 @@ levels and Block only the high-confidence ones.
 
 ## Reading the Traffic page
 
-The **Traffic** page in the Dashboard shows how your automated traffic breaks down. Note that
-these counts cover *all* HTTP requests, not just page views.
+The **Traffic** page in the Dashboard shows overall request volume alongside how your
+automated traffic breaks down.
+
+![The Traffic analytics page](../assets/atm-traffic.png)
+
+### Request charts
+
+The charts at the top of the page come from different sources and count different things:
+
+| Chart                    | What it counts                                                                                                                                                   |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Total HTTP Requests**  | Every request served by the CDN, including static files, media, and API calls. Requests blocked by the firewall are included, since the CDN still answered them. |
+| **Estimated Page Views** | Requests that passed through the whole firewall and match the page view heuristic (see below). Blocked requests, and requests that fail a CAPTCHA or Challenge, are not included. |
+| **Blocked Requests**     | Every request blocked by any firewall rule, including Traffic Management, the IP and User-Agent blocklists, rate limits, and exploit protections.                 |
+
+### Bot breakdown
+
+The bot breakdown covers **all HTTP requests**, not just page views. Altis classifies a
+sample of every request reaching the CDN, including static files, media, and API calls, so
+these tables describe your whole traffic mix. This is different from the rules on the
+settings page, which only act on page requests (see
+[Rules only act on page requests](#rules-only-act-on-page-requests)). Expect the request
+counts here to be several times higher than the number of page views a given bot generates,
+and treat them as an indicator of proportions and trends rather than an exact count.
 
 - **Bot detection** — the split between verified bots, unverified bots, and non-bot (human)
-  traffic, and how much was allowed vs. blocked.
+  requests, and how much was allowed vs. blocked.
 - **Bot categories** and **Automation signals** — how much traffic matched each category and
   signal, with the action taken.
 - **Identified bots** and **Bot organizations** — the specific named bots and the companies
-  operating them. *These tables require the Advanced Traffic Management add-on.*
-
-![The Traffic analytics page](../assets/atm-traffic.png)
+  operating them. Unlike the tables above, these are built from the labels the rules apply,
+  so they count only the page requests the rules act on. *These tables require
+  the Advanced Traffic Management add-on.*
 
 Use Count Only mode together with this page to understand your traffic before enforcing any
 blocking.
@@ -174,6 +253,13 @@ account manager or Altis support.
 - **Prefer CAPTCHA over Block when uncertain.** The CAPTCHA action stops bots while
   still allowing real-users to access the site; reserve Block for traffic you're
   confident is unwanted.
+- **Expect page views to drop, not total requests.** Blocking a category removes its page
+  loads from your page views, but its asset and API requests are not subject to the rules and still
+  appear in Total HTTP Requests and in the bot breakdown. Use User-Agent Blocking to remove
+  a client entirely.
+- **Allowlist your own networks.** Traffic Management rules do not act on requests from IPs
+  on your allowlist, which protects editors working from VPNs or data-center-hosted
+  networks from being challenged.
 - **Review regularly.** Bot behaviour changes; revisit the Traffic page periodically and
   adjust your actions.
 
