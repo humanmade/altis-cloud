@@ -24,7 +24,9 @@ import, uploads copy, [URL search-replace](./search-replace.md), cache flush, an
    - **Database.** Syncs the full database. Expand **Customize** to specify individual tables. URL mappings are applied
      automatically during the sync based on your [search and replace configuration](./search-replace.md).
    - **Run post-sync actions.** Runs any [post-sync actions](docs://core/cli-command/#wp-altis-post-sync)
-     configured for the destination environment after the database sync.
+     configured for the destination environment after the database sync. These run against the environment's internal
+     domain root unless a [post-sync URL](./post-sync-url.md) is configured, which subdirectory multisite installs
+     need if their main site is not at the domain root.
    - **Uploads.** Copies uploaded files such as images, videos, and PDFs. Expand **Restrict to subpath** to limit the copy
      to a specific directory. Matching files will be overwritten.
 5. Click **Review Sync** and confirm to start.
