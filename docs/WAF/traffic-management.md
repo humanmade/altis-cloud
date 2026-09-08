@@ -174,7 +174,7 @@ Blocked requests, and requests which do not pass the CAPTCHA or Challenge tests,
 before the firewall counts page views, so they are not counted towards your page views. (The
 interstitial page for CAPTCHAs and Challenges is also not counted as a view.) A request that
 presents a valid token from an earlier CAPTCHA or Challenge continues through the firewall and
-is counted as normal. See [How Traffic Management affects your page views](#how-traffic-management-affects-your-page-views).
+is counted as normal.
 
 The CAPTCHA puzzle is accessible — it offers both visual and audio variants and is available
 in multiple languages. CAPTCHAs are only displayed to the user on their first visit, and
