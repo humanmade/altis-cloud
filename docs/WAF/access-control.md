@@ -1,17 +1,17 @@
 # IP Access Control
 
 The **IP Access Control** feature allows administrators to manage
-network access and rate limiting at the IP address level. This feature
+network access at the IP address level. This feature
 complements the default Web Application Firewall (WAF) protections by
-enabling more granular control over which IPs are blocked or allowed to
-bypass rate limits.
+enabling more granular control over which IPs are completely blocked or allowed to
+bypass rate limits and [Traffic Management](./traffic-management.md) controls.
 
 For more information on WAF and default rate limits, see the [Firewall documentation](docs://cloud/firewall/).
 
 ## Feature Overview
 
 - **Blocklist**: Deny all access from specific IP addresses or ranges.
-- **Allowlist**: Permit specified IP addresses or ranges to bypass WAF rate limits.
+- **Allowlist**: Permit specified IP addresses or ranges to bypass WAF rate limits and [Traffic Management](./traffic-management.md) controls.
 
 This feature is accessible from the Altis Dashboard and is designed for
 simple, effective access management.
@@ -31,15 +31,15 @@ remove it from the allowlist.
 
 ## Allowlist
 
-The **Allowlist** lets you specify IP addresses or ranges that are exempt from the default WAF rate limits.
-Requests from allowlisted IPs will not be subject to rate limiting, ensuring uninterrupted access.
+The **Allowlist** lets you specify IP addresses or ranges that are exempt from the default WAF rate limits and [Traffic Management](./traffic-management.md) controls.
+Requests from allowlisted IPs will not be subject to rate limiting, as well bypass all Traffic Management rules ensuring uninterrupted access.
 
 **Use Cases:**
 
 - Ensuring trusted partners or internal teams are never rate-limited.
 - Allowing monitoring or uptime services unrestricted access.
 
-> **Note:** Only use the allowlist for trusted IPs, as bypassing rate limits can increase exposure to abuse.
+> **Note:** Only use the allowlist for trusted IPs, as bypassing rate limits and Traffic Management can increase exposure to abuse.
 
 ## Managing IP Lists
 
