@@ -42,9 +42,10 @@ Traffic Management appears in two places in the Dashboard:
   to allow.
 - **Verified vs. unverified** — a *verified* bot is one that identifies itself and whose
   identity Altis can independently confirm (for example, Googlebot crawling from Google's own
-  IP ranges, or a bot using the [Web Bot Auth protocol][wba]. An *unverified*
-  bot claims an identity that cannot be confirmed, or none at all.
-  Most rules only act on unverified traffic — verified bots are labelled but left alone.
+  IP ranges, or a bot using the [Web Bot Auth protocol][wba]). An *unverified*
+  bot claims an identity that cannot be confirmed, or none at all. Rules only act on
+  unverified bots, with the AI category as the single exception. See
+  [Rules only act on unverified bots](#rules-only-act-on-unverified-bots).
 - **Signal** — an indicator based on detection algorithms, such as coming from a known
   bot data center or using a non-browser user agent. Signals apply to traffic that doesn't
   fall into a clean category.
@@ -55,6 +56,87 @@ Traffic Management appears in two places in the Dashboard:
   are issued automatically when the CAPTCHA or Challenge actions run.
 
 [wba]: https://datatracker.ietf.org/wg/webbotauth/about/
+
+## How rules are applied
+
+Traffic Management runs inside the Altis [Web Application Firewall](./README.md) at the CDN
+edge, so decisions are made before a request reaches your application. Three details of how
+it is wired up matter when you are interpreting the analytics or choosing actions.
+
+### Rules only act on page requests
+
+Every HTTP request is classified, and the analytics on the Traffic page reflect all of your
+traffic. The rules you configure are narrower: they only act on requests that are likely to
+be a person (or a bot) loading a page, and skip the supporting requests around them. The
+following are never blocked or challenged by Traffic Management rules:
+
+- Static files such as CSS, JavaScript, images, fonts, and XML or text files.
+- Media uploads and images served through the image resizing service.
+- WordPress core, theme, and plugin asset directories.
+- REST API requests (`/wp-json/`), `admin-ajax.php`, `admin-post.php`, and XML-RPC.
+- Requests from IP addresses on your [IP allowlist](./access-control.md).
+
+This filter is deliberately close to the heuristic Altis uses to estimate page views, so
+that a bot which is blocked disappears from your page views rather than from your asset
+requests. Altis maintains the exact list of exclusions and it may change over time.
+
+Because the analytics cover all requests and the rules cover only page requests, the numbers
+on the Traffic page are larger than the set of requests your rules act on. See
+[Reading the Traffic page](#reading-the-traffic-page).
+
+The practical consequences:
+
+- **Blocking a category stops that bot loading pages.** It does not stop the same client
+  fetching images or static files, and it does not stop it calling the REST API. If you need
+  to shut a client out of your site entirely, use [User-Agent Blocking](./ua-blocking.md) or
+  [IP Access Control](./access-control.md), which apply to every request.
+- **The Traffic page will show more requests for a category than the rule acts on.** A search
+  engine crawler that loads one page and then fetches its images and CSS shows up in the
+  Search Engine row of the bot breakdown for every one of those requests, but only the page
+  request is subject to your Search Engine action. A client that only calls the REST API or
+  only downloads media still appears in the breakdown, even though no Traffic Management
+  rule will ever act on it.
+- **Logged-in administration traffic is covered by the rules.** Requests to `/wp-admin/`
+  pages and `wp-login.php` are treated as page requests (only their static assets and AJAX
+  endpoints are excluded).
+  If editors report being challenged, check the Signals rules first, particularly
+  Known Bot Data Center if your team works from a VPN or office network hosted in a data
+  center. Adding the network to the IP allowlist exempts it from Traffic Management.
+
+### Where Traffic Management sits in the firewall
+
+Traffic Management rules are evaluated after the rest of the Altis firewall: the IP
+blocklist, User-Agent blocklist, rate limits, and the managed exploit protections. A request
+that is already blocked by one of those never reaches Traffic Management, so it is counted
+in the firewall's **Blocked Requests** total but does not appear in the bot breakdown.
+
+### Rules only act on unverified bots
+
+**Setting a category to Block, CAPTCHA, or Challenge affects unverified bots only.** A
+verified bot, such as Googlebot crawling from Google's published IP ranges, Bingbot from
+Microsoft's, or Pingdom from its own monitoring network, is labelled and counted under its
+category, but the action you set for that category is never applied to it. It passes through
+Traffic Management untouched.
+
+This is deliberate. Verification means the bot's identity has been independently confirmed,
+usually by checking the source IP against ranges the operator publishes, so it cannot be
+spoofed. The action is reserved for clients that merely *claim* to be that kind of bot: a
+scraper sending Googlebot's user agent from a hosting provider is unverified and is acted on.
+It also means you cannot damage your search ranking by setting Search Engine to Block,
+because the real search engines are verified.
+
+**The AI category is the one exception.** Its action applies to verified and unverified
+bots alike, so setting AI to Block does stop GPTBot, ClaudeBot, PerplexityBot, Bytespider
+and similar crawlers even when they come from their operators' own networks.
+
+Signals and Targeted Protections never match verified bots at all, so the question does not
+arise for them.
+
+In practice, the number of requests a Block will affect is therefore much smaller than the
+category's row on the Traffic page suggests, which counts verified and unverified bots
+together. If you need to block a specific verified bot in any category other than AI, use
+[User-Agent Blocking](./ua-blocking.md), which applies to every request regardless of
+verification.
 
 ## Mode
 
@@ -67,10 +149,19 @@ and only then switching to **Active**.
 | **Count Only** | Rules are evaluated and their matches are counted in your analytics, but **no requests are blocked or challenged**. This is the safe way to see what *would* happen before enforcing anything. |
 | **Active**     | Rules are enforced. The per-rule action you set for each category, signal, and protection is applied.                                                                                          |
 
+### Applying changes
+
+Saving the settings page updates your environment's firewall configuration through an
+automated infrastructure update. Unlike [User-Agent Blocking](./ua-blocking.md), changes are
+not instant: allow several minutes for a new mode or action to take effect. You can save
+further changes in the meantime; the most recently saved settings are the ones applied.
+
 ## Actions
 
 When Traffic Management is **Active**, each rule can be set to one of the following actions.
-Setting a rule to anything other than **Allow** means matching requests are acted on.
+Setting a rule to anything other than **Allow** means matching requests are acted on. For
+every category except AI, only *unverified* bots are matched; see
+[Rules only act on unverified bots](#rules-only-act-on-unverified-bots).
 
 | Action                       | What happens                                                                                                                                                                                     |
 |------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -79,9 +170,11 @@ Setting a rule to anything other than **Allow** means matching requests are acte
 | **CAPTCHA**                  | Matching requests are shown a CAPTCHA puzzle on an interstitial page. Humans can solve it and continue; most bots cannot. Solving it issues a token so the visitor isn't repeatedly challenged.  |
 | **Challenge** (requires ATM) | Matching requests are given a silent, background browser check — no puzzle is shown. Real browsers pass automatically and invisibly; automated clients that can't run the challenge are stopped. |
 
-Blocked requests and requests which do not pass the CAPTCHA or Challenge tests are not counted
-towards your page views. (The interstitial page for CAPTCHAs and Challenges are also not
-counted as views.)
+Blocked requests, and requests which do not pass the CAPTCHA or Challenge tests, are stopped
+before the firewall counts page views, so they are not counted towards your page views. (The
+interstitial page for CAPTCHAs and Challenges is also not counted as a view.) A request that
+presents a valid token from an earlier CAPTCHA or Challenge continues through the firewall and
+is counted as normal.
 
 The CAPTCHA puzzle is accessible — it offers both visual and audio variants and is available
 in multiple languages. CAPTCHAs are only displayed to the user on their first visit, and
@@ -100,6 +193,10 @@ The settings page splits the rules into three groups.
 Bots are automatically classified into categories based their purpose, as determined by self-reported
 user-agent and other signals. For example, Advertising, Monitoring, Search Engine. See the
 *Settings* > *Traffic Management* page for the full list of categories and their descriptions.
+
+The action you choose for a category applies to unverified bots in that category. Verified
+bots are allowed through regardless of the setting, with the exception of the **AI**
+category, where the action applies to all AI bots.
 
 ### Signals
 
@@ -136,17 +233,41 @@ levels and Block only the high-confidence ones.
 
 ## Reading the Traffic page
 
-The **Traffic** page in the Dashboard shows how your automated traffic breaks down. Note that
-these counts cover *all* HTTP requests, not just page views.
-
-- **Bot detection** — the split between verified bots, unverified bots, and non-bot (human)
-  traffic, and how much was allowed vs. blocked.
-- **Bot categories** and **Automation signals** — how much traffic matched each category and
-  signal, with the action taken.
-- **Identified bots** and **Bot organizations** — the specific named bots and the companies
-  operating them. *These tables require the Advanced Traffic Management add-on.*
+The **Traffic** page in the Dashboard shows overall request volume alongside how your
+automated traffic breaks down.
 
 ![The Traffic analytics page](../assets/atm-traffic.png)
+
+### Request charts
+
+The charts at the top of the page come from different sources and count different things:
+
+| Chart                    | What it counts                                                                                                                                                   |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Total HTTP Requests**  | Every request served by the CDN, including static files, media, and API calls. Requests blocked by the firewall are included, since the CDN still answered them. |
+| **Estimated Page Views** | Requests that passed through the whole firewall and match the page view heuristic (see below). Blocked requests, and requests that fail a CAPTCHA or Challenge, are not included. |
+| **Blocked Requests**     | Every request blocked by any firewall rule, including Traffic Management, the IP and User-Agent blocklists, rate limits, and exploit protections.                 |
+
+### Bot breakdown
+
+The bot breakdown covers **all HTTP requests**, not just page views. Altis classifies a
+sample of every request reaching the CDN, including static files, media, and API calls, so
+these tables describe your whole traffic mix. This is different from the rules on the
+settings page, which only act on page requests (see
+[Rules only act on page requests](#rules-only-act-on-page-requests)). Expect the request
+counts here to be several times higher than the number of page views a given bot generates,
+and treat them as an indicator of proportions and trends rather than an exact count.
+
+- **Bot detection** — the split between verified bots, unverified bots, and non-bot (human)
+  requests, and how much was allowed vs. blocked.
+- **Bot categories** and **Automation signals** — how much traffic matched each category and
+  signal, with the action taken. Category rows include verified bots, which your actions do
+  not affect (except for AI), so a row's total is not the number of requests a Block would
+  stop.
+- **Identified bots** and **Bot organizations** — the specific named bots and the companies
+  operating them. Unlike the tables above, these are built from the labels the rules apply,
+  so they count only the page requests the rules act on. *These tables require
+  the Advanced Traffic Management add-on.*
 
 Use Count Only mode together with this page to understand your traffic before enforcing any
 blocking.
@@ -169,11 +290,16 @@ account manager or Altis support.
 
 - **Start in Count Only.** Enable Traffic Management in Count Only mode and watch the Traffic
   page before enforcing anything, so you can see what would be affected.
-- **Protect verified bots you rely on.** Leave categories like Search Engine on Allow so you
-  don't harm SEO. Remember verified bots are generally left alone regardless.
 - **Prefer CAPTCHA over Block when uncertain.** The CAPTCHA action stops bots while
   still allowing real-users to access the site; reserve Block for traffic you're
   confident is unwanted.
+- **Expect page views to drop, not total requests.** Blocking a category removes its page
+  loads from your page views, but its asset and API requests are not subject to the rules and still
+  appear in Total HTTP Requests and in the bot breakdown. Use User-Agent Blocking to remove
+  a client entirely.
+- **Allowlist your own networks.** Traffic Management rules do not act on requests from IPs
+  on your allowlist, which protects editors working from VPNs or data-center-hosted
+  networks from being challenged.
 - **Review regularly.** Bot behaviour changes; revisit the Traffic page periodically and
   adjust your actions.
 
