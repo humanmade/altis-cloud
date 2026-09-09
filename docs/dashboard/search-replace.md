@@ -11,6 +11,10 @@ Mappings are fetched from `composer.json` at the currently deployed SHA.
 
 Configure mappings under `extra.altis.cloud.search-replace` in `composer.json`.
 
+**Important:** As this configuration is for the cloud environment directly, it
+uses the `cloud` key under `altis` - this differs from the Cloud module's
+configuration at `extra.altis.modules.cloud`
+
 Each top-level key should be the **exact** ID of the environment you are syncing
 **into**. Under each environment, define a set of `"find": "replace"` pairs
 to apply during the database sync.
