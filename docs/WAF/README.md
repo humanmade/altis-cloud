@@ -98,7 +98,7 @@ those cases when you do, we provide a variety of customizations you can adjust:
 * Manage access by IP address or range with [IP Access Control](access-control.md)
 
 For more advanced control, many additional controls including blocking routes and behaviours can be implemented via
-[custom nginx configuration](../nginx-configuration.md). This allows writing arbitrary nginx rules, however operates *after* the
+[custom nginx configuration](../nginx-configuration.md). This allows writing arbitrary nginx rules, however these rules operate *after* the
 CDN and edge cache, so can't block all traffic.
 
 ### Custom Firewall Rules
