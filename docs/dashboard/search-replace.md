@@ -54,3 +54,7 @@ In this example, if a database is synced into `example-stag-01`, every occurrenc
 
 Likewise, if a database is synced into `example-dev-01`, both `example.com` and
 `www.example.com` will be replaced with `example-dev.altis.cloud`.
+
+If the post-sync steps need to run against a specific site in the destination
+environment, such as on a subdirectory multisite install, see
+[post-sync URL](./post-sync-url.md).
