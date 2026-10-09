@@ -61,6 +61,52 @@ Selecting any trace from the trace list will take you to the Trace screen.
 **Tip:** You can jump directly from your site to the X-Ray trace for the current request by clicking the "Debug Request" link in the Query Monitor menu or the Altis logo menu in the admin bar.
 
 
+## Log Insights
+
+Log Insights groups similar lines from your PHP and Nginx error logs together, and lists the most frequent groups first. Use it to find which errors are happening most often, without reading through every line in the logs. You can find it under "X-Ray" in the Altis Dashboard sidebar for each environment.
+
+Lines are grouped when they differ only in their variable parts, such as a function name, file path, or IP address. Each group is shown as a pattern, with the parts that vary replaced by `<*>`. For example, these two lines:
+
+```text
+Fatal error:  Uncaught Error: Call to undefined function build_query()
+Fatal error:  Uncaught Error: Call to undefined function get_field()
+```
+
+are grouped into the pattern:
+
+```text
+Fatal error:  Uncaught Error: Call to undefined function <*>()
+```
+
+For each pattern, the list shows its level, the number of matching log lines (**Count**), and the share of all log lines in the time range that it accounts for (**Share**). Select a pattern to see sample log lines with their timestamps, and use "View logs from this time" to open the Logs page at the time of the latest sample, showing 5 minutes either side.
+
+### Choosing what to group
+
+Use the **PHP** and **Nginx** buttons to switch between the PHP error log and the Nginx error log.
+
+Use the time selector to choose the time range. Log Insights can cover up to 7 days at a time. The default is the last hour.
+
+The cards above the list show the number of log lines at each level. Select a level card to show only the patterns at that level, or select "All levels" to show everything.
+
+Levels follow the standard syslog levels, so PHP and Nginx logs can be compared directly. PHP error types are mapped as follows:
+
+| PHP error type | Level |
+|---|---|
+| Parse error | Critical |
+| Fatal error, Recoverable fatal error, Error | Error |
+| Warning, Deprecated | Warning |
+| Notice, Strict Standards | Notice |
+
+Nginx levels map directly (for example `crit` is shown as Critical and `warn` as Warning). Hover over a level label in the list to see the original PHP error type or Nginx level.
+
+### Notes
+
+* Grouping runs when you open the page or change the filters, and may take a few seconds for larger time ranges.
+* Results are cached for up to 5 minutes, so the newest log lines may not appear straight away. Select **Refresh** to run the grouping again.
+* Grouping is automatic and approximate. Lines that look alike may occasionally be grouped separately, or slightly different lines grouped together.
+* Log Insights uses the same logs as the [Logs](./logs.md) page, so the same retention applies.
+
+
 ## Understanding an X-Ray trace
 
 Each HTTP request generates an "X-Ray trace" and provides many useful pieces of debugging information.
