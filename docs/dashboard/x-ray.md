@@ -65,6 +65,8 @@ Selecting any trace from the trace list will take you to the Trace screen.
 
 Log Insights groups similar lines from your PHP and Nginx error logs together, and lists the most frequent groups first. Use it to find which errors are happening most often, without reading through every line in the logs. You can find it under "X-Ray" in the Altis Dashboard sidebar for each environment.
 
+![Screenshot of X-Ray Log Insights](../assets/xray-log-insights.png)
+
 Lines are grouped when they differ only in their variable parts, such as a function name, file path, or IP address. Each group is shown as a pattern, with the parts that vary replaced by `<*>`. For example, these two lines:
 
 ```text
@@ -101,9 +103,8 @@ Nginx levels map directly (for example `crit` is shown as Critical and `warn` as
 
 ### Notes
 
-* Grouping runs when you open the page or change the filters, and may take a few seconds for larger time ranges.
+* Grouping runs when you open the page or change the log type or time range, and may take a few seconds for larger time ranges.
 * Results are cached for up to 5 minutes, so the newest log lines may not appear straight away. Select **Refresh** to run the grouping again.
-* Grouping is automatic and approximate. Lines that look alike may occasionally be grouped separately, or slightly different lines grouped together.
 * Log Insights uses the same logs as the [Logs](./logs.md) page, so the same retention applies.
 
 
