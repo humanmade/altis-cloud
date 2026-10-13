@@ -86,7 +86,7 @@ Use the **PHP** and **Nginx** buttons to switch between the PHP error log and th
 
 Use the time selector to choose the time range. Log Insights can cover up to 7 days at a time. The default is the last hour.
 
-The cards above the list show the number of log lines at each level. Select a level card to show only the patterns at that level, or select "All levels" to show everything.
+The level filters above the list work like the ones on the Logs page, and show the number of log lines at each level. Use the checkbox on a level to show or hide it, or select the level name to show only that level.
 
 Levels follow the standard syslog levels, so PHP and Nginx logs can be compared directly. PHP error types are mapped as follows:
 
