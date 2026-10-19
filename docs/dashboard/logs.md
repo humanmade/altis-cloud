@@ -16,3 +16,5 @@ The date range can be specified for all logs types. Some log types will also sup
 
 ![Screenshot of a logs filter being applied](../assets/logs-with-filter.png)
 
+To see which PHP and Nginx errors happen most often, use [Log Insights](./x-ray.md#log-insights), which groups similar log lines together and ranks them by frequency.
+
