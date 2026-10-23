@@ -40,7 +40,7 @@ The following types of requests are blocked by the firewall, and are excluded fr
 * Clients which fail to complete a CAPTCHA or Challenge, as controlled in [Traffic Management settings](./WAF/traffic-management.md)
 * Any requests which are blocked by custom firewall rules (requires Beyond subscription or add-on)
 
-Additionally, requests which show the CAPTCHA interface or Challenge itself are not counted towards your usage.
+Additionally, interstitial pages which show the CAPTCHA interface or Challenge itself are not counted towards your usage.
 
 Altis monitors web-wide trends of automated traffic and makes a best-effort attempt to exclude malicious and badly-behaved bots,
 however cannot guarantee that all bots will be excluded by platform-wide rules.
