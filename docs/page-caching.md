@@ -99,6 +99,15 @@ fully compatible with page caches.
 
 Non-cacheable requests (such as logged-in users) can safely use these headers.
 
+The `Referer` header is forwarded to PHP when the browser supplies it and the request reaches the backend; it is not part of the
+page-cache key. Browsers may omit it or limit its contents according to their referrer policy. For referrer-dependent behaviour
+on cached pages, pass the required value explicitly as a `GET` parameter included in the cache key, or use a non-cacheable `POST`
+request.
+
+WordPress sends `no-cache` headers for `admin-ajax.php` responses by default, so even a cookieless `GET` request is not cached unless
+those headers are overridden. Take care when overriding them: ensure the final response headers permit caching and that the
+response is safe to share between all requests with the same cache key.
+
 **Note:** The User-Agent header is set to a static value by Altis and cannot be used server-side for feature detection.
 
 ## Customizations
