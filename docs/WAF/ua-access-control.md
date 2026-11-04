@@ -24,7 +24,7 @@ and is designed for simple, effective control over automated traffic.
 > **Note:** The allowlist is only shown on environments where it has been provisioned. If
 > you only see the blocklist, contact Altis support.
 
-![Screenshot of the User-Agent Access Control blocklist](../assets/ua-blocking-list.png)
+![Screenshot of the User-Agent Access Control allowlist and blocklist](../assets/ua-access-control-list.png)
 
 ## How Matching Works
 
@@ -100,9 +100,9 @@ remove it from its current list first.
 
 The new entries appear in the list with an **Allow** or **Block** status.
 
-![Screenshot of the User-Agent Access Control add form](../assets/ua-blocking-add.png)
+![Screenshot of the User-Agent Access Control add form](../assets/ua-access-control-add.png)
 
-![Screenshot of the User-Agent Access Control populated list](../assets/ua-blocking-added-list.png)
+![Screenshot of the User-Agent Access Control populated list](../assets/ua-access-control-added-list.png)
 
 ## Testing an Entry
 
@@ -110,7 +110,7 @@ Use the **Test a user-agent string…** box at the top of each list to check whe
 user agent matches your current entries. Paste a full `user-agent` value to confirm that the
 list matches the clients you intend, and does not match ones you don't, before relying on it.
 
-![Screenshot of testing a User-Agent string entry](../assets/ua-blocking-string-test.png)
+![Screenshot of testing a User-Agent string entry](../assets/ua-access-control-string-test.png)
 
 ## Removing an Entry
 
@@ -121,7 +121,7 @@ list matches the clients you intend, and does not match ones you don't, before r
 > **Note:** Removing an entry cannot be undone. If you remove one by mistake, add it
 > again using the steps above.
 
-![Screenshot of removing a User-Agent Access Control entry](../assets/ua-blocking-remove.png)
+![Screenshot of removing a User-Agent Access Control entry](../assets/ua-access-control-remove.png)
 
 ## Exporting a List
 
