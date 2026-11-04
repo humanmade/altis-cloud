@@ -10,7 +10,7 @@ More advanced detections, such as silent background Challenge actions and machin
 targeted rules, require the Advanced Traffic Management add-on. See [What the Advanced Traffic
 Management add-on adds](#what-the-advanced-traffic-management-add-on-adds) for more details.
 
-For precise control per user-agent, see [User-Agent Blocking](./ua-blocking.md). To manage
+For precise control per user-agent, see [User-Agent Access Control](./ua-access-control.md). To manage
 access by IP address or range, see [IP Access Control](./access-control.md).
 
 ## What Traffic Management does
@@ -88,7 +88,7 @@ The practical consequences:
 
 - **Blocking a category stops that bot loading pages.** It does not stop the same client
   fetching images or static files, and it does not stop it calling the REST API. If you need
-  to shut a client out of your site entirely, use [User-Agent Blocking](./ua-blocking.md) or
+  to shut a client out of your site entirely, use [User-Agent Access Control](./ua-access-control.md) or
   [IP Access Control](./access-control.md), which apply to every request.
 - **The Traffic page will show more requests for a category than the rule acts on.** A search
   engine crawler that loads one page and then fetches its images and CSS shows up in the
@@ -135,7 +135,7 @@ arise for them.
 In practice, the number of requests a Block will affect is therefore much smaller than the
 category's row on the Traffic page suggests, which counts verified and unverified bots
 together. If you need to block a specific verified bot in any category other than AI, use
-[User-Agent Blocking](./ua-blocking.md), which applies to every request regardless of
+[User-Agent Access Control](./ua-access-control.md), which applies to every request regardless of
 verification.
 
 ## Mode
@@ -152,7 +152,7 @@ and only then switching to **Active**.
 ### Applying changes
 
 Saving the settings page updates your environment's firewall configuration through an
-automated infrastructure update. Unlike [User-Agent Blocking](./ua-blocking.md), changes are
+automated infrastructure update. Unlike [User-Agent Access Control](./ua-access-control.md), changes are
 not instant: allow several minutes for a new mode or action to take effect. You can save
 further changes in the meantime; the most recently saved settings are the ones applied.
 
@@ -295,8 +295,8 @@ account manager or Altis support.
   confident is unwanted.
 - **Expect page views to drop, not total requests.** Blocking a category removes its page
   loads from your page views, but its asset and API requests are not subject to the rules and still
-  appear in Total HTTP Requests and in the bot breakdown. Use User-Agent Blocking to remove
-  a client entirely.
+  appear in Total HTTP Requests and in the bot breakdown. Use the User-Agent Access Control
+  blocklist to remove a client entirely.
 - **Allowlist your own networks.** Traffic Management rules do not act on requests from IPs
   on your allowlist, which protects editors working from VPNs or data-center-hosted
   networks from being challenged.
@@ -310,5 +310,5 @@ responsible.
 ## Related Documentation
 
 - [Web Application Firewall](./README.md)
-- [User-Agent Blocking](./ua-blocking.md)
+- [User-Agent Access Control](./ua-access-control.md)
 - [IP Access Control](./access-control.md)
