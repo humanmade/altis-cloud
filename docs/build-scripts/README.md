@@ -36,6 +36,8 @@ The build process follows these steps:
 
 Once the build process is complete, we have a container with your built files ready for deployment to the infrastructure.
 
+If you need to stop a build that is in progress, you can [cancel it from Altis Dashboard](../dashboard/builds.md#cancelling-a-build).
+
 ## Your build script
 
 Your build script tells Altis any transformations you want to make to turn your source repository into the site that you deploy.
