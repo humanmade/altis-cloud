@@ -21,9 +21,6 @@ To manage access at the IP address level instead, see [IP Access Control](./acce
 This feature is accessible from the Altis Dashboard under **User-Agent Access Control**,
 and is designed for simple, effective control over automated traffic.
 
-> **Note:** The allowlist is only shown on environments where it has been provisioned. If
-> you only see the blocklist, contact Altis support.
-
 ![Screenshot of the User-Agent Access Control allowlist and blocklist](../assets/ua-access-control-list.png)
 
 ## How Matching Works
