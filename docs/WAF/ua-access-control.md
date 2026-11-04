@@ -115,13 +115,17 @@ list matches the clients you intend, and does not match ones you don't, before r
 ## Removing an Entry
 
 1. In the list, tick the checkbox next to each entry you want to remove.
-2. Click **Remove**.
+2. Click **Remove** in the bar that appears above the list.
 3. Review the confirmation banner and click **Remove *N* agent** to confirm.
 
 > **Note:** Removing an entry cannot be undone. If you remove one by mistake, add it
 > again using the steps above.
 
 ![Screenshot of removing a User-Agent Access Control entry](../assets/ua-blocking-remove.png)
+
+## Exporting a List
+
+Click **Export** on a list to download its entries as a text file, with one entry per line.
 
 ## Best Practices
 
