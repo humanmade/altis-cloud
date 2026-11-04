@@ -98,7 +98,7 @@ remove it from its current list first.
 3. In the **User-Agent Strings** box, enter one `user-agent` string per line.
 4. Click **Add**.
 
-The new entries appear in the list with an **Allowed** or **Blocked** status.
+The new entries appear in the list with an **Allow** or **Block** status.
 
 ![Screenshot of the User-Agent Access Control add form](../assets/ua-blocking-add.png)
 
