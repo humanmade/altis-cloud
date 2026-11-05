@@ -76,8 +76,15 @@ Common use cases include:
 The blocklist takes precedence over the allowlist. A request that matches both lists is
 blocked.
 
-The same string cannot be added to both lists. To move a string from one list to the other,
-remove it from its current list first.
+An entry can't be added if it overlaps an entry on the other list in a way that would stop the
+allowlist entry from working. For example, `bot` can't be added to the blocklist while `uptimebot/`
+is on the allowlist, because every request matching `uptimebot/` also matches `bot` and would be
+blocked. The same check stops `uptimebot/` being added to the allowlist while `bot` is on the
+blocklist, and stops the same string being added to both lists. To change a conflicting entry,
+remove it from the other list first.
+
+The reverse is allowed: a blocklist entry such as `badbot/1.0` can sit alongside an allowlist entry
+such as `bot`, because requests matching `bot` but not `badbot/1.0` are still allowlisted.
 
 ## Limits
 
@@ -106,6 +113,9 @@ The new entries appear in the list with an **Allow** or **Block** status.
 Use the **Test a user-agent string…** box at the top of each list to check whether a given
 user agent matches your current entries. Paste a full `user-agent` value to confirm that the
 list matches the clients you intend, and does not match ones you don't, before relying on it.
+
+When testing the allowlist, a user agent that also matches a blocklist entry is shown as blocked,
+because the blocklist takes precedence.
 
 ![Screenshot of testing a User-Agent string entry](../assets/ua-access-control-string-test.png)
 
