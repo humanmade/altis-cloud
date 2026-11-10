@@ -48,17 +48,27 @@ Common use cases include:
 - Blocking poorly-behaved crawlers that ignore `robots.txt` or generate excessive load.
 - Blocking scripted clients and tools you don't want accessing the site.
 
+> **Note:** Avoid entries that appear in ordinary browser user agents, such as `Mozilla`,
+> `Chrome`, `Safari` or `AppleWebKit`. Because entries match anywhere in the header, these
+> would block every visitor using that browser.
+
+See [Best Practices](#best-practices) for choosing entries.
+
 ## Allowlist
 
 If a request's `user-agent` header matches an entry in the allowlist, the request skips:
 
-- The CDN-level request rate limit, and the stricter rate limits on `wp-login.php` and `xmlrpc.php`.
-- The outdated-browser restrictions.
+- The [CDN-level and login page rate limits](./README.md#protection-against-request-floods--denial-of-service-attacks),
+  including the stricter limits on `wp-login.php` and `xmlrpc.php`.
+- The outdated-browser restrictions, where enabled for your environment. These challenge or
+  block requests claiming a browser version more than about a year old.
 - [Traffic Management](./traffic-management.md) bot rules.
 
-Allowlisted requests are **still checked** by the blocklist, the IP blocklist, and the managed
-exploit protections. They are also still subject to the per-container rate limits applied on
-each application container, and to the Node.js request rate limit on Node.js applications.
+Allowlisted requests are **still checked** by the blocklist, the IP blocklist, and the
+[managed exploit protections](./README.md#protection-against-exploits). Only traffic controls
+are bypassed, not security controls. They are also still subject to the
+[per-container rate limits](./README.md#protection-against-request-floods--denial-of-service-attacks)
+on each application container, and to the Node.js request rate limit on Node.js applications.
 
 Common use cases include:
 
@@ -70,6 +80,8 @@ Common use cases include:
 > who copies an allowlisted string into their own requests will skip the same protections.
 > Where the client has a fixed set of IP addresses, use the
 > [IP Access Control](./access-control.md) allowlist instead, which cannot be spoofed.
+
+See [Best Practices](#best-practices) for choosing entries.
 
 ## Precedence
 
@@ -90,8 +102,7 @@ such as `bot`, because requests matching `bot` but not `badbot/1.0` are still al
 
 - Each entry can be at most **200 characters**.
 - Entries are escaped before being stored, which adds a character for each special
-  character (such as `.`, `(`, `)` or `-`). An entry must also be at most 200 characters
-  once escaped.
+  character (such as `.`, `(`, `)` or `-`). An escaped entry must be at most 200 characters.
 - Each list holds roughly **2,000 characters** of escaped entries in total. The dashboard
   shows an error when a change would exceed this.
 
@@ -136,8 +147,16 @@ Click **Export** on a list to download its entries as a text file, with one entr
 
 ## Best Practices
 
-- **Use a delimiter.** Prefer `BadBot/` or `BadBot;` over a bare `BadBot` to reduce
-  the chance of matching unrelated traffic.
+- **Use the shortest distinctive part of the user agent.** Entries match anywhere in the
+  header, so the full string is rarely needed, and short entries leave room for more within
+  the [limits](#limits). For example, instead of
+
+  `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) badbot-scanner 1.0`
+
+  add only `badbot-scanner`.
+- **Add a delimiter to short or common tokens.** Prefer `BadBot/` or `BadBot;` over a bare
+  `BadBot` to reduce the chance of matching unrelated traffic. Entries can't end in a space,
+  as surrounding whitespace is removed.
 - **Test before you rely on an entry.** Use the test box to verify an entry matches
   the clients you intend and nothing else.
 - **Be specific, especially in the allowlist.** A distinctive substring (e.g. `bytespider`)
