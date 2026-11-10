@@ -1,7 +1,7 @@
 # Builds
 
 The Altis Dashboard shows the latest builds and deploys for each environment. When you push to an environment's tracked branch,
-Altis builds your commit using your [build script](../build-scripts/README.md).
+Altis builds your commit using your [build script](../build-scripts/).
 
 You can find these under the **Release** tab of the selected Altis Environment.
 
@@ -21,7 +21,7 @@ The button changes to **Cancelling…** while the build is stopped.
 ![cancelling build](../assets/cancel-build-cancelling.png)
 
 Once stopped, the build is marked as **Cancelled** and kept in the build history. Cancelled builds cannot be deployed. To build
-the commit again, push a new commit to the branch.
+the branch again, expand **Advanced actions** and click **Force Rebuild**. This builds the latest commit on the branch.
 
 ![cancelled build](../assets/cancel-build-cancelled.png)
 
