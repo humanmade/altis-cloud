@@ -60,8 +60,10 @@ If a request's `user-agent` header matches an entry in the allowlist, the reques
 
 - The [CDN-level and login page rate limits](./README.md#protection-against-request-floods--denial-of-service-attacks),
   including the stricter limits on `wp-login.php` and `xmlrpc.php`.
-- The outdated-browser restrictions, where enabled for your environment. These challenge or
-  block requests claiming a browser version more than about a year old.
+- The outdated-browser restrictions. These are off by default and only enabled on request.
+  When enabled, they check page requests from user agents claiming an old browser version
+  (roughly more than a year old), which is a common sign of automated traffic, and can count,
+  challenge or block them.
 - [Traffic Management](./traffic-management.md) bot rules.
 
 Allowlisted requests are **still checked** by the blocklist, the IP blocklist, and the
