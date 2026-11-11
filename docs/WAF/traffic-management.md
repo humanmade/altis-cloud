@@ -10,7 +10,7 @@ More advanced detections, such as silent background Challenge actions and machin
 targeted rules, require the Advanced Traffic Management add-on. See [What the Advanced Traffic
 Management add-on adds](#what-the-advanced-traffic-management-add-on-adds) for more details.
 
-For precise control per user-agent, see [User-Agent Blocking](./ua-blocking.md). To manage
+For precise control per user-agent, see [User-Agent Access Control](./ua-access-control.md). To manage
 access by IP address or range, see [IP Access Control](./access-control.md).
 
 ## What Traffic Management does
@@ -184,5 +184,5 @@ responsible.
 ## Related Documentation
 
 - [Web Application Firewall](./README.md)
-- [User-Agent Blocking](./ua-blocking.md)
+- [User-Agent Access Control](./ua-access-control.md)
 - [IP Access Control](./access-control.md)

@@ -94,7 +94,7 @@ Our firewall is maintained as standard across our platform, and for most custome
 those cases when you do, we provide a variety of customizations you can adjust:
 
 * Control incoming traffic by category or signal with [Traffic Management](traffic-management.md)
-* Block individual user-agents or exclude them from rate limits with [User-Agent Controls](ua-blocking.md)
+* Block individual user-agents or exclude them from rate limits with [User-Agent Access Control](ua-access-control.md)
 * Manage access by IP address or range with [IP Access Control](access-control.md)
 
 For more advanced control, many additional controls including blocking routes and behaviours can be implemented via
