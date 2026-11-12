@@ -88,10 +88,27 @@ To use this:
 
 ## GitHub
 
-If you have dependencies in private GitHub repositories, you can use the pre-configured Altis accounts to provide access to these.
+If you have dependencies in private GitHub repositories, how you give Altis access depends on how your environment is linked to
+GitHub.
 
-To use these repositories, provide the [@humanmade-cloud](https://github.com/humanmade-cloud) user with read access to the
-repository using GitHub's access management tools.
+### Environments linked with the Altis Cloud app
+
+If your environment deploys through a [GitHub connection](docs://cloud/dashboard/connections/), your build can access any
+repository the Altis Cloud app can access in your connected organization. To use a private dependency:
+
+- Add the repository to the app's repository access. See
+  [Manage repository access](docs://cloud/dashboard/connections/#manage-repository-access).
+- Reference the repository with an HTTPS URL, for example `https://github.com/example-org/example-package.git`. SSH URLs such as
+  `git@github.com:example-org/example-package.git` will not work.
+
+The app can only access repositories in the organization it is connected to. For private repositories in other GitHub
+organizations, use a build secret with an access token, as described in the Composer section above.
+
+### Environments linked with the humanmade-cloud user
+
+If your environment still deploys using the `@humanmade-cloud` user, provide
+the [@humanmade-cloud](https://github.com/humanmade-cloud) user with read access to the repository using GitHub's access management
+tools.
 
 ## BitBucket
 
