@@ -29,10 +29,14 @@ devices) can be enabled by Human Made to provide device-type headers, or such ch
 
 This also means the `wp_is_mobile` function will not work as intended, and should not be used.
 
-## `Referer` Header Not Available
+## Referrer-Dependent Content and Page Caching
 
-Due to caching rules, the HTTP `Referer` header is not available in PHP. Any requirement for the referrer should be passed as a `GET`
-or `POST` parameter on the referring page.
+The HTTP `Referer` header is forwarded to PHP when supplied by the browser and the request reaches the backend. It is not part of
+the page-cache key, so cacheable responses must not vary based on it. Non-cacheable requests, such as those from logged-in users,
+can use the header, but browsers may omit it or limit its contents according to their referrer policy.
+
+For referrer-dependent behaviour on cached pages, pass the required value explicitly as a `GET` parameter that is included in the
+cache key, or use a non-cacheable `POST` request. See [Page Caching](./page-caching.md#developer-considerations).
 
 ## Web Requests to PHP Files
 
