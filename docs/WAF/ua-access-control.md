@@ -175,3 +175,4 @@ If you're unsure which entry is responsible, contact Altis support.
 - [Firewall and Rate Limiting](docs://cloud/firewall/)
 - [IP Access Control](./access-control.md)
 - [Traffic Management](./traffic-management.md)
+- [Allowed Header](./allowed-header.md)

@@ -75,3 +75,4 @@ Requests from allowlisted IPs will not be subject to rate limiting, as well bypa
 ## Related Documentation
 
 - [Firewall and Rate Limiting](docs://cloud/firewall/)
+- [Allowed Header](./allowed-header.md)
