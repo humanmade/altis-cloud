@@ -123,23 +123,31 @@ with an access token. See [Private dependencies](docs://cloud/build-scripts/priv
 
 To remove a connection, go to **Settings** > **Connections** and select **Disconnect** next to it.
 
-Environments that deploy from repositories in that organization may stop building. Choose a new repository for each
-affected environment before disconnecting, or connect again afterwards.
+Builds will fail for any environment that deploys from a repository in that organization, until you connect again and
+choose a repository. Altis does not switch these environments back to the `@humanmade-cloud` user. To move an
+environment back, [contact Altis support](support://new).
 
 Disconnecting in the Altis Dashboard does not uninstall the app from GitHub. To remove it completely, uninstall the Altis Cloud
 app from your organization's settings on GitHub.
 
 ## Switching from the humanmade-cloud user
 
-If your environments currently deploy using the `@humanmade-cloud` user, they will keep working as they are. Nothing changes
-until you choose a repository through a connection.
+If your environments currently deploy using the `@humanmade-cloud` user, they will keep working as they are. Switching an
+environment to the Altis Cloud app also needs a change on the Altis side, so you switch with help from Altis support.
 
 To switch:
 
-1. [Connect your GitHub organization](#connect-your-github-organization).
-2. [Choose the repository and branch](#choose-the-repository-and-branch-for-an-environment) for each environment.
-3. Push a commit to each environment's branch and check the build starts and succeeds.
-4. Once every environment in the Instance is switched, you can remove the `@humanmade-cloud` user from your repositories, and
-   uninstall the AWS Connector for GitHub app if no other services use it.
+1. [Contact Altis support](support://new) and tell us which environments you want to switch. We will turn on Connections
+   for your Instance and agree a time for the switch.
+2. [Connect your GitHub organization](#connect-your-github-organization).
+3. [Choose the repository and branch](#choose-the-repository-and-branch-for-an-environment) for each environment.
+4. Tell Altis support you have finished. We will complete the switch on our side. After this, the environment only
+   builds through the Altis Cloud app.
+5. Push a commit to each environment's branch and check the build starts and succeeds.
 
-If you have any problems while switching, [contact Altis support](support://new).
+Until Altis completes step 4, a push to the branch may start two builds of the same commit. This is expected and stops once
+the switch is complete.
+
+Keep the `@humanmade-cloud` user on your repositories, and keep the AWS Connector for GitHub app installed, until Altis
+support confirms you can remove them. Some Altis services still use them, including [Node.js](docs://cloud/nodejs/)
+environments.
