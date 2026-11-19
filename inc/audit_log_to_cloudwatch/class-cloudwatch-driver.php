@@ -266,12 +266,16 @@ class CloudWatch_Driver implements DB_Driver_Interface {
 	/**
 	 * Init storage.
 	 *
+	 * There is no database storage to set up, but Stream 4.5+ requires an
+	 * Install instance here on admin and WP-CLI requests, so return a stub.
+	 *
 	 * @param \WP_Stream\Plugin $plugin Instance of the plugin.
-	 * @return null
+	 * @return Null_Install
 	 */
 	public function setup_storage( $plugin ) {
-		// no op.
-		return;
+		require_once __DIR__ . '/class-null-install.php';
+
+		return new Null_Install( $plugin );
 	}
 
 	/**
