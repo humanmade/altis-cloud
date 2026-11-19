@@ -96,6 +96,7 @@ those cases when you do, we provide a variety of customizations you can adjust:
 * Control incoming traffic by category or signal with [Traffic Management](traffic-management.md)
 * Block individual user-agents or exclude them from rate limits with [User-Agent Access Control](ua-access-control.md)
 * Manage access by IP address or range with [IP Access Control](access-control.md)
+* Let trusted clients skip rate limits with an [Allowed Header](allowed-header.md)
 
 For more advanced control, many additional controls including blocking routes and behaviours can be implemented via
 [custom nginx configuration](../nginx-configuration.md). This allows writing arbitrary nginx rules, however these rules operate *after* the
