@@ -145,8 +145,7 @@ To switch:
    builds through the Altis Cloud app.
 5. Push a commit to each environment's branch and check the build starts and succeeds.
 
-Until Altis completes step 4, a push to the branch may start two builds of the same commit. This is expected and stops once
-the switch is complete.
+Until Altis completes step 4, the environment keeps building through the `@humanmade-cloud` user, as before.
 
 Keep the `@humanmade-cloud` user on your repositories, and keep the AWS Connector for GitHub app installed, until Altis
 support confirms you can remove them. Some Altis services still use them, including [Node.js](docs://cloud/nodejs/)
