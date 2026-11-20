@@ -133,7 +133,8 @@ app from your organization's settings on GitHub.
 ## Switching from the humanmade-cloud user
 
 If your environments currently deploy using the `@humanmade-cloud` user, they will keep working as they are. Switching an
-environment to the Altis Cloud app also needs a change on the Altis side, so you switch with help from Altis support.
+environment to the Altis Cloud app also needs a change on the Altis side, so you switch with help from
+[Altis support](support://new).
 
 To switch:
 
@@ -141,9 +142,9 @@ To switch:
    for your Instance and agree a time for the switch.
 2. [Connect your GitHub organization](#connect-your-github-organization).
 3. [Choose the repository and branch](#choose-the-repository-and-branch-for-an-environment) for each environment.
-4. Tell Altis support you have finished. We will complete the switch on our side. After this, the environment only
-   builds through the Altis Cloud app.
+4. Tell [Altis support](support://new) you have finished. We will complete the switch on our side. After this, the
+   environment only builds through the Altis Cloud app.
 5. Push a commit to each environment's branch and check the build starts and succeeds.
 
-The Altis Cloud app does not support [Node.js](docs://cloud/nodejs/) environments yet. They still deploy through the
-`@humanmade-cloud` user, so keep the user on any repository that a Node.js environment deploys from.
+**Note:** The Altis Cloud app does not support [Node.js](docs://cloud/nodejs/) environments yet. They still deploy through
+the `@humanmade-cloud` user, so keep the user on any repository that a Node.js environment deploys from.
