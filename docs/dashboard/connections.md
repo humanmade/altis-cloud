@@ -123,9 +123,13 @@ with an access token. See [Private dependencies](docs://cloud/build-scripts/priv
 
 To remove a connection, go to **Settings** > **Connections** and select **Disconnect** next to it.
 
-Builds will fail for any environment that deploys from a repository in that organization, until you connect again and
-choose a repository. Altis does not switch these environments back to the `@humanmade-cloud` user. To move an
-environment back, [contact Altis support](support://new).
+What happens next depends on whether Altis support has finished switching the environment (see
+[Switching from the humanmade-cloud user](#switching-from-the-humanmade-cloud-user)):
+
+- **Switched environments** stop building until you connect again and choose a repository. Altis does not switch them back
+  to the `@humanmade-cloud` user. To move one back, [contact Altis support](support://new).
+- **Environments not yet switched** go back to the repository and branch they used before you connected. They keep building
+  through the `@humanmade-cloud` user, as long as it still has access to that repository.
 
 Disconnecting in the Altis Dashboard does not uninstall the app from GitHub. To remove it completely, uninstall the Altis Cloud
 app from your organization's settings on GitHub.
