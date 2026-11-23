@@ -13,9 +13,6 @@ With the Altis Cloud app:
 - You can change the repository and branch for an environment yourself, from the Altis Dashboard.
 - Pushes to your deploy branch start a new build automatically, the same as before.
 
-If you don't see the **Connections** page in your Instance settings, it is not yet turned on for your Instance.
-[Contact Altis support](support://new) to request access.
-
 ## Before you start
 
 You will need:
@@ -81,6 +78,9 @@ Once both are saved, the environment's **Deploys** page shows the connected repo
 
 Every commit pushed to the chosen branch creates a new build.
 
+If the environment deployed through the `@humanmade-cloud` user before, saving the branch also switches it to the Altis Cloud
+app. See [Switching from the humanmade-cloud user](#switching-from-the-humanmade-cloud-user).
+
 Changing the repository or the branch clears the environment's build cache, so the next build may take longer than usual.
 
 Only repositories the Altis Cloud app can access appear in the list. If a repository is missing, see
@@ -123,11 +123,11 @@ with an access token. See [Private dependencies](docs://cloud/build-scripts/priv
 
 To remove a connection, go to **Settings** > **Connections** and select **Disconnect** next to it.
 
-What happens next depends on whether Altis support has finished switching the environment (see
+What happens next depends on whether the environment has switched to the Altis Cloud app (see
 [Switching from the humanmade-cloud user](#switching-from-the-humanmade-cloud-user)):
 
-- **Switched environments** stop building until you connect again and choose a repository. Altis does not switch them back
-  to the `@humanmade-cloud` user. To move one back, [contact Altis support](support://new).
+- **Switched environments** stop building until you connect again and choose a repository and branch. Altis does not switch
+  them back to the `@humanmade-cloud` user. To move one back, [contact Altis support](support://new).
 - **Environments not yet switched** go back to the repository and branch they used before you connected. They keep building
   through the `@humanmade-cloud` user, as long as it still has access to that repository.
 
@@ -136,19 +136,21 @@ app from your organization's settings on GitHub.
 
 ## Switching from the humanmade-cloud user
 
-If your environments currently deploy using the `@humanmade-cloud` user, they will keep working as they are. Switching an
-environment to the Altis Cloud app also needs a change on the Altis side, so you switch with help from
-[Altis support](support://new).
+If your environments currently deploy using the `@humanmade-cloud` user, they will keep working as they are. You can switch an
+environment to the Altis Cloud app at any time.
 
 To switch:
 
-1. [Contact Altis support](support://new) and tell us which environments you want to switch. We will turn on Connections
-   for your Instance and agree a time for the switch.
-2. [Connect your GitHub organization](#connect-your-github-organization).
-3. [Choose the repository and branch](#choose-the-repository-and-branch-for-an-environment) for each environment.
-4. Tell [Altis support](support://new) you have finished. We will complete the switch on our side. After this, the
-   environment only builds through the Altis Cloud app.
-5. Push a commit to each environment's branch and check the build starts and succeeds.
+1. [Connect your GitHub organization](#connect-your-github-organization).
+2. [Choose the repository and branch](#choose-the-repository-and-branch-for-an-environment) for the environment. When you
+   save the branch, Altis starts switching the environment to the Altis Cloud app. This takes a few minutes. Until it
+   finishes, pushes still build through the `@humanmade-cloud` user.
+3. Push a commit to the environment's branch and check the build starts and succeeds.
+
+After the switch, the environment only builds through the Altis Cloud app. Once all the environments that use a repository have
+switched, you can remove the `@humanmade-cloud` user from it.
+
+To move an environment back to the `@humanmade-cloud` user, [contact Altis support](support://new).
 
 **Note:** The Altis Cloud app does not support [Node.js](docs://cloud/nodejs/) environments yet. They still deploy through
 the `@humanmade-cloud` user, so keep the user on any repository that a Node.js environment deploys from.
